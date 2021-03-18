@@ -36,15 +36,15 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             origin: "*",
         },
     });
+    ControllerRegistry_1.ControllerRegistry(exports.app);
+    SocketRegistry_1.default(socketServer);
     if (process.env.NODE_ENV === "production") {
         exports.app.use(express_1.default.static("client/build"));
         exports.app.get("*", (req, res) => {
             res.sendFile(path_1.default.resolve(__dirname, "client", "build", "index.html"));
         });
     }
-    ControllerRegistry_1.ControllerRegistry(exports.app);
-    SocketRegistry_1.default(socketServer);
-    server.listen(4040, () => console.log(`listening to ports 4040`));
+    server.listen(process.env.PORT || 4040, () => console.log(`listening to ports 4040`));
 });
 main();
 //# sourceMappingURL=index.js.map
