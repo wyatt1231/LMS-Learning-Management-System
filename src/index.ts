@@ -36,7 +36,9 @@ const main = async () => {
     });
   }
 
-  server.listen(4040, () => console.log(`listening to ports 4040`));
+  server.listen(process.env.PORT || 4040, () =>
+    console.log(`listening to ports 4040`)
+  );
 };
 
 main();
