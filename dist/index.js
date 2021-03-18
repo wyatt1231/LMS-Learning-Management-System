@@ -41,11 +41,11 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     exports.app.use("/static", express_1.default.static(path_1.default.join(__dirname, "../client/build//static")));
     exports.app.get("*", function (req, res) {
         res.sendFile("index.html", {
-            root: path_1.default.join(__dirname, "../../client/build/"),
+            root: path_1.default.join(__dirname, "../client/build/"),
         });
     });
     console.log(`path`, path_1.default.join(__dirname, "../client/build//static"));
-    console.log(`path`, path_1.default.join(__dirname, "../../client/build/"));
+    console.log(`path`, path_1.default.join(__dirname, "../client/build/"));
     // app.get("*", function (req, res) {
     //   res.sendFile("index.html", {
     //     root: path.join(__dirname, "../../client/build/"),

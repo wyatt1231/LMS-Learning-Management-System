@@ -35,12 +35,12 @@ const main = async () => {
 
   app.get("*", function (req, res) {
     res.sendFile("index.html", {
-      root: path.join(__dirname, "../../client/build/"),
+      root: path.join(__dirname, "../client/build/"),
     });
   });
 
   console.log(`path`, path.join(__dirname, "../client/build//static"));
-  console.log(`path`, path.join(__dirname, "../../client/build/"));
+  console.log(`path`, path.join(__dirname, "../client/build/"));
 
   // app.get("*", function (req, res) {
   //   res.sendFile("index.html", {
