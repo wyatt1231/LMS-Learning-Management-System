@@ -8,6 +8,7 @@
     "postinstall": "tsc",
     "watch-node": "nodemon dist/index.js",
     "watch-ts": "tsc -w",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client",
     "deploy": "git add . && git commit -m Heroku && git push heroku master"
   },
   "keywords": [],
