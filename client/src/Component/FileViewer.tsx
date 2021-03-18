@@ -8,9 +8,6 @@ interface IFileViwer {
 }
 
 export const FileViwer: FC<IFileViwer> = memo(({ file }) => {
-  if (!file) {
-    return null;
-  }
   const viewer = useRef(null);
 
   useEffect(() => {
@@ -27,6 +24,11 @@ export const FileViwer: FC<IFileViwer> = memo(({ file }) => {
       });
     }
   }, [file]);
+
+  if (!file) {
+    return null;
+  }
+
   return (
     <div className="MyComponent">
       {file ? (
