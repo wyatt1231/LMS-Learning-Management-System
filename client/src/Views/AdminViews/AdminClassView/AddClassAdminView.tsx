@@ -241,7 +241,9 @@ export const AddClassAdminView: FC<AddClassAdminViewInterface> = memo(() => {
     };
 
     mounted && settingPageLinks();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
 
   return (
