@@ -222,29 +222,29 @@ export const AddClassAdminView: FC<AddClassAdminViewInterface> = memo(() => {
     setOpenTutorFutureSched(open);
   };
 
-  useEffect(() => {
-    let mounted = true;
+  // useEffect(() => {
+  //   let mounted = true;
 
-    const settingPageLinks = () => {
-      dispatch(
-        setPageLinks([
-          {
-            link: "/admin/class",
-            title: "Class",
-          },
-          {
-            link: window.location.pathname,
-            title: "Add Class",
-          },
-        ])
-      );
-    };
+  //   const settingPageLinks = () => {
+  //     dispatch(
+  //       setPageLinks([
+  //         {
+  //           link: "/admin/class",
+  //           title: "Class",
+  //         },
+  //         {
+  //           link: window.location.pathname,
+  //           title: "Add Class",
+  //         },
+  //       ])
+  //     );
+  //   };
 
-    mounted && settingPageLinks();
-    return () => {
-      mounted = false;
-    };
-  }, [dispatch]);
+  //   mounted && settingPageLinks();
+  //   return () => {
+  //     mounted = false;
+  //   };
+  // }, [dispatch]);
 
   return (
     <Container maxWidth="sm">
