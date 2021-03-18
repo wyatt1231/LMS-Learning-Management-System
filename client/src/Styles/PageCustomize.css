@@ -1,0 +1,29 @@
+::-webkit-scrollbar {
+  width: 0.4em !important;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(201, 199, 199);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(201, 199, 199);
+}
+
+.page-content {
+  margin: 1em 0;
+  background-color: #fff;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-top: none;
+  border-bottom: none;
+}
+
+/* .page-container {
+  min-height: calc(100vh - 150px) !important;
+} */

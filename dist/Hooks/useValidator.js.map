@@ -1,0 +1,1 @@
+{"version":3,"file":"useValidator.js","sourceRoot":"","sources":["../../src/Hooks/useValidator.ts"],"names":[],"mappings":";;;AAAO,MAAM,cAAc,GAAG,CAAC,OAAY,EAAW,EAAE;IACtD,IAAI,OAAO,OAAO,KAAK,WAAW,IAAI,OAAO,KAAK,EAAE,IAAI,OAAO,KAAK,IAAI,EAAE;QACxE,OAAO,IAAI,CAAC;KACb;SAAM;QACL,OAAO,KAAK,CAAC;KACd;AACH,CAAC,CAAC;AANW,QAAA,cAAc,kBAMzB"}
