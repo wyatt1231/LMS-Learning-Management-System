@@ -1,5 +1,8 @@
 export const APP_NAME: any = process.env.REACT_APP_NAME;
-export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+export const API_BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:4040/"
+    : process.env.REACT_APP_API_BASE_URL;
 
 export const getAccessToken = (): string | null => {
   let token: string | null = null;

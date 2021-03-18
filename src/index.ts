@@ -28,32 +28,18 @@ const main = async () => {
   ControllerRegistry(app);
   SocketRegistry(socketServer);
 
-  app.use(
-    "/static",
-    express.static(path.join(__dirname, "../client/build//static"))
-  );
+  if (process.env.NODE_ENV === "production") {
+    app.use(
+      "/static",
+      express.static(path.join(__dirname, "../client/build//static"))
+    );
 
-  app.get("*", function (req, res) {
-    res.sendFile("index.html", {
-      root: path.join(__dirname, "../client/build/"),
+    app.get("*", function (req, res) {
+      res.sendFile("index.html", {
+        root: path.join(__dirname, "../client/build/"),
+      });
     });
-  });
-
-  console.log(`path`, path.join(__dirname, "../client/build//static"));
-  console.log(`path`, path.join(__dirname, "../client/build/"));
-
-  // app.get("*", function (req, res) {
-  //   res.sendFile("index.html", {
-  //     root: path.join(__dirname, "../../client/build/"),
-  //   });
-  // });
-
-  // if (process.env.NODE_ENV === "production") {
-  //   app.use(express.static("../client/build"));
-  //   app.get("*", (req, res) => {
-  //     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-  //   });
-  // }
+  }
 
   const PORT = process.env.PORT || 4040;
   server.listen(PORT, () => console.log(`listening to ports ${PORT}`));

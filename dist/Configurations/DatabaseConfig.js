@@ -4,18 +4,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.query = exports.DatabaseConnection = exports.DatabaseConfig = void 0;
-const mysql2_1 = __importDefault(require("mysql2"));
-exports.DatabaseConfig = mysql2_1.default.createPool({
+const mysql_1 = __importDefault(require("mysql"));
+exports.DatabaseConfig = mysql_1.default.createPool({
     host: "localhost",
-    user: "root",
-    password: "root sa",
-    database: "lms",
-    port: 3309,
+    user: "id16408595_mymentor",
+    password: "PT8@Xq!/!L6/canD",
+    database: "id16408595_lms",
+    port: 3306,
 });
 const DatabaseConnection = () => {
     return new Promise((resolve, reject) => {
         exports.DatabaseConfig.getConnection((error, connection) => {
             if (error) {
+                console.log(`error`, error);
                 reject(error);
             }
             const Query = (sql, binding) => {
@@ -52,7 +53,7 @@ const DatabaseConnection = () => {
                     const full_query = `
           ${query} 
           ORDER BY ${sort.column} ${sort.direction}
-          LIMIT ${mysql2_1.default.escape(page.begin)}, ${mysql2_1.default.escape(page.limit)} `;
+          LIMIT ${mysql_1.default.escape(page.begin)}, ${mysql_1.default.escape(page.limit)} `;
                     connection.query(full_query, (err, result) => {
                         if (err) {
                             reject(err);
@@ -225,11 +226,11 @@ const queryFormat = (query, values) => {
                     return "(NULL)";
                 }
                 if (values[key] instanceof Array) {
-                    const formatArritem = values[key].map((v) => mysql2_1.default.escape(v));
+                    const formatArritem = values[key].map((v) => mysql_1.default.escape(v));
                     const arr_rep = formatArritem.join(",");
                     return ` (${arr_rep}) `;
                 }
-                return mysql2_1.default.escape(values[key]);
+                return mysql_1.default.escape(values[key]);
             }
             else {
                 if (typeof formattedQuery.message === "undefined") {
@@ -241,7 +242,7 @@ const queryFormat = (query, values) => {
         }
         if (key instanceof Array) {
             for (let i = 0; i < key.length; i++) {
-                key[i] = mysql2_1.default.escape(key[i]);
+                key[i] = mysql_1.default.escape(key[i]);
             }
             const joined_arr = key.join(",");
             return joined_arr;

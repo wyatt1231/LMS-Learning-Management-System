@@ -1,19 +1,20 @@
-import mysql, { OkPacket, RowDataPacket } from "mysql2";
+import mysql, { OkPacket, RowDataPacket } from "mysql";
 import { DatabaseConnectionModel, InsertModel } from "../Models/DatabaseModel";
 import { PaginationModel } from "../Models/PaginationModel";
 
 export const DatabaseConfig = mysql.createPool({
   host: "localhost",
-  user: "root",
-  password: "root sa",
-  database: "lms",
-  port: 3309,
+  user: "id16408595_mymentor",
+  password: "PT8@Xq!/!L6/canD",
+  database: "id16408595_lms",
+  port: 3306,
 });
 
 export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
   return new Promise((resolve, reject) => {
     DatabaseConfig.getConnection((error, connection) => {
       if (error) {
+        console.log(`error`, error);
         reject(error);
       }
 
