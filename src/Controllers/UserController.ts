@@ -7,7 +7,7 @@ const UserController = async (app: Express): Promise<void> => {
   const router = Router();
 
   router.get("/test", async (req: Request & UserClaims, res: Response) => {
-    res.json("The app is running");
+    res.json("The app is running" + __dirname);
   });
 
   router.post("/login", async (req: Request & UserClaims, res: Response) => {

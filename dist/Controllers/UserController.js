@@ -37,7 +37,7 @@ const user_repo = __importStar(require("../Repositories/UserRepository"));
 const UserController = (app) => __awaiter(void 0, void 0, void 0, function* () {
     const router = express_1.Router();
     router.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        res.json("The app is running");
+        res.json("The app is running" + __dirname);
     }));
     router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield user_repo.loginUser(req.body));

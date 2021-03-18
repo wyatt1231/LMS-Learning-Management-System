@@ -25,18 +25,17 @@ const main = async () => {
     },
   });
 
+  ControllerRegistry(app);
+  SocketRegistry(socketServer);
+
   if (process.env.NODE_ENV === "production") {
     // Set static folder
-    app.use(express.static("client/build"));
+    app.use(express.static("../client/build"));
 
     app.get("*", (req, res) => {
       res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
     });
   }
-
-  ControllerRegistry(app);
-
-  SocketRegistry(socketServer);
 
   server.listen(process.env.PORT || 4040, () =>
     console.log(`listening to ports 4040`)
