@@ -30,11 +30,19 @@ const main = async () => {
 
   if (process.env.NODE_ENV === "production") {
     // Set static folder
-    app.use(express.static("../client/build"));
-
-    app.get("*", (req, res) => {
-      res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+    // app.use(express.static("../client/build"));
+    app.use(
+      "/static",
+      express.static(path.join(__dirname, "../client/build//static"))
+    );
+    app.get("*", function (req, res) {
+      res.sendFile("index.html", {
+        root: path.join(__dirname, "../../client/build/"),
+      });
     });
+    // app.get("*", (req, res) => {
+    //   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+    // });
   }
 
   server.listen(process.env.PORT || 4040, () =>
