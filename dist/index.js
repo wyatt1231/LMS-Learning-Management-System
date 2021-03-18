@@ -39,21 +39,26 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     ControllerRegistry_1.ControllerRegistry(exports.app);
     SocketRegistry_1.default(socketServer);
     exports.app.use("/static", express_1.default.static(path_1.default.join(__dirname, "../client/build//static")));
-    console.log(`__dirname`, __dirname);
-    console.log(`path`, path_1.default.join(__dirname, "../client/build//static"));
     exports.app.get("*", function (req, res) {
         res.sendFile("index.html", {
             root: path_1.default.join(__dirname, "../../client/build/"),
         });
     });
-    if (process.env.NODE_ENV === "production") {
-        // Set static folder
-        // app.use(express.static("../client/build"));
-        // app.get("*", (req, res) => {
-        //   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-        // });
-    }
-    server.listen(process.env.PORT || 4040, () => console.log(`listening to ports 4040`));
+    console.log(`path`, path_1.default.join(__dirname, "../client/build//static"));
+    console.log(`path`, path_1.default.join(__dirname, "../../client/build/"));
+    // app.get("*", function (req, res) {
+    //   res.sendFile("index.html", {
+    //     root: path.join(__dirname, "../../client/build/"),
+    //   });
+    // });
+    // if (process.env.NODE_ENV === "production") {
+    //   app.use(express.static("../client/build"));
+    //   app.get("*", (req, res) => {
+    //     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+    //   });
+    // }
+    const PORT = process.env.PORT || 4040;
+    server.listen(PORT, () => console.log(`listening to ports ${PORT}`));
 });
 main();
 //# sourceMappingURL=index.js.map

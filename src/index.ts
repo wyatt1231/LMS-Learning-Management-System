@@ -33,26 +33,30 @@ const main = async () => {
     express.static(path.join(__dirname, "../client/build//static"))
   );
 
-  console.log(`__dirname`, __dirname);
-  console.log(`path`, path.join(__dirname, "../client/build//static"));
-
   app.get("*", function (req, res) {
     res.sendFile("index.html", {
       root: path.join(__dirname, "../../client/build/"),
     });
   });
 
-  if (process.env.NODE_ENV === "production") {
-    // Set static folder
-    // app.use(express.static("../client/build"));
-    // app.get("*", (req, res) => {
-    //   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-    // });
-  }
+  console.log(`path`, path.join(__dirname, "../client/build//static"));
+  console.log(`path`, path.join(__dirname, "../../client/build/"));
 
-  server.listen(process.env.PORT || 4040, () =>
-    console.log(`listening to ports 4040`)
-  );
+  // app.get("*", function (req, res) {
+  //   res.sendFile("index.html", {
+  //     root: path.join(__dirname, "../../client/build/"),
+  //   });
+  // });
+
+  // if (process.env.NODE_ENV === "production") {
+  //   app.use(express.static("../client/build"));
+  //   app.get("*", (req, res) => {
+  //     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  //   });
+  // }
+
+  const PORT = process.env.PORT || 4040;
+  server.listen(PORT, () => console.log(`listening to ports ${PORT}`));
 };
 
 main();
