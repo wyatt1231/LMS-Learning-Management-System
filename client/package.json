@@ -60,7 +60,7 @@
     "react-quill": "^1.3.5",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.4",
+    "react-scripts": "4.0.0-next.77",
     "react-text-mask": "^5.4.3",
     "recharts": "^2.0.4",
     "redux": "^4.0.5",
@@ -71,6 +71,8 @@
     "typeface-lato": "^1.1.13",
     "typeface-montserrat": "^1.1.13",
     "typescript": "^3.7.5",
+    "@typescript-eslint/eslint-plugin": "^3.3.0", 
+    "@typescript-eslint/parser": "^3.3.0",
     "yup": "^0.29.3"
   },
   "scripts": {
