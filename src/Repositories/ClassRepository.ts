@@ -299,7 +299,7 @@ const getTutorClassTable = async (
       OR room_desc like concat('%',@search,'%')
       OR class_type like concat('%',@search,'%')
       OR tutor_name like concat('%',@search,'%'))
-      AND tutor_pk =getTutorPK(${user_pk})
+      AND tutor_pk = (SELECT tutor_pk FROM tutors WHERE user_id='${user_pk}' LIMIT 1)
       `,
       payload
     );
@@ -393,7 +393,7 @@ const getStudentUnenrolledClassTable = async (
           LEFT JOIN class_students cs ON cs.class_pk = c.class_pk
           LEFT JOIN courses cr ON cr.course_pk = c.course_pk
           LEFT JOIN status_master sm ON sm.sts_pk = c.sts_pk
-          WHERE c.class_pk NOT IN (SELECT class_pk FROM class_students  WHERE student_pk =getStudentPK('${user_pk}') )  AND c.sts_pk = 'a'
+          WHERE c.class_pk NOT IN (SELECT class_pk FROM class_students  WHERE student_pk =(SELECT student_pk FROM students WHERE user_id='${user_pk}' LIMIT 1) )  AND c.sts_pk = 'a'
           GROUP BY c.class_pk
         ) tmp
       WHERE
@@ -451,7 +451,7 @@ const getStudentEnrolledClasses = async (
       FROM classes c
       LEFT JOIN tutors t ON c.tutor_pk = c.tutor_pk
       LEFT JOIN class_students cs ON cs.class_pk = c.class_pk
-      WHERE cs.student_pk =getStudentPK('${user_pk}')
+      WHERE cs.student_pk =(SELECT student_pk FROM students WHERE user_id='${user_pk}' LIMIT 1) 
       GROUP BY c.class_pk`,
       null
     );

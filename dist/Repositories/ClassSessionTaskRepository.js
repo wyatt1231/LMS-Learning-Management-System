@@ -405,7 +405,7 @@ const addClassTaskSub = (payload, student_pk) => __awaiter(void 0, void 0, void 
             sub.student_pk = student_pk;
             if (sub.task_sub_pk) {
                 const sql_update_sub = yield con.Modify(`UPDATE class_task_sub SET
-                student_pk=getStudentPK(@student_pk),
+                student_pk=(SELECT student_pk FROM students WHERE user_id=@student_pk LIMIT 1),
                 task_ques_pk=@task_ques_pk,
                 answer=@answer WHERE task_sub_pk = @task_sub_pk ;
                 `, sub);
@@ -419,7 +419,7 @@ const addClassTaskSub = (payload, student_pk) => __awaiter(void 0, void 0, void 
             }
             else {
                 const sql_add_sub = yield con.Insert(`INSERT INTO class_task_sub SET
-                student_pk=getStudentPK(@student_pk),
+                student_pk=(SELECT student_pk FROM students WHERE user_id=@student_pk LIMIT 1),
                 task_ques_pk=@task_ques_pk,
                 answer=@answer;
                 ;`, sub);

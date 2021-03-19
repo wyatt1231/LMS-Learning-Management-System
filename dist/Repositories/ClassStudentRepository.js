@@ -94,7 +94,7 @@ const joinStudentToClass = (payload, user_pk) => __awaiter(void 0, void 0, void 
         INSERT INTO class_students 
         SET
         class_pk=@class_pk,
-        student_pk=(getStudentPK('${user_pk}')),
+        student_pk=(SELECT student_pk FROM students WHERE user_id='${user_pk}' LIMIT 1),
         sts_pk=@sts_pk,
         encoder_pk=@encoder_pk;
         `, payload);
@@ -102,7 +102,7 @@ const joinStudentToClass = (payload, user_pk) => __awaiter(void 0, void 0, void 
             const sql_audit = yield con.Insert(`
           INSERT INTO class_log 
           SET
-          remarks=CONCAT(getStudNameByUser('${user_pk}'),' has requested to join in your ',COALESCE(getClassDesc(@class_pk),''),' class' ),
+          remarks=CONCAT((SELECT concat(firstname,' ',lastname) FROM students WHERE user_id='${user_pk}' LIMIT 1),' has requested to join in your ',COALESCE((SELECT class_desc FROM classes WHERE class_pk = @class_pk),''),' class' ),
           ref_table='class_students',
           ref_pk=${sql_enroll_student.insertedId},
           user_type='STUDENT',

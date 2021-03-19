@@ -3,10 +3,10 @@ import { DatabaseConnectionModel, InsertModel } from "../Models/DatabaseModel";
 import { PaginationModel } from "../Models/PaginationModel";
 
 export const DatabaseConfig = mysql.createPool({
-  host: "localhost",
-  user: "id16408595_mymentor",
-  password: "PT8@Xq!/!L6/canD",
-  database: "id16408595_lms",
+  host: "us-cdbr-east-03.cleardb.com",
+  user: "b25793f72a1e8c",
+  password: "7b71cb24",
+  database: "heroku_fda4a2166dd220a",
   port: 3306,
 });
 
