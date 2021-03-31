@@ -91,3 +91,12 @@ export const setPageSuccessPromptAction = (
     page_success_prompt: payload,
   });
 };
+
+export const toggleActivitySidebar = (is_open: boolean) => async (
+  dispatch: Dispatch<PageReducerTypes>
+) => {
+  dispatch({
+    type: "toggle_activity_sidebar",
+    toggle_activity_sidebar: is_open,
+  });
+};

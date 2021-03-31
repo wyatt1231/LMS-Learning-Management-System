@@ -59,8 +59,16 @@ const formSchema = yup.object({
   firstname: yup.string().required().max(150).label("First Name"),
   lastname: yup.string().required().max(150).label("Last Name"),
   birth_date: yup.date().nullable().label("Birth Date"),
-  email: yup.string().required().matches(validateEmail),
-  gender: yup.string().required().max(1).label("Gender"),
+  email: yup.string().required().email().label("Email"),
+  gender: yup.string().required().nullable().max(1).label("Gender"),
+  mob_no: yup
+    .string()
+    .required()
+    .matches(
+      /^(09|\+639)\d{9}$/,
+      "Mobile number must be a valid philippine mobile number."
+    )
+    .label("Mobile Number"),
 });
 
 export const AddCoAdminView: FC<AddCoAdminViewInterface> = memo(() => {
@@ -135,7 +143,15 @@ export const AddCoAdminView: FC<AddCoAdminViewInterface> = memo(() => {
         innerRef={formRef}
       >
         {({ values, errors, touched, setFieldValue }) => (
-          <Form className="clinic-adding-form">
+          <Form
+            className="clinic-adding-form"
+            style={{
+              backgroundColor: `#fff`,
+              borderRadius: 10,
+              padding: `1em 2em`,
+            }}
+            noValidate
+          >
             <div className="box-ctnr">
               <div className="box-header">
                 <div className="header-text">
@@ -383,7 +399,7 @@ export const AddCoAdminView: FC<AddCoAdminViewInterface> = memo(() => {
                   setPic(null);
                 }}
               >
-                Add another record
+                Add another administrator
               </Button>
               <Button
                 color="primary"
@@ -392,7 +408,7 @@ export const AddCoAdminView: FC<AddCoAdminViewInterface> = memo(() => {
                   history.push(`/admin/co-administrator`);
                 }}
               >
-                View all records
+                View all administrator
               </Button>
             </SuccessDialog>
           </Form>

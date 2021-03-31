@@ -9,8 +9,8 @@ import MenuIcon from "@material-ui/icons/Menu";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import clsx from "clsx";
 import React, { memo } from "react";
-import { useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { NavLink, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import logo from "../../Assets/Images/Logo/app_logo.png";
 import Message from "../../Component/Message/Message";
@@ -19,9 +19,10 @@ import PageLinks from "../../Component/PageLinks";
 import TaskMenu from "../../Component/TaskMenu/TaskMenu";
 import UserProfile from "../../Component/UserProfile/UserProfile";
 import { APP_NAME } from "../../Helpers/AppConfig";
+import { toggleActivitySidebar } from "../../Services/Actions/PageActions";
 import { RootStore } from "../../Services/Store";
 import { IPageNavLinks } from "./Layout";
-
+import AssignmentRoundedIcon from "@material-ui/icons/AssignmentRounded";
 interface IHeader {
   PageNavLinks: Array<IPageNavLinks>;
   isOpenMobileHeader: boolean;
@@ -42,10 +43,13 @@ const Header: React.FC<IHeader> = memo(
   }) => {
     const theme = useTheme();
     const mobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const dispatch = useDispatch();
+    const history = useHistory();
 
     const page_links = useSelector(
       (store: RootStore) => store.PageReducer.page_links
     );
+
     return (
       <>
         <StyledHeader
@@ -66,6 +70,10 @@ const Header: React.FC<IHeader> = memo(
             className="brand"
             style={{
               opacity: isOpenMobileSidebar ? 0 : 1,
+            }}
+            onClick={() => {
+              // window.location.href = "/admin/dashboard";
+              history.push(`/${user?.user_type}/dashboard`);
             }}
           >
             <Avatar src={logo} className="brand-logo" alt="" />
@@ -95,6 +103,16 @@ const Header: React.FC<IHeader> = memo(
 
             <Notification />
             <Message />
+            <IconButton
+              color="inherit"
+              size="small"
+              onClick={() => {
+                dispatch(toggleActivitySidebar(true));
+              }}
+              className="icon-header"
+            >
+              <AssignmentRoundedIcon />
+            </IconButton>
             <UserProfile user={user} variant={mobile ? "mobile" : "desktop"} />
           </section>
 
@@ -137,6 +155,7 @@ const StyledHeader = styled(AppBar)`
     justify-items: start;
     justify-content: start;
     grid-template-areas: "logo app" "logo name";
+    cursor: pointer;
     /* grid-gap: 0.3em; */
     .brand-logo {
       grid-area: logo;
@@ -190,10 +209,9 @@ const StyledHeader = styled(AppBar)`
       justify-items: center;
       justify-content: center;
 
-      text-transform: capitalize;
       font-weight: 500;
       font-size: 0.9em;
-      color: rgba(255, 255, 255, 0.75);
+      color: rgba(255, 255, 255, 0.7);
 
       &.nav-item-active {
         transition: 0.2s all ease-in-out;

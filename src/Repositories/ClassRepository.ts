@@ -355,10 +355,18 @@ const getSingleClass = async (class_pk: string): Promise<ResponseModel> => {
         class_pk: class_pk,
       }
     );
-
     if (data?.pic) {
       data.pic = await GetUploadedImage(data.pic);
     }
+
+    data.tutor_info = await con.QuerySingle(
+      `select * from tutors where tutor_pk=@tutor_pk`,
+      {
+        tutor_pk: data.tutor_pk,
+      }
+    );
+
+    data.tutor_info.picture = await GetUploadedImage(data.pic);
 
     con.Commit();
     return {

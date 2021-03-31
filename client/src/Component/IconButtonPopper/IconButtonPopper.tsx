@@ -1,5 +1,5 @@
 import { Button, IconButton, Paper, Popover } from "@material-ui/core";
-import MoreHorizRoundedIcon from "@material-ui/icons/MoreHorizRounded";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import React, { memo } from "react";
 import styled from "styled-components";
 interface IIconButtonPopper {
@@ -15,6 +15,7 @@ interface IIconButtonPopper {
   buttons: Array<IButtonItem>;
   style?: React.CSSProperties;
   className?: string;
+  size?: "small" | "medium";
 }
 
 interface IButtonItem {
@@ -26,7 +27,7 @@ interface IButtonItem {
 }
 
 const IconButtonPopper: React.FC<IIconButtonPopper> = memo(
-  ({ buttonColor, className, iconColor, buttons, style }) => {
+  ({ buttonColor, className, iconColor, buttons, style, size }) => {
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
       null
     );
@@ -45,17 +46,16 @@ const IconButtonPopper: React.FC<IIconButtonPopper> = memo(
     return (
       <div style={style} className={className}>
         <IconButton
-          color={buttonColor}
-          // color={buttonColor}
+          color="primary"
           aria-describedby={id}
           onClick={handleClick}
-          // size="small"
+          size={size}
           style={{
-            backgroundColor: `rgba(255, 255, 255, 0.9)`,
-            color: `#333`,
+            backgroundColor: `#e3f2fd`,
+            color: `#1a237e`,
           }}
         >
-          <MoreHorizRoundedIcon color={iconColor} />
+          <MoreVertIcon />
         </IconButton>
         <Popover
           id={id}

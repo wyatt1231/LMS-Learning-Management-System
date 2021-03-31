@@ -303,12 +303,21 @@ const getSingleStudent = async (student_pk: string): Promise<ResponseModel> => {
   try {
     await con.BeginTransaction();
 
-    const data = await con.QuerySingle(
+    const data: StudentModel = await con.QuerySingle(
       `select * from students where student_pk = @student_pk`,
       {
         student_pk: student_pk,
       }
     );
+
+    data.status = await con.QuerySingle(
+      `select * from status_master where sts_pk=@sts_pk`,
+      {
+        sts_pk: data.sts_pk,
+      }
+    );
+
+    data.picture = await GetUploadedImage(data.picture);
 
     con.Commit();
     return {

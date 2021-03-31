@@ -12,6 +12,7 @@ const FormikInputField = (props: TextFieldProps) => {
     <TextField
       {...props}
       {...field}
+      value={field.value ? field.value : ""}
       error={!!errorText}
       helperText={errorText}
     />

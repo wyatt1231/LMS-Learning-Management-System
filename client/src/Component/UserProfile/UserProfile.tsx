@@ -32,21 +32,19 @@ const UserProfile: React.FC<IUserProfile> = memo(({ variant, user }) => {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
-  let ProfileLink;
+  // let ProfileLink;
 
-  if (user?.user_type === "admin") {
-    ProfileLink = (
-      <NavLink to="/admin/profile" className="link">
-        My Profile
-      </NavLink>
-    );
-  } else if (user?.user_type === "tutor") {
-    ProfileLink = (
-      <NavLink to="/clinic/myprofile" className="link">
-        My Profile
-      </NavLink>
-    );
-  }
+  // if (user?.user_type === "admin") {
+  //   ProfileLink = (
+
+  //   );
+  // } else if (user?.user_type === "tutor") {
+  //   ProfileLink = (
+  //     <NavLink to="/clinic/myprofile" className="link">
+  //       My Profile
+  //     </NavLink>
+  //   );
+  // }
 
   return (
     <StyledUserProfile theme={theme}>
@@ -98,7 +96,9 @@ const UserProfile: React.FC<IUserProfile> = memo(({ variant, user }) => {
           <div className="content-body">
             <div className="content-title">MENUS</div>
             <div className="content-items">
-              {ProfileLink}
+              <NavLink to={`/${user?.user_type}/profile`} className="link">
+                My Profile
+              </NavLink>
               <div className="link" onClick={handleLogout}>
                 Logout
               </div>

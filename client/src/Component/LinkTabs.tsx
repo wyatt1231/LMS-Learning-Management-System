@@ -1,5 +1,5 @@
-import { Grid, useMediaQuery } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
+import { Grid } from "@material-ui/core";
+import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import React, { memo } from "react";
@@ -7,8 +7,13 @@ import { useHistory } from "react-router";
 import styled from "styled-components";
 
 export interface ITab {
-  label: String;
+  label: string;
   link: string;
+}
+
+interface StyledTabsProps {
+  value: number;
+  onChange: (event: React.ChangeEvent<{}>, newValue: number) => void;
 }
 
 interface ILinkTabs {
@@ -16,53 +21,76 @@ interface ILinkTabs {
   RenderSwitchComponent: any;
 }
 
+interface StyledTabProps {
+  label: any;
+}
+
+const AntTabs = withStyles({
+  root: {
+    borderBottom: "1px solid #e8e8e8",
+  },
+  indicator: {
+    backgroundColor: "#1890ff",
+  },
+})(Tabs);
+
+const AntTab = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      textTransform: "none",
+      minWidth: 72,
+      fontWeight: theme.typography.fontWeightRegular,
+      marginRight: theme.spacing(4),
+      "&:hover": {
+        color: "#40a9ff",
+        opacity: 1,
+      },
+      "&$selected": {
+        color: "#1890ff",
+        fontWeight: theme.typography.fontWeightMedium,
+      },
+      "&:focus": {
+        color: "#40a9ff",
+      },
+    },
+    selected: {},
+  })
+)((props: any) => <Tab disableRipple {...props} />);
+
 const LinkTabs: React.FC<ILinkTabs> = memo(
   ({ tabs, RenderSwitchComponent }) => {
-    const theme = useTheme();
     const history = useHistory();
-    const desktop = useMediaQuery(theme.breakpoints.up("md"));
-    const [value, setValue] = React.useState(0);
-    const handleChange = (event, newValue) => {
-      setValue(newValue);
-    };
 
     return (
       <StyledLinkTabs>
         <Grid container>
-          <Grid item xs={12} md={3} lg={2}>
-            <Tabs
-              orientation={desktop ? "vertical" : "horizontal"}
+          <Grid item xs={12}>
+            <AntTabs
+              orientation={"horizontal"}
               variant="scrollable"
-              value={value}
-              onChange={handleChange}
+              value={tabs.findIndex((p) =>
+                window.location.pathname
+                  .toLowerCase()
+                  .includes(p.link.toLowerCase())
+              )}
               className="tabs"
               indicatorColor="primary"
               textColor="primary"
-              style={{
-                // borderRight: desktop
-                //   ? `1px solid ${theme.palette.divider}`
-                //   : "",
-                // borderBottom: !desktop
-                //   ? `1px solid ${theme.palette.divider}`
-                //   : "",
-                height: "100%",
-              }}
             >
               {tabs.map((value, index) => (
-                <Tab
+                <AntTab
                   label={value.label}
                   key={index}
                   value={index}
-                  color="primary"
                   onClick={() => {
                     history.push(value.link);
                   }}
-                />
+                ></AntTab>
               ))}
-            </Tabs>
+            </AntTabs>
           </Grid>
-          <Grid item xs={12} md={9} lg={10}>
-            <div className="body" style={{ minHeight: 600 }}>
+          <Grid item xs={12}>
+            <div className="body" style={{ minHeight: 400, padding: `1em` }}>
               {RenderSwitchComponent}
             </div>
           </Grid>
@@ -77,15 +105,17 @@ export default LinkTabs;
 const StyledLinkTabs = styled.div`
   width: 100%;
   height: 100%;
+
+  span.PrivateTabIndicator-root-1.PrivateTabIndicator-colorPrimary-2.MuiTabs-indicator {
+    border-bottom-color: blue !important;
+  }
   .tabs {
     .Mui-selected {
-      /* color: #2196f3 !important; */
+      color: #2196f3 !important;
+      border-bottom-color: #2196f3 !important;
     }
 
     .MuiTab-wrapper {
-      font-weight: 700 !important;
-      letter-spacing: 0.3pt;
-      word-spacing: 0.3pt;
     }
   }
   .body {

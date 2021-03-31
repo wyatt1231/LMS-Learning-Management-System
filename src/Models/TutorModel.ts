@@ -1,3 +1,5 @@
+import { StatusMasterModel } from "./StatusMasterModel";
+
 export interface TutorModel {
   tutor_pk?: string;
   user_id?: number;

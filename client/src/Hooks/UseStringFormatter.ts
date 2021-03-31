@@ -6,7 +6,7 @@ const StringEmptyToDefault = (
     return defaultString;
   } else {
     if (!originalString) {
-      return "";
+      return defaultString;
     } else {
       return originalString.toString().trim() === ""
         ? defaultString

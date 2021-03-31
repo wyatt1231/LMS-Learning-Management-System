@@ -59,11 +59,12 @@ declare module "@material-ui/core/styles/createPalette" {
 let theme = createMuiTheme({
   palette: {
     primary: {
-      main: `#1e2a78`,
+      // main: `#1e2a78`,
+      main: `#581b98`,
     },
     secondary: {
-      // main: `#f3f169`,
-      main: `#ff1f5a`,
+      // main: `#ff1f5a`,
+      main: `#f3558e`,
     },
   },
   typography: {
@@ -73,11 +74,10 @@ let theme = createMuiTheme({
       fontSize: `.8em`,
     },
     fontFamily: [
-      "lato",
+      "montserrat",
       "-apple-system",
       "BlinkMacSystemFont",
       '"Segoe UI"',
-      "Roboto",
       '"Helvetica Neue"',
       "Arial",
       "sans-serif",
@@ -99,7 +99,7 @@ let theme = createMuiTheme({
     color: "black",
   },
   body: {
-    backgroundColor: " #edfcff",
+    backgroundColor: " #e1f5fe",
   },
 });
 

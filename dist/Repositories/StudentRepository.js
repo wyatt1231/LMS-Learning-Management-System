@@ -265,6 +265,10 @@ const getSingleStudent = (student_pk) => __awaiter(void 0, void 0, void 0, funct
         const data = yield con.QuerySingle(`select * from students where student_pk = @student_pk`, {
             student_pk: student_pk,
         });
+        data.status = yield con.QuerySingle(`select * from status_master where sts_pk=@sts_pk`, {
+            sts_pk: data.sts_pk,
+        });
+        data.picture = yield useFileUploader_1.GetUploadedImage(data.picture);
         con.Commit();
         return {
             success: true,

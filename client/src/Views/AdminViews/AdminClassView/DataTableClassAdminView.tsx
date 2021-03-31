@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import DataTableSearch from "../../../Component/DataTableSearch";
 import DataTableSort from "../../../Component/DataTableSort";
-import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopper";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import useFilter from "../../../Hooks/useFilter";
 import { setClassDataTableAction } from "../../../Services/Actions/ClassActions";
@@ -130,16 +129,29 @@ export const DataTableClassAdminView: FC<DataTableClassAdminInterface> = memo(
 
     return (
       <Container maxWidth="lg">
-        <Grid container spacing={3}>
+        <Grid
+          container
+          style={{
+            backgroundColor: `#fff`,
+            borderRadius: 10,
+            marginTop: `1em`,
+            marginBottom: `1em`,
+            minHeight: `90vh`,
+          }}
+          spacing={3}
+          alignItems="flex-start"
+          alignContent="flex-start"
+        >
           <Grid item xs={12} container justify="flex-end" alignItems="center">
             <Grid item>
               <NavLink to="/admin/class/add">
-                <Button disableElevation color="primary" variant="contained">
-                  Add Class
+                <Button color="primary" variant="contained">
+                  Create a Class
                 </Button>
               </NavLink>
             </Grid>
           </Grid>
+
           <Grid
             xs={12}
             item
@@ -215,10 +227,10 @@ export const DataTableClassAdminView: FC<DataTableClassAdminInterface> = memo(
                 className="class-container"
                 style={{
                   display: `grid`,
-                  gridGap: `1em`,
+                  gridGap: `2em`,
                   alignItems: `start`,
                   alignContent: `start`,
-                  gridTemplateColumns: `repeat(auto-fill, minmax(min(15rem, 100%), 1fr))`,
+                  gridTemplateColumns: `repeat(auto-fit, minmax(min(270px, 100%), 1fr))`,
                 }}
               >
                 {data_table?.map((v, i) => (
@@ -233,31 +245,13 @@ export const DataTableClassAdminView: FC<DataTableClassAdminInterface> = memo(
 
                     <div className="info-container">
                       <NavLink
-                        to={`/admin/class/${v.class_pk}`}
+                        to={`/admin/class/${v.class_pk}/session`}
                         className="title"
                       >
                         {v.class_desc}
                         {" - "}
                         {v.course_desc}
                       </NavLink>
-
-                      <div className="time">
-                        {moment(v.start_time, "HH:mm:ss").format("hh:mma")}
-                        {" - "}
-                        {moment(v.end_time, "HH:mm:ss").format("hh:mma")}
-                      </div>
-                      <div
-                        className="item"
-                        style={{ textTransform: `capitalize` }}
-                      >
-                        {v.tutor_name}
-                      </div>
-                      <div className="item">
-                        <div className="value">
-                          {v.closed_sessions} of {v.session_count} completed
-                          sessions
-                        </div>
-                      </div>
                       <div className="status">
                         <div
                           style={{
@@ -276,17 +270,24 @@ export const DataTableClassAdminView: FC<DataTableClassAdminInterface> = memo(
                               color: v.sts_color,
                             }}
                           />
-                          {v.sts_pk === "fa" && (
-                            <IconButtonPopper
-                              style={{}}
-                              buttons={[
-                                {
-                                  text: "Cancel class",
-                                  color: "secondary",
-                                },
-                              ]}
-                            />
-                          )}
+                        </div>
+                      </div>
+
+                      <div className="time item">
+                        {moment(v.start_time, "HH:mm:ss").format("hh:mma")}
+                        {" - "}
+                        {moment(v.end_time, "HH:mm:ss").format("hh:mma")}
+                      </div>
+                      <div
+                        className="item"
+                        style={{ textTransform: `capitalize` }}
+                      >
+                        {v.tutor_name}
+                      </div>
+                      <div className="item">
+                        <div className="value">
+                          {v.closed_sessions} of {v.session_count} completed
+                          sessions
                         </div>
                       </div>
                     </div>

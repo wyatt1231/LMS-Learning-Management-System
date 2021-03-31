@@ -39,8 +39,8 @@ const generateNavLinks = (user: any): Array<IPageNavLinks> => {
         hasSubLinks: false,
       },
       {
-        to: "/admin/course",
-        text: "Courses",
+        to: "/admin/student",
+        text: "Students",
         hasSubLinks: false,
       },
       {
@@ -48,19 +48,22 @@ const generateNavLinks = (user: any): Array<IPageNavLinks> => {
         text: "Tutors",
         hasSubLinks: false,
       },
+
+      {
+        to: "/admin/course",
+        text: "Courses",
+        hasSubLinks: false,
+      },
+
       {
         to: "/admin/room",
         text: "Rooms",
         hasSubLinks: false,
       },
-      {
-        to: "/admin/student",
-        text: "Students",
-        hasSubLinks: false,
-      },
+
       {
         to: "/admin/co-administrator",
-        text: "Co-administrators",
+        text: "Administrators",
         hasSubLinks: false,
       },
     ];

@@ -21,6 +21,7 @@ export const StyledUserProfile = styled.div`
       grid-area: image;
       height: 45px;
       width: 43px;
+      background-color: ${(p) => p.theme.palette.secondary.main} !important;
       img {
         /* margin: 0.5em; */
       }
@@ -84,11 +85,13 @@ export const StyledPopOverContent = styled.div`
     grid-gap: 1em;
     padding: 1em;
     grid-auto-columns: 50px 1fr 100px;
-    background-color: #e2f3f5;
+    background-color: ${(p) => p.theme.palette.primary.light};
+    color: ${(p) => p.theme.palette.primary.contrastText};
 
     .content-header-image {
       height: 50px;
       width: 50px;
+      background-color: ${(p) => p.theme.palette.secondary.main} !important;
     }
     .content-header-user {
       font-size: 0.8em;
@@ -120,10 +123,10 @@ export const StyledPopOverContent = styled.div`
     }
     .link {
       padding: 0.5em 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-      color: rgba(0, 0, 0, 0.6);
+      border-bottom: 0.01em solid rgba(0, 0, 0, 0.2);
+      color: rgba(0, 0, 0, 1) !important;
       &:hover {
-        color: blue;
+        color: blue !important;
       }
     }
   }

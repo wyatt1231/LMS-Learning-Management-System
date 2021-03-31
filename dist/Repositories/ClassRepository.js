@@ -300,6 +300,10 @@ const getSingleClass = (class_pk) => __awaiter(void 0, void 0, void 0, function*
         if (data === null || data === void 0 ? void 0 : data.pic) {
             data.pic = yield useFileUploader_1.GetUploadedImage(data.pic);
         }
+        data.tutor_info = yield con.QuerySingle(`select * from tutors where tutor_pk=@tutor_pk`, {
+            tutor_pk: data.tutor_pk,
+        });
+        data.tutor_info.picture = yield useFileUploader_1.GetUploadedImage(data.pic);
         con.Commit();
         return {
             success: true,

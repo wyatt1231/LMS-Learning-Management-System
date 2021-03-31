@@ -6,7 +6,6 @@ const API_DEFAULT_ROUTE = `api/users/`;
 
 export const CurrentUserApi = async (): Promise<IServerResponse> => {
   const response = await PostFetch(API_DEFAULT_ROUTE + "currentUser", null);
-  console.log(`repsonse`, response);
   return response;
 };
 

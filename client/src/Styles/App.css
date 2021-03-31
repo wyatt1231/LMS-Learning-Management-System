@@ -2,18 +2,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* font-family: "Montserrat", "Verdana", Helvetica, Tahoma, Geneva, Verdana, */
-  font-family: "Lato", "Verdana", Helvetica, Tahoma, Geneva, Verdana, sans-serif !important;
-  letter-spacing: 0.3pt;
-  word-spacing: 0.3pt;
-}
-
-html {
-  /* font-size: 0.9em !important; */
+  font-family: "montserrat", "Verdana", Helvetica, Tahoma, Geneva, Verdana,
+    sans-serif !important;
 }
 
 body {
-  background-color: #edfcff !important;
+  background-color: #e1f5fe !important;
 }
 
 .appbar-title {
@@ -92,17 +86,7 @@ body {
 
 a {
   text-decoration: none !important;
-}
-
-tr th {
-  font-weight: 600 !important;
-  font-size: 0.9em !important;
-  padding-top: 0.87em !important;
-  padding-bottom: 0.87em !important;
-}
-
-tr td {
-  color: black !important;
+  color: blue;
 }
 
 .empty-rows {
@@ -160,6 +144,15 @@ tr td {
 ::placeholder {
   font-size: 0.87em !important;
   font-weight: 400 !important;
+}
+
+table tr th {
+  background-color: #fff !important;
+  font-weight: 500 !important;
+}
+
+table tbody td {
+  font-size: 0.87em !important;
 }
 
 .table-actions {
@@ -236,6 +229,15 @@ tr td {
   transition: none !important;
 }
 
+table tr .table-profile {
+  display: grid;
+  align-items: center;
+  align-content: center;
+  justify-content: start;
+  grid-gap: 0.78em;
+  grid-auto-flow: column;
+}
+
 .table-cell-profile {
   display: grid;
   grid-template-areas: "img title" "img sub";
@@ -255,12 +257,12 @@ tr td {
 }
 .table-cell-profile .title {
   grid-area: title;
-  font-weight: 700;
+  font-weight: 500;
 }
 .table-cell-profile .sub-title {
   grid-area: sub;
   font-size: 0.87em;
-  font-weight: 700;
+  font-weight: 600;
   color: rgba(0, 0, 0, 0.55);
 }
 
@@ -344,9 +346,107 @@ tr td {
   padding: 0.3em;
 }
 
-
-
 .link {
   cursor: pointer;
   color: blue;
+}
+
+.container-title {
+  font-weight: 900 !important;
+  opacity: 0.8 !important;
+  font-size: 0.8em !important;
+  padding: 1em !important;
+  color: black !important;
+  letter-spacing: 0.3pt;
+  word-spacing: 0.3pt;
+}
+
+.container-title small {
+  font-weight: 500 !important;
+}
+
+span.MuiTab-wrapper {
+  text-transform: capitalize !important;
+  font-weight: 500 !important;
+}
+
+.PrivateTabIndicator-root-1.PrivateTabIndicator-colorPrimary-2.MuiTabs-indicator {
+  border-bottom-color: blue !important;
+}
+
+.manage-container {
+  padding: 1em;
+  border-radius: 10px;
+  background-color: #fff;
+  height: 100%;
+}
+
+.manage-container .profile {
+  display: grid;
+  justify-items: center;
+  justify-content: center;
+  grid-gap: 0.3em;
+}
+
+.manage-container .profile .title {
+  font-weight: 500;
+  font-size: 1.5em;
+}
+
+.manage-container .profile .sub-title {
+  font-weight: 500;
+  font-size: 1em;
+}
+
+.manage-container .remarks {
+  padding: 0.5em;
+  border-radius: 5px;
+  background-color: #f5f5f5;
+  font-size: 0.8em;
+}
+
+.manage-container .remarks {
+  padding: 0.5em;
+  border-radius: 5px;
+  background-color: #f5f5f5;
+  font-size: 0.8em;
+}
+
+.manage-container .info-container {
+  justify-self: start;
+  display: grid;
+  align-items: start;
+  align-content: start;
+  font-size: 0.87em;
+}
+
+.manage-container .info-container .form-group {
+  padding: 0.7em 0;
+  border-bottom: 0.01em solid rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: auto 1fr;
+  justify-content: start;
+  justify-items: start;
+  grid-gap: 1.3em;
+  font-size: 0.9em;
+  align-items: center;
+  align-content: center;
+}
+
+.manage-container .info-container .label {
+  font-weight: 400;
+  opacity: 0.8;
+}
+.manage-container .info-container .value {
+  font-weight: 500;
+}
+
+.manage-container .info-container .value.profile {
+  display: grid;
+  align-items: center;
+  align-content: center;
+  grid-auto-flow: column;
+  grid-gap: 0.5em;
+  justify-content: start;
 }

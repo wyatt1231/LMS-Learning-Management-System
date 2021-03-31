@@ -101,11 +101,11 @@ export const AddAdminTutorView: FC<IAddAdminTutorView> = memo(() => {
       dispatch(
         setPageLinks([
           {
-            link: "/admin/tutors",
+            link: "/admin/tutor",
             title: "Tutors",
           },
           {
-            link: "/admin/tutors/add",
+            link: "/admin/tutor/add",
             title: "Add Tutor",
           },
         ])
@@ -134,11 +134,19 @@ export const AddAdminTutorView: FC<IAddAdminTutorView> = memo(() => {
           handleChange,
           setValues,
         }) => (
-          <Form className="clinic-adding-form">
+          <Form
+            className="clinic-adding-form"
+            noValidate
+            style={{
+              backgroundColor: `#fff`,
+              borderRadius: 10,
+              padding: `1em 2em`,
+            }}
+          >
             <div className="box-ctnr">
               <div className="box-header">
                 <div className="header-text">
-                  Fill-up the personal information
+                  Kindly fill-up all the required tutor information
                 </div>
               </div>
               <div className="box-body">
@@ -394,16 +402,16 @@ export const AddAdminTutorView: FC<IAddAdminTutorView> = memo(() => {
                   setPic(null);
                 }}
               >
-                Add another employee
+                Add another tutor
               </Button>
               <Button
                 color="primary"
                 disableElevation={false}
                 onClick={() => {
-                  history.push(`/admin/tutors`);
+                  history.push(`/admin/tutor`);
                 }}
               >
-                View all employees
+                View all tutors
               </Button>
             </SuccessDialog>
           </Form>

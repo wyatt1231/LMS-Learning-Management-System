@@ -58,7 +58,7 @@ const StyledPageLinks = styled(AppBar)`
   .bread-crumb {
     .navText {
       text-decoration: none !important;
-      font-weight: 500 !important;
+      font-weight: 600 !important;
     }
   }
 `;

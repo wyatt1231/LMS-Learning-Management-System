@@ -51,14 +51,14 @@ export const dateParseJsToAspDate = (date: Date): any => {
 };
 
 export const InvalidTimeToDefault = (
-  date: Date | null,
+  date: Date | null | string,
   defaultString: string
 ): string => {
   if (!date) {
     return defaultString;
   }
 
-  const time = moment(date).format("hh:mm a");
+  const time = moment(date, "HH:mm:ss").format("hh:mm a");
 
   if (time.toLowerCase() === "invalid date") {
     return defaultString;
@@ -67,7 +67,7 @@ export const InvalidTimeToDefault = (
 };
 
 export const InvalidDateToDefault = (
-  date: Date | null,
+  date: Date | null | string,
   defaultString: string
 ): string => {
   if (!date) {
@@ -75,6 +75,22 @@ export const InvalidDateToDefault = (
   }
 
   const d = moment(date).format("MMM DD, YYYY");
+
+  if (d.toLowerCase() === "invalid date") {
+    return defaultString;
+  }
+  return d;
+};
+
+export const InvalidDateTimeToDefault = (
+  date: Date | null,
+  defaultString: string
+): string => {
+  if (!date) {
+    return defaultString;
+  }
+
+  const d = moment(date).format("MMM DD, YYYY hh:mm a");
 
   if (d.toLowerCase() === "invalid date") {
     return defaultString;

@@ -55,6 +55,10 @@ export type PageReducerTypes =
   | {
       type: "SET_PAGE_SUCCESS_PROMPT";
       page_success_prompt: PageSuccessPromptTypes;
+    }
+  | {
+      type: "toggle_activity_sidebar";
+      toggle_activity_sidebar: boolean;
     };
 
 export interface PageReducerModel {
@@ -63,4 +67,6 @@ export interface PageReducerModel {
   page_snackbar: PageSnackbarTypes;
   page_links: Array<PageLinkTypes>;
   page_success_prompt?: PageSuccessPromptTypes;
+
+  toggle_activity_sidebar?: boolean;
 }

@@ -1,4 +1,5 @@
 import {
+  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -23,6 +24,7 @@ interface IFormDialog {
   minWidth?: number;
   fullScreen?: boolean;
   scroll?: "body" | "paper";
+  maxWidth?: false | "xs" | "sm" | "md" | "lg" | "xl";
 }
 
 export const FormDialog: React.FC<IFormDialog> = memo(
@@ -36,6 +38,7 @@ export const FormDialog: React.FC<IFormDialog> = memo(
     minWidth,
     fullScreen,
     scroll,
+    maxWidth,
   }) => {
     const theme = useTheme();
     const descriptionElementRef = useRef<any>(null);
@@ -77,6 +80,7 @@ export const FormDialog: React.FC<IFormDialog> = memo(
         disableBackdropClick={true}
         disableEscapeKeyDown={true}
         fullScreen={fullScreen}
+        maxWidth={maxWidth}
         PaperProps={{
           style: {
             margin: 0,
@@ -91,21 +95,15 @@ export const FormDialog: React.FC<IFormDialog> = memo(
       >
         <DialogTitleStyle theme={theme} disableTypography={true}>
           <div className="title">{title}</div>
-
-          {typeof handleClose === "function" && (
-            <div className="toolbar">
-              <Tooltip title="">
-                <IconButton size="small" onClick={handleClose}>
-                  <CancelPresentationIcon />
-                </IconButton>
-              </Tooltip>
-            </div>
-          )}
         </DialogTitleStyle>
 
         <DialogContentStyle theme={theme}>{body}</DialogContentStyle>
         <DialogActionsStyle className="form-footer">
           {actions}
+
+          <Button color="secondary" variant="contained" onClick={handleClose}>
+            Close
+          </Button>
         </DialogActionsStyle>
       </Dialog>
     );
@@ -115,17 +113,18 @@ export const FormDialog: React.FC<IFormDialog> = memo(
 export default FormDialog;
 
 const DialogTitleStyle = styled(DialogTitle)`
-  background-color: ${(p) => p.theme.palette.primary.light};
-  color: ${(p) => p.theme.palette.primary.contrastText};
+  /* background-color: ${(p) => p.theme.palette.primary.light}; */
+  /* color: ${(p) => p.theme.palette.primary.contrastText}; */
+  /* font-size: 0.87em; */
   display: grid;
   grid-auto-flow: column;
-  font-size: 0.87em;
   align-items: center;
   align-content: center;
   grid-gap: 1em;
+  border-bottom: 0.02em solid rgba(0, 0, 0, 0.2);
 
   .title {
-    font-weight: 900;
+    font-weight: 600;
   }
 
   .toolbar {

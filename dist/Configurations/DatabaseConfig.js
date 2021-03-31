@@ -5,12 +5,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.query = exports.DatabaseConnection = exports.DatabaseConfig = void 0;
 const mysql_1 = __importDefault(require("mysql"));
+// export const DatabaseConfig = mysql.createPool({
+//   host: "us-cdbr-east-03.cleardb.com",
+//   user: "b25793f72a1e8c",
+//   password: "7b71cb24",
+//   database: "heroku_fda4a2166dd220a",
+//   port: 3306,
+// });
 exports.DatabaseConfig = mysql_1.default.createPool({
-    host: "us-cdbr-east-03.cleardb.com",
-    user: "b25793f72a1e8c",
-    password: "7b71cb24",
-    database: "heroku_fda4a2166dd220a",
-    port: 3306,
+    host: "127.0.0.1",
+    user: "root",
+    password: "root sa",
+    database: "lms",
+    port: 3309,
 });
 const DatabaseConnection = () => {
     return new Promise((resolve, reject) => {

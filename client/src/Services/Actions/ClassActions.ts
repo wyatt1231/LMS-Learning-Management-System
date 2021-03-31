@@ -127,7 +127,6 @@ export const setSelectedClassAction = (course_pk: number) => async (
       course_pk
     );
 
-    console.log(`res`, response);
     dispatch({
       type: "fetching_selected_class",
       fetching_selected_class: false,

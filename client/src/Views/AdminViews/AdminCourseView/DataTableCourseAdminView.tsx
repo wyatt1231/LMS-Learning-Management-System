@@ -11,16 +11,16 @@ import {
   TableRow,
   Tooltip,
 } from "@material-ui/core";
-import React, { FC, memo, useEffect } from "react";
+import React, { FC, memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import DataTableSearch from "../../../Component/DataTableSearch";
 import DataTableSort from "../../../Component/DataTableSort";
+import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopper";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import { InvalidDateToDefault } from "../../../Hooks/UseDateParser";
 import useFilter from "../../../Hooks/useFilter";
-import { setAdminDataTableAction } from "../../../Services/Actions/AdminActions";
 import { setCourseDataTableAction } from "../../../Services/Actions/CourseActions";
 import { setPageLinks } from "../../../Services/Actions/PageActions";
 import ITableColumns from "../../../Services/Interface/ITableColumns";
@@ -28,6 +28,7 @@ import ITableInitialSort from "../../../Services/Interface/ITableInitialSort";
 import { CourseModel } from "../../../Services/Models/CourseModel";
 import { PaginationModel } from "../../../Services/Models/PaginationModels";
 import { RootStore } from "../../../Services/Store";
+import EditCourseDialog from "./EditCourseDialog";
 
 interface DataTableCourseAdminViewInterface {}
 
@@ -68,7 +69,7 @@ const initialTableSort: Array<ITableInitialSort> = [
 
 const tableColumns: Array<ITableColumns> = [
   {
-    label: "",
+    label: "Course Details",
     width: 300,
     align: "left",
   },
@@ -92,6 +93,11 @@ const tableColumns: Array<ITableColumns> = [
     width: 150,
     align: "left",
   },
+  {
+    label: "Actions",
+    width: 50,
+    align: "center",
+  },
 ];
 
 export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = memo(
@@ -104,6 +110,28 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
     const data_table: Array<CourseModel> = useSelector(
       (store: RootStore) => store.CourseReducer.course_data_table?.table
     );
+
+    const [selected_course, set_selected_course] = useState<null | CourseModel>(
+      null
+    );
+
+    const [open_edit_course, set_open_edit_course] = useState(false);
+
+    const handleOpenEditCourse = useCallback(() => {
+      set_open_edit_course(true);
+    }, []);
+    const handleCloseEditCourse = useCallback(() => {
+      set_open_edit_course(false);
+    }, []);
+
+    const [open_change_image, set_open_change_image] = useState(false);
+
+    const handleOpenChangeCourse = useCallback(() => {
+      set_open_change_image(true);
+    }, []);
+    const handleCloseChangeCourse = useCallback(() => {
+      set_open_change_image(false);
+    }, []);
 
     const [
       tableSearch,
@@ -162,7 +190,17 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
 
     return (
       <Container maxWidth="lg">
-        <Grid container spacing={3}>
+        <Grid
+          container
+          style={{
+            backgroundColor: `#fff`,
+            borderRadius: 10,
+            marginTop: `1em`,
+            marginBottom: `1em`,
+            minHeight: `90vh`,
+          }}
+          spacing={3}
+        >
           <Grid item xs={12} container justify="flex-end" alignItems="center">
             <Grid item>
               <NavLink to="/admin/course/add">
@@ -244,11 +282,9 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
             style={{ height: `100%`, overflowX: "auto" }}
           >
             <Grid item xs={12}>
-              <TableContainer
-                style={{ height: "100%", minHeight: 500, borderRadius: 10 }}
-              >
+              <TableContainer style={{ height: "100%", minHeight: 500 }}>
                 <LinearLoadingProgress show={table_loading} />
-                <Table stickyHeader size="small">
+                <Table stickyHeader>
                   <TableHead>
                     <TableRow>
                       {tableColumns.map((col, index) => (
@@ -318,6 +354,32 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
                             {InvalidDateToDefault(row.encoded_at, "-")}
                           </div>
                         </TableCell>
+
+                        <TableCell align="center">
+                          <IconButtonPopper
+                            size="small"
+                            buttons={[
+                              {
+                                text: "Edit Info.",
+                                handleClick: () => {
+                                  set_selected_course(row);
+                                  handleOpenEditCourse();
+                                },
+                              },
+                              {
+                                text: "Change Image",
+                                handleClick: () => console.log(`.`),
+                              },
+                              {
+                                text:
+                                  row.is_active === "y"
+                                    ? "Deactivate"
+                                    : "Activate",
+                                handleClick: () => console.log(`.`),
+                              },
+                            ]}
+                          />
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -326,6 +388,12 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
             </Grid>
           </Grid>
         </Grid>
+
+        <EditCourseDialog
+          initial_form_values={selected_course}
+          open={open_edit_course}
+          handleClose={handleCloseEditCourse}
+        />
       </Container>
     );
   }

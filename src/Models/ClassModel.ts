@@ -1,4 +1,5 @@
 import { ClassSessionModel } from "./ClassSessionModel";
+import { TutorModel } from "./TutorModel";
 
 export interface ClassModel {
   class_pk?: number;
@@ -24,4 +25,5 @@ export interface ClassModel {
   encoded_at?: Date;
   encoder_pk?: string;
   class_sessions: Array<ClassSessionModel>;
+  tutor_info?: TutorModel;
 }

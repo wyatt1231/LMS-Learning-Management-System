@@ -35,6 +35,12 @@ const PageReducer = (
     case "SET_PAGE_SUCCESS_PROMPT":
       return { ...state, page_success_prompt: action.page_success_prompt };
 
+    case "toggle_activity_sidebar":
+      return {
+        ...state,
+        toggle_activity_sidebar: action.toggle_activity_sidebar,
+      };
+
     default:
       return state;
   }

@@ -34,7 +34,7 @@ const TutorReducer = (
     case "SINGLE_TUTOR": {
       return {
         ...state,
-        single_tutor: state.single_tutor,
+        single_tutor: action.single_tutor,
       };
     }
     case "FETCHING_SINGLE_TUTOR": {

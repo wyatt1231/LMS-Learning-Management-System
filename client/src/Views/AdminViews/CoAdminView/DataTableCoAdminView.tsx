@@ -161,7 +161,17 @@ export const DataTableCoAdminView: FC<DataTableCoAdminViewInterface> = memo(
 
     return (
       <Container maxWidth="lg">
-        <Grid container spacing={3}>
+        <Grid
+          container
+          spacing={3}
+          style={{
+            backgroundColor: `#fff`,
+            borderRadius: 10,
+            marginTop: `1em`,
+            marginBottom: `1em`,
+            minHeight: `90vh`,
+          }}
+        >
           <Grid item xs={12} container justify="flex-end" alignItems="center">
             <Grid item>
               <NavLink to="/admin/co-administrator/add">
@@ -247,7 +257,7 @@ export const DataTableCoAdminView: FC<DataTableCoAdminViewInterface> = memo(
                 style={{ height: "100%", minHeight: 500, borderRadius: 10 }}
               >
                 <LinearLoadingProgress show={table_loading} />
-                <Table stickyHeader size="small">
+                <Table stickyHeader>
                   <TableHead>
                     <TableRow>
                       {tableColumns.map((col, index) => (

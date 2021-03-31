@@ -45,6 +45,7 @@ export const setSelectedStudentAction = (student_pk: string) => async (
     const response: IServerResponse = await StudentApi.getSingleStudentApi(
       student_pk
     );
+
     dispatch({
       type: "fetching_selected_student",
       fetching_selected_student: false,

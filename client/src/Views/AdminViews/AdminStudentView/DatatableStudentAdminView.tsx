@@ -161,16 +161,17 @@ export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> =
 
     return (
       <Container maxWidth="lg">
-        <Grid container spacing={3}>
-          {/* <Grid item xs={12} container justify="flex-end" alignItems="center">
-            <Grid item>
-              <NavLink to="/admin/stude/add">
-                <Button disableElevation color="primary" variant="contained">
-                  Add Tutor
-                </Button>
-              </NavLink>
-            </Grid>
-          </Grid> */}
+        <Grid
+          container
+          spacing={3}
+          style={{
+            backgroundColor: `#fff`,
+            borderRadius: 10,
+            marginTop: `1em`,
+            marginBottom: `1em`,
+            minHeight: `90vh`,
+          }}
+        >
           <Grid
             xs={12}
             item
@@ -247,7 +248,7 @@ export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> =
                 style={{ height: "100%", minHeight: 500, borderRadius: 10 }}
               >
                 <LinearLoadingProgress show={table_loading} />
-                <Table stickyHeader size="small">
+                <Table stickyHeader>
                   <TableHead>
                     <TableRow>
                       {tableColumns.map((col, index) => (

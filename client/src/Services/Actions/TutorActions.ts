@@ -40,7 +40,7 @@ export const setTutorDataTableAction = (payload: PaginationModel) => async (
   }
 };
 
-export const getSingleTutor = (tutor_pk: string) => async (
+export const setSingleTutor = (tutor_pk: string) => async (
   dispatch: Dispatch<TutorReducerTypes>
 ) => {
   try {
@@ -49,17 +49,17 @@ export const getSingleTutor = (tutor_pk: string) => async (
       fetching_single_tutor: true,
     });
     const response: IServerResponse = await getSingleTutorApi(tutor_pk);
-    dispatch({
-      type: "FETCHING_SINGLE_TUTOR",
-      fetching_single_tutor: false,
-    });
+
     if (response.success) {
       dispatch({
         type: "SINGLE_TUTOR",
         single_tutor: response.data,
       });
-    } else {
     }
+    dispatch({
+      type: "FETCHING_SINGLE_TUTOR",
+      fetching_single_tutor: false,
+    });
   } catch (error) {
     console.error(`reducer error`, error);
   }

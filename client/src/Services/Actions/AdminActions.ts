@@ -37,7 +37,7 @@ export const setAdminDataTableAction = (payload: PaginationModel) => async (
   }
 };
 
-export const setSelectedTutorAction = (admin_pk: string) => async (
+export const setSelectedAdminAction = (admin_pk: string) => async (
   dispatch: Dispatch<AdminReducerTypes>
 ) => {
   try {
@@ -46,6 +46,7 @@ export const setSelectedTutorAction = (admin_pk: string) => async (
       fetching_selected_admin: true,
     });
     const response: IServerResponse = await getSingleAdminApi(admin_pk);
+    console.log(`response`, response);
     dispatch({
       type: "fetching_selected_admin",
       fetching_selected_admin: false,

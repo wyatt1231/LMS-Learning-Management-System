@@ -1,4 +1,5 @@
 import { ClassSessionModel } from "./ClassSessionModel";
+import { TutorModel } from "./TutorModels";
 
 export interface ClassModel {
   class_pk?: number;
@@ -25,4 +26,5 @@ export interface ClassModel {
   encoder_pk?: string;
   is_ongoing?: 1 | 0;
   class_sessions: Array<ClassSessionModel>;
+  tutor_info?: TutorModel;
 }

@@ -1,3 +1,4 @@
+import { StatusMasterModel } from "./StatusMasterModel";
 import { UserModel } from "./UserModel";
 
 export interface StudentModel {
@@ -19,4 +20,5 @@ export interface StudentModel {
   encoded_at?: Date;
   encoder_pk?: string;
   user?: UserModel;
+  status?: StatusMasterModel;
 }

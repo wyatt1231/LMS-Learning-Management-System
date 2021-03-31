@@ -17,6 +17,7 @@ import PhotoField from "../../../Component/PhotoField/PhotoField";
 import SuccessDialog from "../../../Component/SuccessDialog";
 import { fileToBase64 } from "../../../Hooks/UseFileConverter";
 import { addCourseApiAction } from "../../../Services/Actions/CourseActions";
+
 import {
   setGeneralPrompt,
   setPageLinks,
@@ -63,7 +64,6 @@ export const AddCourseAdminView: FC<AddCourseAdminViewInterface> = memo(() => {
   const handleFormSubmit = useCallback(
     async (formValues: CourseModel) => {
       formValues.picture = await fileToBase64(pic);
-      console.log(`formValues`, formValues);
 
       dispatch(
         setGeneralPrompt({
@@ -106,7 +106,7 @@ export const AddCourseAdminView: FC<AddCourseAdminViewInterface> = memo(() => {
   }, [dispatch]);
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="sm">
       <Formik
         initialValues={initFormValues}
         validationSchema={formSchema}
@@ -116,19 +116,26 @@ export const AddCourseAdminView: FC<AddCourseAdminViewInterface> = memo(() => {
         innerRef={formRef}
       >
         {({ values, errors, touched, setFieldValue }) => (
-          <Form className="clinic-adding-form">
+          <Form
+            className="clinic-adding-form"
+            style={{
+              backgroundColor: `#fff`,
+              borderRadius: 10,
+              padding: `1em 2em`,
+            }}
+          >
             <div className="box-ctnr">
               <div className="box-header">
                 <div className="header-text">Fill-up the course details</div>
               </div>
               <div className="box-body">
-                <Grid container justify="center" spacing={3}>
-                  <Grid xs={12} md={4} lg={3} container justify="center" item>
+                <Grid container justify="center" spacing={2}>
+                  <Grid xs={12} container justify="center" item>
                     <div style={{ padding: "1.5em 0" }}>
                       <PhotoField
                         label=""
-                        height={200}
-                        width={200}
+                        height={180}
+                        width={300}
                         selectedFile={pic}
                         name="pic"
                         variant="rounded"
@@ -139,13 +146,11 @@ export const AddCourseAdminView: FC<AddCourseAdminViewInterface> = memo(() => {
 
                   <Grid
                     xs={12}
-                    md={8}
-                    lg={9}
                     item
                     container
                     justify="flex-start"
                     spacing={2}
-                    style={{ padding: "1em", marginTop: "1em" }}
+                    style={{ padding: "1em" }}
                   >
                     <Grid xs={12} item>
                       <FormikInputField

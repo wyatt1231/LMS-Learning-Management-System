@@ -20,10 +20,10 @@ const addStudentApi = async (
 };
 
 const getSingleStudentApi = async (
-  admin_pk: string
+  student_pk: string
 ): Promise<IServerResponse> => {
   const response = await PostFetch(BASE_URL + "getSingleStudent", {
-    admin_pk,
+    student_pk,
   });
   return response;
 };

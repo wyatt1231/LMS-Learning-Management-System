@@ -257,9 +257,14 @@ export const AddClassAdminView: FC<AddClassAdminViewInterface> = memo(() => {
         innerRef={formRef}
       >
         {({ values, errors, touched, setFieldValue, submitCount }) => (
-          <Form className="clinic-adding-form">
-            {/* <pre> {JSON.stringify(values, null, 2)}</pre>
-            <pre> {JSON.stringify(errors, null, 2)}</pre> */}
+          <Form
+            className="clinic-adding-form"
+            style={{
+              backgroundColor: `#fff`,
+              borderRadius: 10,
+              padding: `1em 2em`,
+            }}
+          >
             <div className="box-ctnr">
               <div className="box-header">
                 <div className="header-text">
@@ -491,9 +496,7 @@ export const AddClassAdminView: FC<AddClassAdminViewInterface> = memo(() => {
             </div>
             <div className="box-ctnr">
               <div className="box-header">
-                <div className="header-text">
-                  Step 2: Review prior class sessions
-                </div>
+                <div className="header-text">Review prior class sessions</div>
               </div>
 
               <div className="box-body">
@@ -530,12 +533,30 @@ export const AddClassAdminView: FC<AddClassAdminViewInterface> = memo(() => {
                     return <div className="error">{errors.session_count}</div>;
                   }
                 })()}
-                <Grid container justify="center" spacing={2}></Grid>
+
+                <div>
+                  {values?.class_sessions?.length > 0 && (
+                    <small
+                      style={{
+                        opacity: 0.8,
+                        fontSize: `.8em`,
+                      }}
+                    >
+                      Note: Conflict tutor schedules are automatically skipped!
+                    </small>
+                  )}
+                </div>
+
                 <FieldArray
                   name="class_sessions"
                   render={(arrayHelpers: FieldArrayRenderProps) => {
                     return (
-                      <Grid container item spacing={2}>
+                      <Grid
+                        container
+                        item
+                        spacing={2}
+                        style={{ marginTop: `1.5em` }}
+                      >
                         {values?.class_sessions?.map((session, i) => (
                           <Grid item key={i}>
                             <Chip
@@ -686,7 +707,7 @@ export const AddClassAdminView: FC<AddClassAdminViewInterface> = memo(() => {
                 color="primary"
                 disableElevation={false}
                 onClick={() => {
-                  history.push(`/admin/room`);
+                  history.push(`/admin/class`);
                 }}
               >
                 View all records

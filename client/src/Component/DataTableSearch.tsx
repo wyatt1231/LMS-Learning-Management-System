@@ -16,8 +16,8 @@ interface IDataTableSearch {
 export const DataTableSearch: FC<IDataTableSearch> = memo(
   ({ onSubmit, searchField, handleSetSearchField }) => {
     return (
-      <form onSubmit={onSubmit} style={{ minWidth: 400 }}>
-        <FormControl fullWidth variant="outlined">
+      <form onSubmit={onSubmit}>
+        <FormControl fullWidth variant="outlined" size="small">
           <OutlinedInput
             style={{ borderRadius: `30px` }}
             id="outlined-adornment-amount"

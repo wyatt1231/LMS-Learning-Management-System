@@ -50,10 +50,11 @@ export const StyledBox = styled.div`
 export const StyledClassContainer = styled.div`
   background-color: #fff;
   border-radius: 0.5em;
-  border: 0.05em solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border: 0.05em solid rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
   height: 100%;
   overflow: hidden;
+  font-size: 0.87em;
   &:hover {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     transition: 0.3s all ease-in-out;
@@ -62,7 +63,7 @@ export const StyledClassContainer = styled.div`
   .image {
     display: inline-block;
     position: relative;
-    height: 150px;
+    height: 120px;
     width: 100%;
     img {
       height: 100%;
@@ -88,8 +89,10 @@ export const StyledClassContainer = styled.div`
 
     .title {
       border-radius: 3px;
+      padding: 0.5em 0;
       grid-gap: 0.1em;
       display: grid;
+      color: blue;
       .main {
         font-size: 1.1em;
         font-weight: 600;
@@ -101,6 +104,11 @@ export const StyledClassContainer = styled.div`
       }
     }
 
+    .item {
+      padding: 0.3em 0;
+      border-bottom: 0.01em solid rgba(0, 0, 0, 0.1);
+    }
+
     .tutor {
       display: grid;
       align-items: center;
@@ -109,6 +117,8 @@ export const StyledClassContainer = styled.div`
       grid-gap: 0.5em;
       font-weight: 600;
       font-size: 0.9em;
+      padding: 0.3em 0;
+      border-bottom: 0.01em solid rgba(0, 0, 0, 0.1);
     }
 
     .details {
@@ -139,28 +149,39 @@ export const StyledClassContainer = styled.div`
 
 export const StyledDashboardItem = styled.div`
   display: grid;
-  align-items: center;
-  align-content: center;
   height: 100%;
   width: 100%;
   background-color: #fff;
   padding: 1.5em 1em;
   border-radius: 10px;
-  box-shadow: 0 2px 4px #e3f2fd;
-  border: 0.01em solid #e3f2fd;
-  align-items: center;
-  align-content: center;
-  justify-items: center;
-  text-align: center;
-  width: 200px;
-
-  .value {
-    font-weight: 900;
-    font-size: 1.8em;
-  }
+  align-items: start;
+  align-content: start;
+  /* padding-bottom: 2em; */
+  grid-template-areas: "label avatar" "val avatar";
   .label {
+    grid-area: label;
+    font-weight: 600;
+    font-size: 0.83em !important;
+    opacity: 0.7;
+    color: blue;
+    justify-self: start;
+  }
+
+  .stat-value {
+    grid-area: val;
     font-weight: 700;
-    font-size: 0.82em !important;
+    font-size: 2em;
+    justify-self: start;
+  }
+
+  .avatar {
+    grid-area: avatar;
+    height: 60px;
+    align-items: center;
+    align-content: center;
+    justify-self: end;
+    width: 60px;
+    /* margin-right: 1em; */
   }
 `;
 

@@ -17,6 +17,8 @@ export const DataTableSort: FC<IDataTableSort> = memo(
           alignItems: `center`,
           alignContent: `center`,
           gridGap: `.7em`,
+          justifyContent: `start`,
+          justifyItems: `start`,
         }}
       >
         <div

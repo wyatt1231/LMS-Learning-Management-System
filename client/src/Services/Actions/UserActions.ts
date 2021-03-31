@@ -3,6 +3,7 @@ import { CurrentUserApi } from "../Api/UserApi";
 import IUserAuthenticate from "../Interface/IAuth";
 import IServerResponse from "../Interface/IServerResponse";
 import { UserActionTypes } from "../Reducers/UserReducer";
+import { PageReducerTypes } from "../Types/PageTypes";
 
 interface IActionAuthenticateUser {
   user: IUserAuthenticate;
@@ -10,17 +11,23 @@ interface IActionAuthenticateUser {
 }
 
 export const SetCurrentUserAction = () => async (
-  dispatch: Dispatch<UserActionTypes>
+  dispatch: Dispatch<UserActionTypes | PageReducerTypes>
 ) => {
   try {
     dispatch({
-      type: "SET_LOADING_USER",
-      isLoading: true,
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: true,
+        loading_message: "Loading, please wait...",
+      },
     });
     const response: IServerResponse = await CurrentUserApi();
     dispatch({
-      type: "SET_LOADING_USER",
-      isLoading: false,
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+        // loading_message: "Loading, please wait..."
+      },
     });
 
     if (response.success) {

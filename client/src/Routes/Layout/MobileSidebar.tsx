@@ -111,6 +111,7 @@ export const StyledMobileSidebar = styled(Drawer)`
       color: ${(p) => p.theme.header.color};
       grid-template-areas: "logo app icon" "logo name icon";
       grid-auto-columns: auto 1fr auto;
+      grid-gap: 0.3em;
 
       .brand-logo {
         grid-area: logo;
@@ -124,15 +125,15 @@ export const StyledMobileSidebar = styled(Drawer)`
         grid-area: app;
         white-space: nowrap;
         justify-self: start;
-        font-weight: 600;
+        font-weight: 700;
         white-space: pre-wrap;
         text-transform: capitalize;
       }
 
       .brand-name {
         grid-area: name;
-        font-weight: 400;
-        font-size: 0.8em;
+        font-weight: 500;
+        font-size: 0.78em;
         align-self: start;
         white-space: pre-wrap;
         text-transform: capitalize;
@@ -152,7 +153,7 @@ export const StyledMobileSidebar = styled(Drawer)`
       align-content: start;
       padding: 1em 0.5em;
       grid-gap: 0.5em;
-      text-transform: uppercase;
+      /* text-transform: uppercase; */
 
       .nav-item {
         transition: 0.2s all ease-in-out;
@@ -160,19 +161,18 @@ export const StyledMobileSidebar = styled(Drawer)`
         grid-auto-flow: column;
         align-items: center;
         align-content: center;
-        grid-gap: 0.5em;
-        padding: 0.7em 0.3em;
+        grid-gap: 0.3em;
+        padding: 0.3em 1.5em;
         width: 100%;
         grid-auto-columns: 1fr;
         border-radius: 10px;
         justify-items: start;
-        font-weight: 600;
-        text-transform: capitalize;
-        font-size: 1em;
+        font-weight: 500;
+        /* text-transform: capitalize; */
         color: black !important;
         .nav-item-label {
           font-size: 0.87em !important;
-          text-transform: capitalize;
+          /* text-transform: capitalize; */
         }
 
         &:hover {

@@ -17,7 +17,7 @@ import { NavLink } from "react-router-dom";
 import DataTableSearch from "../../../Component/DataTableSearch";
 import DataTableSort from "../../../Component/DataTableSort";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
-import { InvalidDateToDefault } from "../../../Hooks/UseDateParser";
+import { InvalidDateTimeToDefault } from "../../../Hooks/UseDateParser";
 import useFilter from "../../../Hooks/useFilter";
 import { setPageLinks } from "../../../Services/Actions/PageActions";
 import { setRoomDataTableAction } from "../../../Services/Actions/RoomActions";
@@ -98,8 +98,6 @@ export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
       (store: RootStore) => store.RoomReducer.room_data_table?.table
     );
 
-    console.log(`data_table`, data_table);
-
     const [
       tableSearch,
       tableLimit,
@@ -157,7 +155,17 @@ export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
 
     return (
       <Container maxWidth="lg">
-        <Grid container spacing={3}>
+        <Grid
+          container
+          spacing={3}
+          style={{
+            backgroundColor: `#fff`,
+            borderRadius: 10,
+            marginTop: `1em`,
+            marginBottom: `1em`,
+            minHeight: `90vh`,
+          }}
+        >
           <Grid item xs={12} container justify="flex-end" alignItems="center">
             <Grid item>
               <NavLink to="/admin/room/add">
@@ -235,7 +243,7 @@ export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
             <Grid item xs={12}>
               <TableContainer style={{ minHeight: 500, borderRadius: 10 }}>
                 <LinearLoadingProgress show={table_loading} />
-                <Table stickyHeader size="small">
+                <Table stickyHeader>
                   <TableHead>
                     <TableRow>
                       {tableColumns.map((col, index) => (
@@ -266,14 +274,7 @@ export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
                             className="title"
                             to={`/admin/room/${row.room_pk}`}
                           >
-                            <span
-                              style={{
-                                textTransform: "capitalize",
-                                fontWeight: 700,
-                              }}
-                            >
-                              {row.room_desc}
-                            </span>
+                            {row.room_desc}
                           </NavLink>
                         </TableCell>
                         <TableCell>
@@ -299,7 +300,7 @@ export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
                         </TableCell>
                         <TableCell>
                           <div className="datetime">
-                            {InvalidDateToDefault(row.encoded_at, "-")}
+                            {InvalidDateTimeToDefault(row.encoded_at, "-")}
                           </div>
                         </TableCell>
                       </TableRow>

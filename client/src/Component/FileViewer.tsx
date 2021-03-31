@@ -35,7 +35,7 @@ export const FileViwer: FC<IFileViwer> = memo(({ file }) => {
         <div
           className="webviewer"
           ref={viewer}
-          style={{ height: "100vh" }}
+          style={{ height: "85vh" }}
         ></div>
       ) : (
         <div>
