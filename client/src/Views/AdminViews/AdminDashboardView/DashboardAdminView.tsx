@@ -37,6 +37,7 @@ import "chartjs-plugin-labels";
 import TutorActions from "../../../Services/Actions/TutorActions";
 import { Rating } from "@material-ui/lab";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
+import UseNumbers from "../../../Hooks/UseNumbers";
 
 interface IDashboardAdminView {}
 
@@ -584,7 +585,8 @@ export const DashboardAdminView: FC<IDashboardAdminView> = memo(() => {
                               justifySelf: `end`,
                             }}
                           >
-                            {t?.average_rating?.toFixed(1)} stars
+                            {UseNumbers.toDecimal(t?.average_rating, 1, 0)}{" "}
+                            stars
                           </div>
                           <Rating
                             name="rating"
