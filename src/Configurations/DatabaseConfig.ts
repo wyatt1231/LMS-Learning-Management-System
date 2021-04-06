@@ -13,24 +13,22 @@ let DatabaseConfig: mysql.PoolOptions | null = null;
 // });
 
 if (process.env.NODE_ENV === "production") {
+  console.log(`prod`);
   DatabaseConfig = {
     host: "sql6.freemysqlhosting.net",
     user: "sql6403664",
     password: "tZkb3jBQbm",
     database: "sql6403664",
     port: 3306,
-    connectionLimit: 10,
-    waitForConnections: true,
   };
 } else {
+  console.log(`dev`);
   DatabaseConfig = {
     host: "localhost",
     user: "root",
     password: "root sa",
     database: "lms",
     port: 3309,
-    connectionLimit: 10,
-    waitForConnections: true,
   };
 }
 

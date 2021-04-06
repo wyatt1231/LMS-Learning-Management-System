@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.query = exports.DatabaseConnection = exports.DatabaseConfig = void 0;
+exports.query = exports.DatabaseConnection = void 0;
 const mysql_1 = __importDefault(require("mysql"));
+let DatabaseConfig = null;
 // export const DatabaseConfig = mysql.createPool({
 //   host: "us-cdbr-east-03.cleardb.com",
 //   user: "b25793f72a1e8c",
@@ -12,16 +13,29 @@ const mysql_1 = __importDefault(require("mysql"));
 //   database: "heroku_fda4a2166dd220a",
 //   port: 3306,
 // });
-exports.DatabaseConfig = mysql_1.default.createPool({
-    host: "127.0.0.1",
-    user: "root",
-    password: "root sa",
-    database: "lms",
-    port: 3309,
-});
+if (process.env.NODE_ENV === "production") {
+    console.log(`prod`);
+    DatabaseConfig = {
+        host: "sql6.freemysqlhosting.net",
+        user: "sql6403664",
+        password: "tZkb3jBQbm",
+        database: "sql6403664",
+        port: 3306,
+    };
+}
+else {
+    console.log(`dev`);
+    DatabaseConfig = {
+        host: "localhost",
+        user: "root",
+        password: "root sa",
+        database: "lms",
+        port: 3309,
+    };
+}
 const DatabaseConnection = () => {
     return new Promise((resolve, reject) => {
-        exports.DatabaseConfig.getConnection((error, connection) => {
+        DatabaseConfig.getConnection((error, connection) => {
             if (error) {
                 console.log(`error`, error);
                 reject(error);
@@ -260,7 +274,7 @@ const queryFormat = (query, values) => {
 };
 const query = (sql, binding) => {
     return new Promise((resolve, reject) => {
-        exports.DatabaseConfig.query(sql, binding, (err, result) => {
+        DatabaseConfig.query(sql, binding, (err, result) => {
             if (err)
                 reject(err);
             resolve(result);
