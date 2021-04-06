@@ -1,4 +1,4 @@
-import { Button, Grid } from "@material-ui/core";
+import { Button, FormHelperText, Grid } from "@material-ui/core";
 import { Form, Formik } from "formik";
 import React, { FC, memo, useCallback } from "react";
 import { useDispatch } from "react-redux";
@@ -6,12 +6,15 @@ import * as yup from "yup";
 import FormDialog from "../../../Component/FormDialog/FormDialog";
 import FormikInputField from "../../../Component/Formik/FormikInputField";
 import FormikSelect from "../../../Component/Formik/FormikSelect";
+import CourseActions from "../../../Services/Actions/CourseActions";
+import { setGeneralPrompt } from "../../../Services/Actions/PageActions";
 import { CourseModel } from "../../../Services/Models/CourseModel";
 import { DbCourseDurations } from "../../../Storage/LocalDatabase";
 interface IEditCourseDialog {
   initial_form_values: CourseModel;
   open: boolean;
   handleClose: () => void;
+  handleReloadDataTable: () => void;
 }
 
 const formSchema = yup.object({
@@ -21,34 +24,36 @@ const formSchema = yup.object({
     .moreThan(29, "Duration must be 30 minutes or above")
     .lessThan(361, "Duration must not exceed to 4hrs")
     .required()
-    .max(150)
     .label("Estimated Duration"),
 });
 
 export const EditCourseDialog: FC<IEditCourseDialog> = memo(
-  ({ initial_form_values, open, handleClose }) => {
+  ({ initial_form_values, open, handleClose, handleReloadDataTable }) => {
     const dispatch = useDispatch();
 
     const handleFormSubmit = useCallback(
       async (payload: CourseModel) => {
         payload.course_pk = initial_form_values.course_pk;
-        console.log(`payload`, payload);
-        //   dispatch(
-        //     setGeneralPrompt({
-        //       open: true,
-        //       continue_callback: () =>
-        //         dispatch(
-        //           addClassAction(form_values, (msg: string) => {
-        //             setSuccessDialog({
-        //               message: msg,
-        //               open: true,
-        //             });
-        //           })
-        //         ),
-        //     })
-        //   );
+        // console.log(`payload`, payload);
+        dispatch(
+          setGeneralPrompt({
+            open: true,
+            continue_callback: () =>
+              dispatch(
+                CourseActions.updateCourse(payload, (msg: string) => {
+                  handleReloadDataTable();
+                  handleClose();
+                })
+              ),
+          })
+        );
       },
-      [dispatch]
+      [
+        dispatch,
+        handleClose,
+        handleReloadDataTable,
+        initial_form_values.course_pk,
+      ]
     );
 
     return (
@@ -64,8 +69,6 @@ export const EditCourseDialog: FC<IEditCourseDialog> = memo(
               <Formik
                 initialValues={initial_form_values}
                 validationSchema={formSchema}
-                validateOnChange={false}
-                validateOnBlur={false}
                 onSubmit={handleFormSubmit}
               >
                 {({ values, errors, touched, setFieldValue, submitCount }) => (
@@ -76,6 +79,7 @@ export const EditCourseDialog: FC<IEditCourseDialog> = memo(
                       borderRadius: 10,
                       padding: `1em 3em`,
                     }}
+                    noValidate
                   >
                     <Grid container justify="center" spacing={3}>
                       <Grid xs={12} item>
@@ -90,7 +94,7 @@ export const EditCourseDialog: FC<IEditCourseDialog> = memo(
                         />
                       </Grid>
 
-                      <Grid xs={6} item>
+                      <Grid xs={12} item>
                         <FormikSelect
                           data={DbCourseDurations}
                           label="Est. Duration"
@@ -100,6 +104,10 @@ export const EditCourseDialog: FC<IEditCourseDialog> = memo(
                           required
                           fullWidth
                         />
+                        <FormHelperText>
+                          Note: Updating the duration will not automatically
+                          update all classes involving this course.
+                        </FormHelperText>
                       </Grid>
 
                       <Grid xs={12} item>

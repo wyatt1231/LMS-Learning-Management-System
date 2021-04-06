@@ -38,6 +38,19 @@ const AdminReducer = (
       };
     }
 
+    case "set_logged_admin": {
+      return {
+        ...state,
+        logged_admin: action.logged_admin,
+      };
+    }
+    case "fetching_logged_admin": {
+      return {
+        ...state,
+        fetching_logged_admin: action.fetching_logged_admin,
+      };
+    }
+
     default:
       return state;
   }

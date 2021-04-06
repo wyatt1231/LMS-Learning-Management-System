@@ -26,11 +26,39 @@ const StudentController = async (app: Express): Promise<void> => {
   );
 
   router.post(
+    "/updateStudent",
+    Authorize("student"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: StudentModel = req.body;
+      payload.encoder_pk = req.user_id;
+      res.json(await StudentRepository.updateStudent(payload));
+    }
+  );
+
+  router.post(
+    "/updateStudentImage",
+    Authorize("student"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: StudentModel = req.body;
+      payload.encoder_pk = req.user_id;
+      res.json(await StudentRepository.updateStudentImage(payload));
+    }
+  );
+
+  router.post(
     "/getSingleStudent",
     Authorize("admin"),
     async (req: Request & UserClaims, res: Response) => {
       const student_pk: string = req.body.student_pk;
       res.json(await StudentRepository.getSingleStudent(student_pk));
+    }
+  );
+
+  router.post(
+    "/getTotalStudents",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(await StudentRepository.getTotalStudents());
     }
   );
 
@@ -42,6 +70,48 @@ const StudentController = async (app: Express): Promise<void> => {
       const class_pk: number = req.body.class_pk;
       res.json(
         await StudentRepository.searchStudentNotInClass(search, class_pk)
+      );
+    }
+  );
+
+  router.post(
+    "/approveStudent",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      const student_pk: string = req.body.student_pk;
+      res.json(
+        await StudentRepository.changeStudentStatus(
+          student_pk,
+          req.user_id,
+          "a",
+          "Approved"
+        )
+      );
+    }
+  );
+
+  router.post(
+    "/blockStudent",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      const student_pk: string = req.body.student_pk;
+      res.json(
+        await StudentRepository.changeStudentStatus(
+          student_pk,
+          req.user_id,
+          "x",
+          "Blocked"
+        )
+      );
+    }
+  );
+
+  router.post(
+    "/getLoggedStudentInfo",
+    Authorize("student"),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(
+        await StudentRepository.getLoggedStudentInfo(parseInt(req.user_id))
       );
     }
   );

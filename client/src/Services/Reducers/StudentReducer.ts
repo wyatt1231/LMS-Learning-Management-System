@@ -41,6 +41,22 @@ const StudentReducer = (
       };
     }
 
+    //--
+
+    case "logged_student_info": {
+      return {
+        ...state,
+        logged_student_info: action.logged_student_info,
+      };
+    }
+
+    case "fetch_logged_student_info": {
+      return {
+        ...state,
+        fetch_logged_student_info: action.fetch_logged_student_info,
+      };
+    }
+
     default:
       return state;
   }

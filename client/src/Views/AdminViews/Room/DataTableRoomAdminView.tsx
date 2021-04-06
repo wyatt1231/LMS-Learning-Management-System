@@ -1,5 +1,6 @@
 import {
   Button,
+  Chip,
   Container,
   Grid,
   Table,
@@ -11,21 +12,28 @@ import {
   TableRow,
   Tooltip,
 } from "@material-ui/core";
-import React, { FC, memo, useEffect } from "react";
+import React, { FC, memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import DataTableSearch from "../../../Component/DataTableSearch";
 import DataTableSort from "../../../Component/DataTableSort";
+import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopper";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import { InvalidDateTimeToDefault } from "../../../Hooks/UseDateParser";
 import useFilter from "../../../Hooks/useFilter";
-import { setPageLinks } from "../../../Services/Actions/PageActions";
-import { setRoomDataTableAction } from "../../../Services/Actions/RoomActions";
+import {
+  setGeneralPrompt,
+  setPageLinks,
+} from "../../../Services/Actions/PageActions";
+import RoomActions, {
+  setRoomDataTableAction,
+} from "../../../Services/Actions/RoomActions";
 import ITableColumns from "../../../Services/Interface/ITableColumns";
 import ITableInitialSort from "../../../Services/Interface/ITableInitialSort";
 import { PaginationModel } from "../../../Services/Models/PaginationModels";
 import { RoomModel } from "../../../Services/Models/RoomModel";
 import { RootStore } from "../../../Services/Store";
+import EditRoomDialog from "./EditRoomDialog";
 
 interface DataTableRoomAdminViewInterface {}
 
@@ -85,6 +93,11 @@ const tableColumns: Array<ITableColumns> = [
     width: 150,
     align: "left",
   },
+  {
+    label: "Actions",
+    width: 50,
+    align: "center",
+  },
 ];
 
 export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
@@ -96,6 +109,39 @@ export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
     );
     const data_table: Array<RoomModel> = useSelector(
       (store: RootStore) => store.RoomReducer.room_data_table?.table
+    );
+
+    const [selected_room, set_selected_room] = useState<RoomModel | null>(null);
+    const [open_edit_room_dialog, set_open_edit_room_dialog] = useState(false);
+
+    const handleOpenRoomDialog = useCallback(() => {
+      set_open_edit_room_dialog(true);
+    }, []);
+
+    const handleCloseRoomDialog = useCallback(() => {
+      set_open_edit_room_dialog(false);
+    }, []);
+
+    const [reload_data_table, set_reload_data_table] = useState(0);
+    const handleReloadDataTable = useCallback(() => {
+      set_reload_data_table((c) => c + 1);
+    }, []);
+
+    const handleToggleRoomStatus = useCallback(
+      (course_pk: number) => {
+        dispatch(
+          setGeneralPrompt({
+            open: true,
+            continue_callback: () =>
+              dispatch(
+                RoomActions.toggleRoomStatus(course_pk, (msg: string) => {
+                  handleReloadDataTable();
+                })
+              ),
+          })
+        );
+      },
+      [dispatch, handleReloadDataTable]
     );
 
     const [
@@ -133,7 +179,14 @@ export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
       return () => {
         mounted = false;
       };
-    }, [activeSort, dispatch, tableLimit, tablePage, tableSearch]);
+    }, [
+      activeSort,
+      dispatch,
+      tableLimit,
+      tablePage,
+      tableSearch,
+      reload_data_table,
+    ]);
 
     useEffect(() => {
       let mounted = true;
@@ -270,12 +323,9 @@ export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
                     {data_table?.map((row, index) => (
                       <TableRow key={index}>
                         <TableCell>
-                          <NavLink
-                            className="title"
-                            to={`/admin/room/${row.room_pk}`}
-                          >
+                          <span style={{ fontWeight: 500 }}>
                             {row.room_desc}
-                          </NavLink>
+                          </span>
                         </TableCell>
                         <TableCell>
                           <Tooltip title={row.notes ? "-" : "row.notes"}>
@@ -292,16 +342,43 @@ export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
                           </Tooltip>
                         </TableCell>
                         <TableCell>
-                          <div className="grid-justify-start">
-                            <span className="badge badge-blue">
-                              {row.is_active === "y" ? "Yes" : "No"}
-                            </span>
-                          </div>
+                          <Chip
+                            label={row.is_active === 1 ? "Yes" : "No"}
+                            style={{
+                              backgroundColor:
+                                row.is_active === 1 ? "#0d47a1" : "#d50000",
+                              color:
+                                row.is_active === 1 ? "#e3f2fd" : "#ffebee",
+                            }}
+                          />
                         </TableCell>
                         <TableCell>
                           <div className="datetime">
                             {InvalidDateTimeToDefault(row.encoded_at, "-")}
                           </div>
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButtonPopper
+                            size="small"
+                            buttons={[
+                              {
+                                text: "Edit Info.",
+                                handleClick: () => {
+                                  set_selected_room(row);
+                                  handleOpenRoomDialog();
+                                },
+                              },
+                              {
+                                text:
+                                  row.is_active === 1
+                                    ? "Set to Inactive"
+                                    : "Set to Active",
+                                handleClick: () => {
+                                  handleToggleRoomStatus(row.room_pk);
+                                },
+                              },
+                            ]}
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -311,6 +388,15 @@ export const DataTableRoomAdminView: FC<DataTableRoomAdminViewInterface> = memo(
             </Grid>
           </Grid>
         </Grid>
+
+        {selected_room && (
+          <EditRoomDialog
+            initial_form_values={selected_room}
+            open={open_edit_room_dialog}
+            handleClose={handleCloseRoomDialog}
+            handleReloadDataTable={handleReloadDataTable}
+          />
+        )}
       </Container>
     );
   }

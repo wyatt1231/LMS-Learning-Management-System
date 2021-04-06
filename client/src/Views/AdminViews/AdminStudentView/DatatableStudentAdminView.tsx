@@ -67,7 +67,7 @@ const initialTableSort: Array<ITableInitialSort> = [
 
 const tableColumns: Array<ITableColumns> = [
   {
-    label: "",
+    label: "Profile",
     width: 250,
     align: "left",
   },
@@ -283,7 +283,7 @@ export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> =
                             />
                             <NavLink
                               className="title"
-                              to={`/admin/student/${row.student_pk}`}
+                              to={`/admin/student/${row.student_pk}/calendar`}
                             >
                               <span style={{ textTransform: "capitalize" }}>
                                 {row.firstname} {row.middlename} {row.lastname}{" "}

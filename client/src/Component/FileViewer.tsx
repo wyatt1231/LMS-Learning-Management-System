@@ -1,15 +1,12 @@
 import { CircularProgress } from "@material-ui/core";
 import WebViewer from "@pdftron/webviewer";
-import React, { memo, FC, useEffect, useRef } from "react";
-// import docx from "../Assets/Files/docx.docx";
-import docx from "../Assets/Images/Wallpapers/header.jpg";
+import React, { FC, memo, useEffect, useRef } from "react";
 interface IFileViwer {
   file: any;
 }
 
 export const FileViwer: FC<IFileViwer> = memo(({ file }) => {
   const viewer = useRef(null);
-
   useEffect(() => {
     if (file) {
       WebViewer(

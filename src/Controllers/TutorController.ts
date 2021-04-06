@@ -1,6 +1,7 @@
 import { Express, Response, Request, Router } from "express";
 import Authorize from "../Middlewares/Authorize";
 import { PaginationModel } from "../Models/PaginationModel";
+import { TutorFavModel } from "../Models/TutorFavModel";
 import { TutorModel } from "../Models/TutorModel";
 import { TutorRatingsModel } from "../Models/TutorRatingModel";
 import { UserClaims } from "../Models/UserModel";
@@ -46,6 +47,20 @@ const TutorController = async (app: Express): Promise<void> => {
   );
 
   router.post(
+    "/getSingTutorToStudent",
+    Authorize("student"),
+    async (req: Request & UserClaims, res: Response) => {
+      const tutor_pk: number = req.body.tutor_pk;
+      res.json(
+        await TutorRepository.getSingTutorToStudent(
+          tutor_pk,
+          parseInt(req.user_id)
+        )
+      );
+    }
+  );
+
+  router.post(
     "/searchTutor",
     Authorize("admin"),
     async (req: Request & UserClaims, res: Response) => {
@@ -73,6 +88,83 @@ const TutorController = async (app: Express): Promise<void> => {
           parseInt(req.user_id)
         )
       );
+    }
+  );
+
+  router.post(
+    "/toggleActiveStatus",
+    Authorize("admin,tutor,student"),
+    async (req: Request & UserClaims, res: Response) => {
+      const tutor_pk: number = req.body.tutor_pk;
+      res.json(
+        await TutorRepository.toggleActiveStatus(
+          tutor_pk,
+          parseInt(req.user_id)
+        )
+      );
+    }
+  );
+
+  router.post(
+    "/updateTutorImage",
+    Authorize("admin,tutor"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: TutorModel = req.body;
+      payload.user_id = parseInt(req.user_id);
+      res.json(await TutorRepository.updateTutorImage(payload));
+    }
+  );
+
+  router.post(
+    "/getTotalTutors",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(await TutorRepository.getTotalTutors());
+    }
+  );
+
+  router.post(
+    "/getLoggedInTutor",
+    Authorize("tutor"),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(await TutorRepository.getLoggedInTutor(parseInt(req.user_id)));
+    }
+  );
+
+  router.post(
+    "/updateLoggedInTutorBio",
+    Authorize("tutor"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: TutorModel = req.body;
+      res.json(await TutorRepository.updateLoggedInTutorBio(payload));
+    }
+  );
+
+  router.post(
+    "/rateTutor",
+    Authorize("student"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: TutorRatingsModel = req.body;
+      payload.encoded_by = parseInt(req.user_id);
+      res.json(await TutorRepository.rateTutor(payload));
+    }
+  );
+
+  router.post(
+    "/favoriteTutor",
+    Authorize("student"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: TutorFavModel = req.body;
+      payload.encoded_by = parseInt(req.user_id);
+      res.json(await TutorRepository.favoriteTutor(payload));
+    }
+  );
+
+  router.post(
+    "/getMostRatedTutors",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(await TutorRepository.getMostRatedTutors());
     }
   );
 

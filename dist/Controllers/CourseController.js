@@ -25,10 +25,6 @@ const CourseController = (app) => __awaiter(void 0, void 0, void 0, function* ()
         const payload = req.body;
         res.json(yield CourseRepository_1.default.addCourse(payload, req.user_id));
     }));
-    router.post("/updateCourse", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const payload = req.body;
-        res.json(yield CourseRepository_1.default.updateCourse(payload, req.user_id));
-    }));
     router.post("/getSingleCourse", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const course_pk = req.body.course_pk;
         res.json(yield CourseRepository_1.default.getSingleCourse(course_pk));
@@ -40,6 +36,23 @@ const CourseController = (app) => __awaiter(void 0, void 0, void 0, function* ()
     router.post("/searchCourse", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const search = req.body.value;
         res.json(yield CourseRepository_1.default.searchCourse(search));
+    }));
+    router.post("/updateCourse", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.encoder_pk = req.user_id;
+        res.json(yield CourseRepository_1.default.updateCourse(payload));
+    }));
+    router.post("/toggleCourseStatus", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const pk = req.body.course_pk;
+        res.json(yield CourseRepository_1.default.toggleCourseStatus(pk, parseInt(req.user_id)));
+    }));
+    router.post("/updateCourseImage", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.encoder_pk = req.user_id;
+        res.json(yield CourseRepository_1.default.updateCourseImage(payload));
+    }));
+    router.post("/getTotalCourses", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield CourseRepository_1.default.getTotalCourses());
     }));
     app.use("/api/course/", router);
 });

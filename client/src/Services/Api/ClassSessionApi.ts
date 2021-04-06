@@ -29,7 +29,7 @@ const getSingleClassSession = async (
   return response;
 };
 
-const startClassSessionApi = async (
+const startClassSession = async (
   payload: ClassSessionModel
 ): Promise<IServerResponse> => {
   const response = await PostFetch(
@@ -39,11 +39,21 @@ const startClassSessionApi = async (
   return response;
 };
 
-const endClassSessionApi = async (
+const endClassSession = async (
   payload: ClassSessionModel
 ): Promise<IServerResponse> => {
   const response = await PostFetch(
     API_DEFAULT_ROUTE + "endClassSession",
+    payload
+  );
+  return response;
+};
+
+const unattendedClassSession = async (
+  payload: ClassSessionModel
+): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "unattendedClassSession",
     payload
   );
   return response;
@@ -100,15 +110,54 @@ const hideMessage = async (
   return response;
 };
 
+const getTutorSessionCal = async (tutor_pk): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "getTutorSessionCal", {
+    tutor_pk,
+  });
+  return response;
+};
+
+const getStudentSessionCal = async (student_pk): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "getStudentSessionCal", {
+    student_pk: student_pk,
+  });
+  return response;
+};
+
+const getLoggedInTutorSessionCalendar = async (): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "getLoggedInTutorSessionCalendar",
+    null
+  );
+  return response;
+};
+
+const getLoggedStudentCalendar = async (): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "getLoggedStudentCalendar",
+    null
+  );
+  return response;
+};
+
 export default {
   getClassSessionsApi,
   getTutorFutureSessionsApi,
   getTutorClassSessionCalendarApi,
   getStatsSessionCalendarApi,
-  startClassSessionApi,
-  endClassSessionApi,
+
   getAllMessage,
   saveMessage,
   hideMessage,
   getSingleClassSession,
+
+  getTutorSessionCal,
+  getStudentSessionCal,
+  //
+  getLoggedInTutorSessionCalendar,
+  getLoggedStudentCalendar,
+  //
+  startClassSession,
+  endClassSession,
+  unattendedClassSession,
 };

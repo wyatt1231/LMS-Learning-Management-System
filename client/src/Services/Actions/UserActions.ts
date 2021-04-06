@@ -1,9 +1,11 @@
 import { Dispatch } from "react";
-import { CurrentUserApi } from "../Api/UserApi";
+import helperErrorMessage from "../../Helpers/helperErrorMessage";
+import UserApi, { CurrentUserApi } from "../Api/UserApi";
 import IUserAuthenticate from "../Interface/IAuth";
 import IServerResponse from "../Interface/IServerResponse";
-import { UserActionTypes } from "../Reducers/UserReducer";
+import { UserModel } from "../Models/UserModel";
 import { PageReducerTypes } from "../Types/PageTypes";
+import { UserReducerTypes } from "../Types/UserTypes";
 
 interface IActionAuthenticateUser {
   user: IUserAuthenticate;
@@ -11,7 +13,7 @@ interface IActionAuthenticateUser {
 }
 
 export const SetCurrentUserAction = () => async (
-  dispatch: Dispatch<UserActionTypes | PageReducerTypes>
+  dispatch: Dispatch<UserReducerTypes | PageReducerTypes>
 ) => {
   try {
     dispatch({
@@ -42,11 +44,11 @@ export const SetCurrentUserAction = () => async (
         window.location.pathname === "/"
       ) {
         if (user_type === "admin") {
-          window.location.href = "/admin/calendar";
+          window.location.href = "/admin/dashboard";
         } else if (user_type === "tutor") {
-          window.location.href = "/tutor/home";
+          window.location.href = "/tutor/dashboard";
         } else if (user_type === "student") {
-          window.location.href = "/student/home";
+          window.location.href = "/student/dashboard";
         }
       }
     } else {
@@ -55,4 +57,100 @@ export const SetCurrentUserAction = () => async (
       }
     }
   } catch (error) {}
+};
+
+const getUserLogs = () => async (dispatch: Dispatch<UserReducerTypes>) => {
+  try {
+    dispatch({
+      type: "fetching_user_logs",
+      fetching_user_logs: true,
+    });
+    const response: IServerResponse = await UserApi.getUserLogs();
+
+    if (response.success) {
+      dispatch({
+        type: "user_logs",
+        user_logs: response.data,
+      });
+    }
+
+    dispatch({
+      type: "fetching_user_logs",
+      fetching_user_logs: false,
+    });
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+const getAllLogs = () => async (dispatch: Dispatch<UserReducerTypes>) => {
+  try {
+    dispatch({
+      type: "fetching_all_logs",
+      fetching_all_logs: true,
+    });
+    const response: IServerResponse = await UserApi.getAllLogs();
+
+    if (response.success) {
+      dispatch({
+        type: "all_logs",
+        all_logs: response.data,
+      });
+    }
+
+    dispatch({
+      type: "fetching_all_logs",
+      fetching_all_logs: false,
+    });
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+export const changeAdminPassword = (
+  payload: UserModel,
+  onSuccess: (msg: string) => any
+) => async (dispatch: Dispatch<UserReducerTypes | PageReducerTypes>) => {
+  try {
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        loading_message: "Loading, thank you for your patience!",
+        show: true,
+      },
+    });
+    const response: IServerResponse = await UserApi.changeAdminPassword(
+      payload
+    );
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+      },
+    });
+    if (response.success) {
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
+      if (typeof onSuccess === "function") {
+        onSuccess(response.message.toString());
+      }
+    } else {
+      helperErrorMessage(dispatch, response);
+    }
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+export default {
+  getUserLogs,
+  changeAdminPassword,
+  getAllLogs,
 };

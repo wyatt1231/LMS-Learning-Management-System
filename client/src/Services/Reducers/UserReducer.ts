@@ -1,26 +1,13 @@
-export type UserActionTypes =
-  | {
-      type: "SET_CURRENT_USER";
-      user: string;
-    }
-  | {
-      type: "SET_LOADING_USER";
-      isLoading: boolean;
-    };
+import { UserReducerModel, UserReducerTypes } from "../Types/UserTypes";
 
-export interface IUserReducer {
-  user: any;
-  userLoading: boolean;
-}
-
-const defaultState: IUserReducer = {
+const defaultState: UserReducerModel = {
   user: null,
   userLoading: false,
 };
 
 const UserReducer = (
-  state: IUserReducer = defaultState,
-  action: UserActionTypes
+  state: UserReducerModel = defaultState,
+  action: UserReducerTypes
 ) => {
   switch (action.type) {
     case "SET_CURRENT_USER": {
@@ -34,6 +21,34 @@ const UserReducer = (
       return {
         ...state,
         userLoading: action.isLoading,
+      };
+    }
+
+    case "user_logs": {
+      return {
+        ...state,
+        user_logs: action.user_logs,
+      };
+    }
+
+    case "fetching_user_logs": {
+      return {
+        ...state,
+        fetching_user_logs: action.fetching_user_logs,
+      };
+    }
+    //
+    case "all_logs": {
+      return {
+        ...state,
+        all_logs: action.all_logs,
+      };
+    }
+
+    case "fetching_all_logs": {
+      return {
+        ...state,
+        fetching_all_logs: action.fetching_all_logs,
       };
     }
 

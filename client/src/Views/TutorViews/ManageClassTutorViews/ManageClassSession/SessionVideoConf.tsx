@@ -15,16 +15,21 @@ export const SessionVideoConf: FC<SessionVideoConfProps> = memo(() => {
 
   // console.log(`hash_pk`, single_class_session);
 
-  if (single_class_session?.hash_pk && single_class_session?.sts_pk === "fa") {
+  if (
+    single_class_session?.hash_pk &&
+    (single_class_session?.sts_pk === "p" ||
+      single_class_session?.sts_pk === "u")
+  ) {
     return (
       <div
         style={{
-          fontWeight: 600,
-          fontSize: `1.5em`,
+          fontWeight: 500,
+          fontSize: `1em`,
           display: `grid`,
           padding: `2em`,
           justifyContent: `center`,
           alignContent: `center`,
+          color: `#4caf50`,
         }}
       >
         You need to start the class session to view the video conferencing!
@@ -124,10 +129,10 @@ export const SessionVideoConf: FC<SessionVideoConfProps> = memo(() => {
           <iframe
             title="iframe-video"
             allow="camera; microphone; fullscreen; display-capture"
-            // src={`https://meet.jit.si/${single_class_session?.hash_pk}#jitsi_meet_external_api_id=0&config.enableWelcomePage=false&config.prejoinPageEnabled=false&interfaceConfig.prejoinPageEnabled=false&interfaceConfig.DISPLAY_WELCOME_FOOTER=false&interfaceConfig.GENERATE_ROOMNAMES_ON_WELCOME_PAGE=false&interfaceConfig.HIDE_INVITE_MORE_HEADER=true&interfaceConfig.HIDE_DEEP_LINKING_LOGO=true&interfaceConfig.SHOW_JITSI_WATERMARK=false&interfaceConfig.SHOW_WATERMARK_FOR_GUESTS=false&interfaceConfig.TOOLBAR_BUTTONS=%5B%22microphone%22%2C%22camera%22%2C%22desktop%22%2C%22fullscreen%22%2C%22fodeviceselection%22%2C%22hangup%22%2C%22profile%22%2C%22etherpad%22%2C%22settings%22%2C%22raisehand%22%2C%22stats%22%2C%22shortcuts%22%2C%22tileview%22%2C%22videobackgroundblur%22%2C%22mute-everyone%22%5D&appData.localStorageContent=null&userInfo.displayName="${user?.fullname}"`}
-            src={
-              "https://meet.jit.si/c20ad4d76fe97759aa27a0c99bff6710#jitsi_meet_external_api_id=0&config.enableWelcomePage=false&config.prejoinPageEnabled=false&config.disableLogCollector=true&config.defaultLogLevel=%22error%22&interfaceConfig.disableLogCollector=true&interfaceConfig.defaultLogLevel=%22error%22&interfaceConfig.prejoinPageEnabled=false&interfaceConfig.DISPLAY_WELCOME_FOOTER=false&interfaceConfig.GENERATE_ROOMNAMES_ON_WELCOME_PAGE=false&interfaceConfig.HIDE_INVITE_MORE_HEADER=true&interfaceConfig.HIDE_DEEP_LINKING_LOGO=true&interfaceConfig.SHOW_JITSI_WATERMARK=false&interfaceConfig.SHOW_WATERMARK_FOR_GUESTS=false&interfaceConfig.TOOLBAR_BUTTONS=%5B%22microphone%22%2C%22camera%22%2C%22desktop%22%2C%22fullscreen%22%2C%22fodeviceselection%22%2C%22hangup%22%2C%22profile%22%2C%22etherpad%22%2C%22settings%22%2C%22raisehand%22%2C%22stats%22%2C%22shortcuts%22%2C%22tileview%22%2C%22videobackgroundblur%22%2C%22mute-everyone%22%5D&appData.localStorageContent=null"
-            }
+            src={`https://meet.jit.si/${single_class_session?.hash_pk}#jitsi_meet_external_api_id=0&config.enableWelcomePage=false&config.prejoinPageEnabled=false&interfaceConfig.prejoinPageEnabled=false&interfaceConfig.DISPLAY_WELCOME_FOOTER=false&interfaceConfig.GENERATE_ROOMNAMES_ON_WELCOME_PAGE=false&interfaceConfig.HIDE_INVITE_MORE_HEADER=true&interfaceConfig.HIDE_DEEP_LINKING_LOGO=true&interfaceConfig.SHOW_JITSI_WATERMARK=false&interfaceConfig.SHOW_WATERMARK_FOR_GUESTS=false&interfaceConfig.TOOLBAR_BUTTONS=%5B%22microphone%22%2C%22camera%22%2C%22desktop%22%2C%22fullscreen%22%2C%22fodeviceselection%22%2C%22hangup%22%2C%22profile%22%2C%22etherpad%22%2C%22settings%22%2C%22raisehand%22%2C%22stats%22%2C%22shortcuts%22%2C%22tileview%22%2C%22videobackgroundblur%22%2C%22mute-everyone%22%5D&appData.localStorageContent=null&userInfo.displayName="${user?.fullname}"`}
+            // src={
+            //   "https://meet.jit.si/c20ad4d76fe97759aa27a0c99bff6710#jitsi_meet_external_api_id=0&config.enableWelcomePage=false&config.prejoinPageEnabled=false&config.disableLogCollector=true&config.defaultLogLevel=%22error%22&interfaceConfig.disableLogCollector=true&interfaceConfig.defaultLogLevel=%22error%22&interfaceConfig.prejoinPageEnabled=false&interfaceConfig.DISPLAY_WELCOME_FOOTER=false&interfaceConfig.GENERATE_ROOMNAMES_ON_WELCOME_PAGE=false&interfaceConfig.HIDE_INVITE_MORE_HEADER=true&interfaceConfig.HIDE_DEEP_LINKING_LOGO=true&interfaceConfig.SHOW_JITSI_WATERMARK=false&interfaceConfig.SHOW_WATERMARK_FOR_GUESTS=false&interfaceConfig.TOOLBAR_BUTTONS=%5B%22microphone%22%2C%22camera%22%2C%22desktop%22%2C%22fullscreen%22%2C%22fodeviceselection%22%2C%22hangup%22%2C%22profile%22%2C%22etherpad%22%2C%22settings%22%2C%22raisehand%22%2C%22stats%22%2C%22shortcuts%22%2C%22tileview%22%2C%22videobackgroundblur%22%2C%22mute-everyone%22%5D&appData.localStorageContent=null"
+            // }
             style={{ height: `100%`, width: `100%` }}
           ></iframe>
         )}

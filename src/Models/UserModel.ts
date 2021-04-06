@@ -4,7 +4,7 @@ export interface UserLogin {
 }
 
 export interface UserClaims {
-  user_id: string;
+  user_id?: string;
   user_type?: string;
   allow_login?: "y" | "n";
 }
@@ -21,4 +21,6 @@ export interface UserModel {
   encoded_at?: Date;
   encoder_pk?: string;
   allow_login?: "y" | "n";
+  old_password?: string;
+  picture?: string;
 }

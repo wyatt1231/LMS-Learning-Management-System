@@ -1,5 +1,6 @@
 import {
   Button,
+  Chip,
   Container,
   Grid,
   Table,
@@ -21,14 +22,20 @@ import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopp
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import { InvalidDateToDefault } from "../../../Hooks/UseDateParser";
 import useFilter from "../../../Hooks/useFilter";
-import { setCourseDataTableAction } from "../../../Services/Actions/CourseActions";
-import { setPageLinks } from "../../../Services/Actions/PageActions";
+import CourseActions, {
+  setCourseDataTableAction,
+} from "../../../Services/Actions/CourseActions";
+import {
+  setGeneralPrompt,
+  setPageLinks,
+} from "../../../Services/Actions/PageActions";
 import ITableColumns from "../../../Services/Interface/ITableColumns";
 import ITableInitialSort from "../../../Services/Interface/ITableInitialSort";
 import { CourseModel } from "../../../Services/Models/CourseModel";
 import { PaginationModel } from "../../../Services/Models/PaginationModels";
 import { RootStore } from "../../../Services/Store";
 import EditCourseDialog from "./EditCourseDialog";
+import EditCourseImageDialog from "./EditCourseImageDialog";
 
 interface DataTableCourseAdminViewInterface {}
 
@@ -117,6 +124,8 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
 
     const [open_edit_course, set_open_edit_course] = useState(false);
 
+    const [reload_data_table, set_reload_data_table] = useState(0);
+
     const handleOpenEditCourse = useCallback(() => {
       set_open_edit_course(true);
     }, []);
@@ -129,9 +138,30 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
     const handleOpenChangeCourse = useCallback(() => {
       set_open_change_image(true);
     }, []);
-    const handleCloseChangeCourse = useCallback(() => {
+    const handleCloseChangeCourseImage = useCallback(() => {
       set_open_change_image(false);
     }, []);
+
+    const handleReloadDataTable = useCallback(() => {
+      set_reload_data_table((c) => c + 1);
+    }, []);
+
+    const handleToggleActiveStatus = useCallback(
+      (course_pk: number) => {
+        dispatch(
+          setGeneralPrompt({
+            open: true,
+            continue_callback: () =>
+              dispatch(
+                CourseActions.toggleCourseStatus(course_pk, (msg: string) => {
+                  handleReloadDataTable();
+                })
+              ),
+          })
+        );
+      },
+      [dispatch, handleReloadDataTable]
+    );
 
     const [
       tableSearch,
@@ -168,7 +198,14 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
       return () => {
         mounted = false;
       };
-    }, [activeSort, dispatch, tableLimit, tablePage, tableSearch]);
+    }, [
+      activeSort,
+      dispatch,
+      tableLimit,
+      tablePage,
+      tableSearch,
+      reload_data_table,
+    ]);
 
     useEffect(() => {
       let mounted = true;
@@ -317,14 +354,11 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
                               src={`${row.picture}`}
                               errorMessage={`${row.course_desc?.charAt(0)}`}
                             />
-                            <NavLink
-                              className="title"
-                              to={`/admin/course/${row.course_pk}`}
-                            >
+                            <div className="title">
                               <span style={{ textTransform: "capitalize" }}>
                                 {row.course_desc}
                               </span>
-                            </NavLink>
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>{row.est_duration} mins</TableCell>
@@ -343,11 +377,15 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
                           </Tooltip>
                         </TableCell>
                         <TableCell>
-                          <div className="grid-justify-start">
-                            <span className="badge badge-blue">
-                              {row.is_active === "y" ? "Yes" : "No"}
-                            </span>
-                          </div>
+                          <Chip
+                            label={row.is_active === 1 ? "Yes" : "No"}
+                            style={{
+                              backgroundColor:
+                                row.is_active === 1 ? "#0d47a1" : "#d50000",
+                              color:
+                                row.is_active === 1 ? "#e3f2fd" : "#ffebee",
+                            }}
+                          />
                         </TableCell>
                         <TableCell>
                           <div className="datetime">
@@ -368,14 +406,18 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
                               },
                               {
                                 text: "Change Image",
-                                handleClick: () => console.log(`.`),
+                                handleClick: () => {
+                                  set_selected_course(row);
+                                  handleOpenChangeCourse();
+                                },
                               },
                               {
                                 text:
-                                  row.is_active === "y"
-                                    ? "Deactivate"
-                                    : "Activate",
-                                handleClick: () => console.log(`.`),
+                                  row.is_active === 1
+                                    ? "Set to Inactive"
+                                    : "Set to Active",
+                                handleClick: () =>
+                                  handleToggleActiveStatus(row.course_pk),
                               },
                             ]}
                           />
@@ -389,11 +431,23 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
           </Grid>
         </Grid>
 
-        <EditCourseDialog
-          initial_form_values={selected_course}
-          open={open_edit_course}
-          handleClose={handleCloseEditCourse}
-        />
+        {selected_course && (
+          <>
+            <EditCourseDialog
+              initial_form_values={selected_course}
+              open={open_edit_course}
+              handleClose={handleCloseEditCourse}
+              handleReloadDataTable={handleReloadDataTable}
+            />
+
+            <EditCourseImageDialog
+              initial_form_values={selected_course}
+              open={open_change_image}
+              handleClose={handleCloseChangeCourseImage}
+              handleReloadDataTable={handleReloadDataTable}
+            />
+          </>
+        )}
       </Container>
     );
   }

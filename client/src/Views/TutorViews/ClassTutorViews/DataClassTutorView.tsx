@@ -1,5 +1,4 @@
 import {
-  Button,
   Chip,
   Container,
   Grid,
@@ -7,22 +6,15 @@ import {
   TablePagination,
 } from "@material-ui/core";
 import moment from "moment";
-import React, { FC, memo, useCallback, useEffect, useState } from "react";
+import React, { FC, memo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import DataTableSearch from "../../../Component/DataTableSearch";
 import DataTableSort from "../../../Component/DataTableSort";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import useFilter from "../../../Hooks/useFilter";
-import {
-  approveClassAction,
-  setTutorClassTableAction,
-} from "../../../Services/Actions/ClassActions";
-import {
-  setGeneralPrompt,
-  setPageLinks,
-  setPageSuccessPromptAction,
-} from "../../../Services/Actions/PageActions";
+import { setTutorClassTableAction } from "../../../Services/Actions/ClassActions";
+import { setPageLinks } from "../../../Services/Actions/PageActions";
 import ITableInitialSort from "../../../Services/Interface/ITableInitialSort";
 import { ClassModel } from "../../../Services/Models/ClassModel";
 import { PaginationModel } from "../../../Services/Models/PaginationModels";
@@ -79,44 +71,6 @@ export const DataClassTutorView: FC<DataClassTutorViewInterface> = memo(() => {
     (store: RootStore) => store.ClassReducer.tutor_class_table?.table
   );
 
-  const [reloadTutorClassTable, setReloadTutorClassTable] = useState(1);
-
-  const handleApproveClass = useCallback(
-    async (class_pk: number) => {
-      dispatch(
-        setGeneralPrompt({
-          open: true,
-          continue_callback: () =>
-            dispatch(
-              approveClassAction(class_pk, (msg: string) => {
-                setReloadTutorClassTable((load) => load + 1);
-
-                dispatch(
-                  setPageSuccessPromptAction({
-                    message: msg,
-                    action_buttons: [
-                      {
-                        text: "Stay on this page",
-                        handleClick: () => console.log(`1`),
-                        color: "primary",
-                      },
-                      {
-                        text: "View approved class",
-                        handleClick: () => console.log(`2`),
-                        color: "secondary",
-                      },
-                    ],
-                    show: true,
-                  })
-                );
-              })
-            ),
-        })
-      );
-    },
-    [dispatch]
-  );
-
   const [
     tableSearch,
     tableLimit,
@@ -152,14 +106,7 @@ export const DataClassTutorView: FC<DataClassTutorViewInterface> = memo(() => {
     return () => {
       mounted = false;
     };
-  }, [
-    activeSort,
-    dispatch,
-    tableLimit,
-    tablePage,
-    tableSearch,
-    reloadTutorClassTable,
-  ]);
+  }, [activeSort, dispatch, tableLimit, tablePage, tableSearch]);
 
   useEffect(() => {
     let mounted = true;
@@ -202,31 +149,15 @@ export const DataClassTutorView: FC<DataClassTutorViewInterface> = memo(() => {
           alignItems="center"
           alignContent="center"
         >
-          <Grid item xs={12} justify="flex-end" container>
-            <Grid item>
-              <DataTableSearch
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSetTableSearch({
-                    ...tableSearch,
-                    search: searchField,
-                  });
-                }}
-                handleSetSearchField={handleSetSearchField}
-                searchField={searchField}
-              />
-            </Grid>
-          </Grid>
-
           <Grid
             item
-            // xs={12}
-            // md={6}
-            // container
-            // spacing={2}
-            // justify="flex-start"
-            // alignContent="center"
-            // alignItems="center"
+            xs={12}
+            md={6}
+            container
+            spacing={2}
+            justify="flex-start"
+            alignContent="center"
+            alignItems="center"
           >
             <Grid item>
               <TablePagination
@@ -242,17 +173,33 @@ export const DataClassTutorView: FC<DataClassTutorViewInterface> = memo(() => {
           </Grid>
           <Grid
             item
-            // container
-            // spacing={3}
-            // alignContent="center"
-            // alignItems="center"
-            // justify="flex-end"
+            xs={12}
+            md={6}
+            container
+            spacing={3}
+            alignContent="center"
+            alignItems="center"
+            justify="flex-end"
           >
             <Grid item>
               <DataTableSort
                 handleChagenSelectedSortIndex={handleChagenSelectedSortIndex}
                 initialTableSort={initialTableSort}
                 selectedSortIndex={selectedSortIndex}
+              />
+            </Grid>
+
+            <Grid item>
+              <DataTableSearch
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSetTableSearch({
+                    ...tableSearch,
+                    search: searchField,
+                  });
+                }}
+                handleSetSearchField={handleSetSearchField}
+                searchField={searchField}
               />
             </Grid>
           </Grid>
@@ -282,6 +229,63 @@ export const DataClassTutorView: FC<DataClassTutorViewInterface> = memo(() => {
                       src={`data:image/jpg;base64,${v.pic}`}
                       alt={`no image found`}
                     />
+                  </div>
+
+                  <div className="info-container">
+                    <NavLink
+                      to={`/tutor/class/${v.class_pk}/session`}
+                      className="title"
+                    >
+                      {v.class_desc}
+                      {" - "}
+                      {v.course_desc}
+                    </NavLink>
+                    <div className="status">
+                      <div
+                        style={{
+                          display: `grid`,
+                          justifyContent: `start`,
+                          justifyItems: `start`,
+                          alignItems: `center`,
+                          gridAutoFlow: `column`,
+                          gridAutoColumns: `1fr auto`,
+                        }}
+                      >
+                        <Chip
+                          label={v.sts_desc}
+                          style={{
+                            backgroundColor: v.sts_bgcolor,
+                            color: v.sts_color,
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="time item">
+                      {moment(v.start_time, "HH:mm:ss").format("hh:mma")}
+                      {" - "}
+                      {moment(v.end_time, "HH:mm:ss").format("hh:mma")}
+                    </div>
+                    <div
+                      className="item"
+                      style={{ textTransform: `capitalize` }}
+                    >
+                      {v.tutor_name}
+                    </div>
+                    <div className="item">
+                      <div className="value">
+                        {v.closed_sessions} of {v.session_count} completed
+                        sessions
+                      </div>
+                    </div>
+                  </div>
+                </StyledClassContainer>
+              ))}
+
+              {/* {data_table?.map((v, i) => (
+                <StyledClassContainer key={i}>
+                  <div className="image">
+                    <img src={`data:image/jpg;base64,${v.pic}`} alt="" />
                   </div>
 
                   <div className="info-container">
@@ -346,7 +350,7 @@ export const DataClassTutorView: FC<DataClassTutorViewInterface> = memo(() => {
                     </div>
                   </div>
                 </StyledClassContainer>
-              ))}
+              ))} */}
             </div>
           </Grid>
         </Grid>

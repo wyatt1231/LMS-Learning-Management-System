@@ -92,7 +92,7 @@ export const addCourseApiAction = (
   }
 };
 
-export const updateCourseAction = (
+const updateCourse = (
   payload: CourseModel,
   onSuccess: (msg: string) => any
 ) => async (dispatch: Dispatch<CourseReducerTypes | PageReducerTypes>) => {
@@ -104,7 +104,7 @@ export const updateCourseAction = (
         show: true,
       },
     });
-    const response: IServerResponse = await CourseApi.updateCourseApi(payload);
+    const response: IServerResponse = await CourseApi.updateCourse(payload);
     dispatch({
       type: "SET_PAGE_LOADING",
       page_loading: {
@@ -115,10 +115,112 @@ export const updateCourseAction = (
       if (typeof onSuccess === "function") {
         onSuccess(response.message.toString());
       }
+
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
     } else {
       helperErrorMessage(dispatch, response);
     }
   } catch (error) {
     console.error(`action error`, error);
   }
+};
+
+const toggleCourseStatus = (
+  course_pk: number,
+  onSuccess: (msg: string) => any
+) => async (dispatch: Dispatch<CourseReducerTypes | PageReducerTypes>) => {
+  try {
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        loading_message: "Loading, thank you for your patience!",
+        show: true,
+      },
+    });
+    const response: IServerResponse = await CourseApi.toggleCourseStatus(
+      course_pk
+    );
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+      },
+    });
+    if (response.success) {
+      if (typeof onSuccess === "function") {
+        onSuccess(response.message.toString());
+      }
+
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
+    } else {
+      helperErrorMessage(dispatch, response);
+    }
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+const updateCourseImage = (
+  payload: CourseModel,
+  onSuccess: (msg: string) => any
+) => async (dispatch: Dispatch<CourseReducerTypes | PageReducerTypes>) => {
+  try {
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        loading_message: "Loading, thank you for your patience!",
+        show: true,
+      },
+    });
+    const response: IServerResponse = await CourseApi.updateCourseImage(
+      payload
+    );
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+      },
+    });
+    if (response.success) {
+      if (typeof onSuccess === "function") {
+        onSuccess(response.message.toString());
+      }
+
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
+    } else {
+      helperErrorMessage(dispatch, response);
+    }
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+export default {
+  updateCourse,
+  toggleCourseStatus,
+  updateCourseImage,
 };

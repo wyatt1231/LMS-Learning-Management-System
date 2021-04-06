@@ -28,7 +28,7 @@ const Authorize = (roles?: string): any => {
                 if (listRoles) {
                   if (listRoles.includes(user.user_type)) {
                     req.user_id = user.user_id;
-                    req.user_type = user.user_id;
+                    req.user_type = user.user_type;
 
                     next();
                   } else {

@@ -52,8 +52,6 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
 
     const handleSubmitFormTask = useCallback(
       (data) => {
-        console.log(`payload data`, data);
-
         const payload: any = [];
 
         data?.questions?.forEach((element) => {

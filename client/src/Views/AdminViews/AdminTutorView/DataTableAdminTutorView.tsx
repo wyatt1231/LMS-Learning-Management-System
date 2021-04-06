@@ -67,7 +67,7 @@ const initialTableSort: Array<ITableInitialSort> = [
 
 const tableColumns: Array<ITableColumns> = [
   {
-    label: "Main Information",
+    label: "Profile",
     width: 250,
     align: "left",
   },

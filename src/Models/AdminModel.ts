@@ -1,6 +1,6 @@
 export interface AdminModel {
   admin_pk?: number;
-  user_id?: number;
+  user_id?: number | string;
   position?: string;
   picture?: string;
   firstname?: string;

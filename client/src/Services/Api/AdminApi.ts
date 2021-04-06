@@ -37,3 +37,40 @@ export const getSingleAdminApi = async (
   });
   return response;
 };
+
+const getLoggedAdmin = async (): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "getLoggedAdmin", null);
+  return response;
+};
+
+const updateAdminInfo = async (
+  payload: AdminModel
+): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "updateAdminInfo",
+    payload
+  );
+  return response;
+};
+
+const updateAdminImage = async (
+  payload: AdminModel
+): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "updateAdminImage",
+    payload
+  );
+  return response;
+};
+
+const getTotalAdmin = async (): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "getTotalAdmin", {});
+  return response;
+};
+
+export default {
+  getLoggedAdmin,
+  updateAdminInfo,
+  updateAdminImage,
+  getTotalAdmin,
+};

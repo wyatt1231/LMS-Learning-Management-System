@@ -96,7 +96,11 @@ const UserProfile: React.FC<IUserProfile> = memo(({ variant, user }) => {
           <div className="content-body">
             <div className="content-title">MENUS</div>
             <div className="content-items">
-              <NavLink to={`/${user?.user_type}/profile`} className="link">
+              <NavLink
+                to={`/${user?.user_type}/profile`}
+                className="link"
+                onClick={handleClose}
+              >
                 My Profile
               </NavLink>
               <div className="link" onClick={handleLogout}>

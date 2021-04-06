@@ -84,6 +84,13 @@ export const ClassStudentView: FC<ClassStudentProps> = memo(({ class_pk }) => {
             </TableRow>
           </TableHead>
           <TableBody>
+            {tbl_class_students?.length < 1 && (
+              <TableRow>
+                <TableCell align="center" colSpan={5}>
+                  <span className="empty-rows">No records to show.</span>
+                </TableCell>
+              </TableRow>
+            )}
             {tbl_class_students?.map((student, index) => (
               <TableRow key={index}>
                 <TableCell>
@@ -147,6 +154,11 @@ export const ClassStudentView: FC<ClassStudentProps> = memo(({ class_pk }) => {
                         (msg: string) => {
                           formikHelpers.resetForm();
                           setOpenEnrollStudentModel(false);
+                          dispatch(
+                            ClassStudentActions.setTblClassStudentsAction(
+                              class_pk
+                            )
+                          );
                         }
                       )
                     ),
@@ -154,7 +166,7 @@ export const ClassStudentView: FC<ClassStudentProps> = memo(({ class_pk }) => {
               );
             }}
           >
-            <Form>
+            <Form id="form-enroll-student">
               <Grid container spacing={2} style={{ padding: `1em 0` }}>
                 <Grid item xs={12}>
                   <FormikAutocomplete
@@ -172,21 +184,27 @@ export const ClassStudentView: FC<ClassStudentProps> = memo(({ class_pk }) => {
                   />
                 </Grid>
 
-                <Grid item xs={12} container justify="flex-end">
+                {/* <Grid item xs={12} container justify="flex-end">
                   <Grid item>
-                    <Button
-                      color="primary"
-                      type="submit"
-                      disableElevation
-                      variant="contained"
-                    >
-                      Enroll Student
-                    </Button>
+                    
                   </Grid>
-                </Grid>
+                </Grid> */}
               </Grid>
             </Form>
           </Formik>
+        }
+        actions={
+          <>
+            <Button
+              color="primary"
+              type="submit"
+              disableElevation
+              variant="contained"
+              form="form-enroll-student"
+            >
+              Enroll Student
+            </Button>
+          </>
         }
       />
     </div>

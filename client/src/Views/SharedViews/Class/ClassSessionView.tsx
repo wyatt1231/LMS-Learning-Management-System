@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import React, { FC, memo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useParams } from "react-router-dom";
+import { NavLink, useHistory, useParams } from "react-router-dom";
 import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopper";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import {
@@ -65,20 +65,24 @@ export const ClassSessionView: FC<ManageClassSessionTutorInterface> = memo(
                 <TableCell width="auto">Status</TableCell>
                 <TableCell width="auto">Began At</TableCell>
                 <TableCell width="auto">Ended At</TableCell>
-                {user_type !== "admin" && (
-                  <TableCell align="center" width="5%">
-                    Actions
-                  </TableCell>
-                )}
               </TableRow>
             </TableHead>
             <TableBody>
               {class_sessions?.map((session, index) => (
                 <TableRow key={index}>
                   <TableCell>
-                    <span style={{ fontWeight: 500 }}>
-                      {parseDateAndDayOfWeekOrDefault(session.start_date, "")}
-                    </span>
+                    {user_type === "admin" ? (
+                      <span style={{ fontWeight: 500 }}>
+                        {parseDateAndDayOfWeekOrDefault(session.start_date, "")}
+                      </span>
+                    ) : (
+                      <NavLink
+                        to={`/${user_type}/class/${class_pk}/session/${session.session_pk}`}
+                        style={{ fontWeight: 500 }}
+                      >
+                        {parseDateAndDayOfWeekOrDefault(session.start_date, "")}
+                      </NavLink>
+                    )}
                   </TableCell>
 
                   <TableCell>
@@ -140,7 +144,7 @@ export const ClassSessionView: FC<ManageClassSessionTutorInterface> = memo(
                       />
                     )}
                   </TableCell>
-                  {user_type !== "admin" && (
+                  {/* {user_type !== "admin" && (
                     <TableCell align="center">
                       <IconButtonPopper
                         style={{ justifySelf: `end` }}
@@ -149,14 +153,14 @@ export const ClassSessionView: FC<ManageClassSessionTutorInterface> = memo(
                             text: "Enter into this session",
                             handleClick: () => {
                               history.push(
-                                `/${user_type}/class/${class_pk}/session/${session.session_pk}`
+                                
                               );
                             },
                           },
                         ]}
                       />
                     </TableCell>
-                  )}
+                  )} */}
                 </TableRow>
               ))}
             </TableBody>

@@ -106,119 +106,115 @@ export const SessionTabs: FC<ISessionTabs> = memo(() => {
   }, [message_table, active_tab]);
 
   return (
-    <Grid item xs={12} md={3}>
-      <div className="info-ctnr">
-        <div className="ctnr-title">Meeting Details</div>
-        <div className="tabs">
-          <div
-            className={`tab-item ${active_tab === "s" && "active"}`}
-            onClick={() => set_active_tab("s")}
-          >
-            Students
-          </div>
-          <div
-            className={`tab-item ${active_tab === "c" && "active"}`}
-            onClick={() => set_active_tab("c")}
-          >
-            Chat
-          </div>
+    <div className="info-ctnr">
+      <div className="ctnr-title">Meeting Details</div>
+      <div className="tabs">
+        <div
+          className={`tab-item ${active_tab === "s" && "active"}`}
+          onClick={() => set_active_tab("s")}
+        >
+          Students
         </div>
+        <div
+          className={`tab-item ${active_tab === "c" && "active"}`}
+          onClick={() => set_active_tab("c")}
+        >
+          Chat
+        </div>
+      </div>
 
-        {active_tab === "s" && (
-          <div className="student-tab">
-            {tbl_class_students?.map((student, i) => (
-              <div key={i} className="student-item">
-                {active_students.findIndex(
-                  (stud) => stud.user_pk === student.student_details.user_id
-                ) === -1 ? (
+      {active_tab === "s" && (
+        <div className="student-tab">
+          {tbl_class_students?.map((student, i) => (
+            <div key={i} className="student-item">
+              {active_students.findIndex(
+                (stud) => stud.user_pk === student.student_details.user_id
+              ) === -1 ? (
+                <CustomAvatar
+                  src={student.student_details.picture}
+                  errorMessage={student.student_details.lastname.charAt(0)}
+                />
+              ) : (
+                <StyledBadge
+                  overlap="circle"
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  variant="dot"
+                >
                   <CustomAvatar
                     src={student.student_details.picture}
                     errorMessage={student.student_details.lastname.charAt(0)}
                   />
-                ) : (
-                  <StyledBadge
-                    overlap="circle"
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "right",
-                    }}
-                    variant="dot"
-                  >
-                    <CustomAvatar
-                      src={student.student_details.picture}
-                      errorMessage={student.student_details.lastname.charAt(0)}
-                    />
-                  </StyledBadge>
-                )}
-                {student.student_details.lastname}
-                {", "} {student.student_details.firstname}{" "}
-                {student.student_details.middlename}
+                </StyledBadge>
+              )}
+              {student.student_details.lastname}
+              {", "} {student.student_details.firstname}{" "}
+              {student.student_details.middlename}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {active_tab === "c" && (
+        <div className="chat-tab">
+          <div className="sent-msg-ctnr">
+            {message_table.map((msg, i) => (
+              <div key={i} ref={messagesEndRef} className="sent-msg-item">
+                <CustomAvatar
+                  className="img"
+                  src={msg.picture}
+                  errorMessage={msg.fullname?.charAt(0)}
+                />
+                <div className="name">{msg.fullname}</div>
+                <div className="time">
+                  {parseDateTimeOrDefault(msg.sent_at, "-")}
+                </div>
+                <div className="message">{msg.msg_body}</div>
               </div>
             ))}
           </div>
-        )}
-
-        {active_tab === "c" && (
-          <div className="chat-tab">
-            <div className="sent-msg-ctnr">
-              {message_table.map((msg, i) => (
-                <div key={i} ref={messagesEndRef} className="sent-msg-item">
-                  <CustomAvatar
-                    className="img"
-                    src={msg.picture}
-                    errorMessage={msg.fullname?.charAt(0)}
-                  />
-                  <div className="name">{msg.fullname}</div>
-                  <div className="time">
-                    {parseDateTimeOrDefault(msg.sent_at, "-")}
-                  </div>
-                  <div className="message">{msg.msg_body}</div>
-                </div>
-              ))}
-            </div>
-            <form
-              id="hook-form"
-              ref={ref}
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmitMessage();
-              }}
-              className="write-msg-ctnr"
-            >
-              <TextField
-                value={message_body}
-                onChange={handleSetMessageBody}
-                fullWidth
-                variant="outlined"
-                placeholder="Write your message here..."
-                multiline
-                rowsMax={2}
-                rows={2}
-                className="write-btn"
-                onKeyDown={(
-                  event: React.KeyboardEvent<HTMLDivElement>
-                ): void => {
-                  if (event.key === "Enter" && !event.shiftKey) {
-                    if (ref.current) {
-                      handleSubmitMessage();
-                    }
+          <form
+            id="hook-form"
+            ref={ref}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmitMessage();
+            }}
+            className="write-msg-ctnr"
+          >
+            <TextField
+              value={message_body}
+              onChange={handleSetMessageBody}
+              fullWidth
+              variant="outlined"
+              placeholder="Write your message here..."
+              multiline
+              rowsMax={2}
+              rows={2}
+              className="write-btn"
+              onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>): void => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  if (ref.current) {
+                    handleSubmitMessage();
                   }
-                }}
-                InputProps={{
-                  style: {
-                    backgroundColor: `#f1f3f8`,
-                  },
-                }}
-                // rowsMax={1}
-              />
-              <IconButton form="hook-form" type="submit" color="primary">
-                <SendRoundedIcon />
-              </IconButton>
-            </form>
-          </div>
-        )}
-      </div>
-    </Grid>
+                }
+              }}
+              InputProps={{
+                style: {
+                  backgroundColor: `#f1f3f8`,
+                },
+              }}
+              // rowsMax={1}
+            />
+            <IconButton form="hook-form" type="submit" color="primary">
+              <SendRoundedIcon />
+            </IconButton>
+          </form>
+        </div>
+      )}
+    </div>
   );
 });
 

@@ -174,28 +174,6 @@ export const AddAdminTutorView: FC<IAddAdminTutorView> = memo(() => {
                     spacing={2}
                     style={{ padding: "1em", marginTop: "1em" }}
                   >
-                    <Grid xs={12} sm={3} item>
-                      <FormikInputField
-                        label="Prefix"
-                        placeholder="Enter prefix"
-                        name="prefix"
-                        variant="outlined"
-                        InputLabelProps={{ shrink: true }}
-                        fullWidth
-                      />
-                    </Grid>
-
-                    <Grid xs={12} sm={3} item>
-                      <FormikInputField
-                        label="Suffix"
-                        placeholder="Enter suffix"
-                        name="suffix"
-                        variant="outlined"
-                        InputLabelProps={{ shrink: true }}
-                        fullWidth
-                      />
-                    </Grid>
-
                     <Grid xs={12} sm={6} item>
                       <FormikInputField
                         label="First Name"
@@ -228,6 +206,17 @@ export const AddAdminTutorView: FC<IAddAdminTutorView> = memo(() => {
                         InputLabelProps={{ shrink: true }}
                         fullWidth
                         required
+                      />
+                    </Grid>
+
+                    <Grid xs={12} sm={3} item>
+                      <FormikInputField
+                        label="Suffix"
+                        placeholder="Enter suffix"
+                        name="suffix"
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
                       />
                     </Grid>
 

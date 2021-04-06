@@ -25,6 +25,7 @@ interface IFormDialog {
   fullScreen?: boolean;
   scroll?: "body" | "paper";
   maxWidth?: false | "xs" | "sm" | "md" | "lg" | "xl";
+  hideCloseButton?: boolean;
 }
 
 export const FormDialog: React.FC<IFormDialog> = memo(
@@ -39,6 +40,7 @@ export const FormDialog: React.FC<IFormDialog> = memo(
     fullScreen,
     scroll,
     maxWidth,
+    hideCloseButton,
   }) => {
     const theme = useTheme();
     const descriptionElementRef = useRef<any>(null);
@@ -101,9 +103,11 @@ export const FormDialog: React.FC<IFormDialog> = memo(
         <DialogActionsStyle className="form-footer">
           {actions}
 
-          <Button color="secondary" variant="contained" onClick={handleClose}>
-            Close
-          </Button>
+          {!hideCloseButton && (
+            <Button color="secondary" variant="contained" onClick={handleClose}>
+              Close
+            </Button>
+          )}
         </DialogActionsStyle>
       </Dialog>
     );

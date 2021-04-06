@@ -47,43 +47,6 @@ const addRoom = (payload, user_id) => __awaiter(void 0, void 0, void 0, function
         };
     }
 });
-const updateRoom = (payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
-    try {
-        yield con.BeginTransaction();
-        payload.encoder_pk = parseInt(user_id);
-        const sql_update_room = yield con.Modify(`
-      UPDATE rooms SET
-      description=@description,
-      notes=@notes,
-      encoder_pk=@encoder_pk
-      WHERE 
-      room_pk=@room_pk;
-          `, payload);
-        if (sql_update_room > 0) {
-            con.Commit();
-            return {
-                success: true,
-                message: "The item has been updated successfully",
-            };
-        }
-        else {
-            con.Rollback();
-            return {
-                success: false,
-                message: "There were no rows affected while updating the new record.",
-            };
-        }
-    }
-    catch (error) {
-        yield con.Rollback();
-        console.error(`error`, error);
-        return {
-            success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
-        };
-    }
-});
 const getRoomDataTable = (pagination_payload) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
@@ -166,11 +129,134 @@ const searchRoom = (search) => __awaiter(void 0, void 0, void 0, function* () {
         };
     }
 });
+const getTotalRoom = () => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const res_sql_count = yield con.QuerySingle(`select count(*) as total from rooms WHERE is_active=1;`, {});
+        con.Commit();
+        return {
+            success: true,
+            data: res_sql_count.total,
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
+const toggleRoomStatus = (room_pk, user_pk) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const current_course_status = yield con.QuerySingle(`
+      select is_active from rooms where room_pk=@room_pk;
+    `, {
+            room_pk,
+        });
+        const payload = {
+            room_pk: room_pk,
+            is_active: current_course_status.is_active === 1 ? 0 : 1,
+        };
+        const res_course_status = yield con.Modify(`update rooms set is_active =@is_active where room_pk = @room_pk`, payload);
+        if (res_course_status > 0) {
+            const audit_log = yield con.Insert(`insert into audit_log set 
+        user_pk=@user_pk,
+        activity=@activity;
+        `, {
+                user_pk: user_pk,
+                activity: `change room status to ${current_course_status.is_active === "y" ? "inactive" : "active"}`,
+            });
+            if (audit_log.insertedId <= 0) {
+                con.Rollback();
+                return {
+                    success: false,
+                    message: "The activity was not logged!",
+                };
+            }
+            con.Commit();
+            return {
+                success: true,
+                message: "The process has been executed successfully!",
+            };
+        }
+        else {
+            yield con.Rollback();
+            return {
+                success: false,
+                message: `No rows are affected when trying to update the status`,
+            };
+        }
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
+const updateRoom = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const sql_update_room = yield con.Modify(`
+      UPDATE rooms SET
+      room_desc=@room_desc,
+      notes=@notes
+      WHERE 
+      room_pk=@room_pk;
+          `, payload);
+        if (sql_update_room > 0) {
+            const audit_log = yield con.Insert(`insert into audit_log set 
+        user_pk=@user_pk,
+        activity=@activity;
+        `, {
+                user_pk: payload.encoder_pk,
+                activity: `updated room the ${payload.room_desc} information`,
+            });
+            if (audit_log.insertedId <= 0) {
+                con.Rollback();
+                return {
+                    success: false,
+                    message: "The activity was not logged!",
+                };
+            }
+            con.Commit();
+            return {
+                success: true,
+                message: "The item has been updated successfully",
+            };
+        }
+        else {
+            con.Rollback();
+            return {
+                success: false,
+                message: "There were no rows affected while updating the new record.",
+            };
+        }
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
 exports.default = {
     addRoom,
     updateRoom,
     getRoomDataTable,
     getSingleRoom,
     searchRoom,
+    getTotalRoom,
+    toggleRoomStatus,
 };
 //# sourceMappingURL=RoomRepository.js.map

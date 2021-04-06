@@ -21,7 +21,7 @@ const CustomAvatar: React.FC<ICustomAvatar> = memo(
     style,
   }) => {
     const theme = useTheme();
-    return src === "" || src === "null" || src === null ? (
+    return src === "" || src === "null" || src === null || !src ? (
       <Avatar
         className={className}
         style={{

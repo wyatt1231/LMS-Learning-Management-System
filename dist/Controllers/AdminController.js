@@ -33,6 +33,22 @@ const AdminController = (app) => __awaiter(void 0, void 0, void 0, function* () 
         const admin_pk = req.body.admin_pk;
         res.json(yield AdminRepository_1.default.getSingleAdmin(admin_pk));
     }));
+    router.post("/getLoggedAdmin", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield AdminRepository_1.default.getLoggedAdmin(req.user_id));
+    }));
+    router.post("/updateAdminInfo", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.user_id = parseInt(req.user_id);
+        res.json(yield AdminRepository_1.default.updateAdminInfo(payload));
+    }));
+    router.post("/updateAdminImage", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.user_id = req.user_id;
+        res.json(yield AdminRepository_1.default.updateAdminImage(payload));
+    }));
+    router.post("/getTotalAdmin", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield AdminRepository_1.default.getTotalAdmin());
+    }));
     app.use("/api/admin/", router);
 });
 exports.default = AdminController;

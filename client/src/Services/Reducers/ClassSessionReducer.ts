@@ -68,6 +68,61 @@ const ClassSessionReducer = (
       };
     }
 
+    case "tutor_session_cal": {
+      return {
+        ...state,
+        tutor_session_cal: action.tutor_session_cal,
+      };
+    }
+    case "fetch_tutor_session_cal": {
+      return {
+        ...state,
+        fetch_tutor_session_cal: action.fetch_tutor_session_cal,
+      };
+    }
+
+    //
+    case "student_session_cal": {
+      return {
+        ...state,
+        student_session_cal: action.student_session_cal,
+      };
+    }
+    case "fetch_student_session_cal": {
+      return {
+        ...state,
+        fetch_student_session_cal: action.fetch_student_session_cal,
+      };
+    }
+    //
+    //
+    case "logged_in_tutor_session_cal": {
+      return {
+        ...state,
+        logged_in_tutor_session_cal: action.logged_in_tutor_session_cal,
+      };
+    }
+    case "fetch_logged_in_tutor_session_cal": {
+      return {
+        ...state,
+        fetch_logged_in_tutor_session_cal:
+          action.fetch_logged_in_tutor_session_cal,
+      };
+    }
+    //
+    case "logged_student_calendar": {
+      return {
+        ...state,
+        logged_student_calendar: action.logged_student_calendar,
+      };
+    }
+    case "fetch_logged_student_calendar": {
+      return {
+        ...state,
+        fetch_logged_student_calendar: action.fetch_logged_student_calendar,
+      };
+    }
+
     default:
       return state;
   }

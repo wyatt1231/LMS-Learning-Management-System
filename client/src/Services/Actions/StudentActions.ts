@@ -62,6 +62,31 @@ export const setSelectedStudentAction = (student_pk: string) => async (
   }
 };
 
+const getLoggedStudentInfo = () => async (
+  dispatch: Dispatch<StudentReducerTypes>
+) => {
+  try {
+    dispatch({
+      type: "fetch_logged_student_info",
+      fetch_logged_student_info: true,
+    });
+    const response: IServerResponse = await StudentApi.getLoggedStudentInfo();
+
+    if (response.success) {
+      dispatch({
+        type: "logged_student_info",
+        logged_student_info: response.data,
+      });
+    }
+    dispatch({
+      type: "fetch_logged_student_info",
+      fetch_logged_student_info: false,
+    });
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
 export const addStudentAction = (
   payload: StudentModel,
   onSuccess: (msg: string) => any
@@ -91,4 +116,180 @@ export const addStudentAction = (
   } catch (error) {
     console.error(`action error`, error);
   }
+};
+
+const approveStudent = (
+  student_pk: number,
+  onSuccess: (msg: string) => any
+) => async (dispatch: Dispatch<PageReducerTypes>) => {
+  try {
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        loading_message: "Loading, thank you for your patience!",
+        show: true,
+      },
+    });
+    const response: IServerResponse = await StudentApi.approveStudent(
+      student_pk
+    );
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+      },
+    });
+    if (response.success) {
+      if (typeof onSuccess === "function") {
+        onSuccess(response.message.toString());
+      }
+
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
+    } else {
+      helperErrorMessage(dispatch, response);
+    }
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+const updateStudent = (
+  payload: StudentModel,
+  onSuccess: (msg: string) => any
+) => async (dispatch: Dispatch<PageReducerTypes>) => {
+  try {
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        loading_message: "Loading, thank you for your patience!",
+        show: true,
+      },
+    });
+    const response: IServerResponse = await StudentApi.updateStudent(payload);
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+      },
+    });
+    if (response.success) {
+      if (typeof onSuccess === "function") {
+        onSuccess(response.message.toString());
+      }
+
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
+    } else {
+      helperErrorMessage(dispatch, response);
+    }
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+const updateStudentImage = (
+  payload: StudentModel,
+  onSuccess: (msg: string) => any
+) => async (dispatch: Dispatch<PageReducerTypes>) => {
+  try {
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        loading_message: "Loading, thank you for your patience!",
+        show: true,
+      },
+    });
+    const response: IServerResponse = await StudentApi.updateStudentImage(
+      payload
+    );
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+      },
+    });
+    if (response.success) {
+      if (typeof onSuccess === "function") {
+        onSuccess(response.message.toString());
+      }
+
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
+    } else {
+      helperErrorMessage(dispatch, response);
+    }
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+const blockStudent = (
+  student_pk: number,
+  onSuccess: (msg: string) => any
+) => async (dispatch: Dispatch<PageReducerTypes>) => {
+  try {
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        loading_message: "Loading, thank you for your patience!",
+        show: true,
+      },
+    });
+    const response: IServerResponse = await StudentApi.blockStudent(student_pk);
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+      },
+    });
+    if (response.success) {
+      if (typeof onSuccess === "function") {
+        onSuccess(response.message.toString());
+      }
+
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
+    } else {
+      helperErrorMessage(dispatch, response);
+    }
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+export default {
+  approveStudent,
+  blockStudent,
+  getLoggedStudentInfo,
+  updateStudent,
+  updateStudentImage,
 };

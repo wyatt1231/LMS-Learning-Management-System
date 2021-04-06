@@ -19,4 +19,8 @@ export interface TutorModel {
   complete_address?: string;
   is_active?: "y" | "n";
   encoder_pk?: number | string;
+  favorited?: "y" | "n";
+  rating?: number;
+  average_rating?: number;
+  fav_count?: number;
 }

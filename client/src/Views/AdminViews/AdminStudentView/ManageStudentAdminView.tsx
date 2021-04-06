@@ -15,8 +15,14 @@ import {
 } from "../../../Hooks/UseDateParser";
 import { StringEmptyToDefault } from "../../../Hooks/UseStringFormatter";
 import { setSelectedClassAction } from "../../../Services/Actions/ClassActions";
-import { setPageLinks } from "../../../Services/Actions/PageActions";
-import { setSelectedStudentAction } from "../../../Services/Actions/StudentActions";
+import {
+  setGeneralPrompt,
+  setPageLinks,
+} from "../../../Services/Actions/PageActions";
+import StudentActions, {
+  setSelectedStudentAction,
+} from "../../../Services/Actions/StudentActions";
+import { setSingleTutor } from "../../../Services/Actions/TutorActions";
 import { RootStore } from "../../../Services/Store";
 import ClassSessionView from "../../SharedViews/Class/ClassSessionView";
 import RatedTutorClassView from "./RatedTutorClassView";
@@ -41,15 +47,51 @@ export const ManageStudentAdminView: FC<ManageStudentAdminProps> = memo(() => {
     (store: RootStore) => store.ClassReducer.fetching_selected_class
   );
 
-  const [open_edit_class, set_open_edit_class] = useState(false);
+  const handleApproveStudent = useCallback(() => {
+    if (selected_student?.student_pk) {
+      dispatch(
+        setGeneralPrompt({
+          open: true,
+          continue_callback: () =>
+            dispatch(
+              StudentActions.approveStudent(
+                selected_student.student_pk,
+                (msg: string) => {
+                  dispatch(
+                    setSelectedStudentAction(
+                      selected_student.student_pk.toString()
+                    )
+                  );
+                }
+              )
+            ),
+        })
+      );
+    }
+  }, [dispatch, selected_student]);
 
-  const handleOpenEditClass = useCallback(() => {
-    set_open_edit_class(true);
-  }, []);
-
-  const handleCloseEditClass = useCallback(() => {
-    set_open_edit_class(false);
-  }, []);
+  const handleBlockStudent = useCallback(() => {
+    if (selected_student?.student_pk) {
+      dispatch(
+        setGeneralPrompt({
+          open: true,
+          continue_callback: () =>
+            dispatch(
+              StudentActions.blockStudent(
+                selected_student.student_pk,
+                (msg: string) => {
+                  dispatch(
+                    setSelectedStudentAction(
+                      selected_student.student_pk.toString()
+                    )
+                  );
+                }
+              )
+            ),
+        })
+      );
+    }
+  }, [dispatch, selected_student]);
 
   useEffect(() => {
     if (params.student_pk) {
@@ -79,11 +121,18 @@ export const ManageStudentAdminView: FC<ManageStudentAdminProps> = memo(() => {
       {
         text: "Approve",
         color: "primary",
+        disabled: selected_student?.sts_pk === "a",
+        handleClick: () => {
+          handleApproveStudent();
+        },
       },
       {
         text: "Block",
         color: "primary",
-        disabled: selected_student?.sts_pk !== "fa",
+        handleClick: () => {
+          handleBlockStudent();
+        },
+        disabled: selected_student?.sts_pk === "x",
       },
     ];
   }

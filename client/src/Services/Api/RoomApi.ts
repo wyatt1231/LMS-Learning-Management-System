@@ -20,11 +20,6 @@ const addRoomApi = async (payload: RoomModel): Promise<IServerResponse> => {
   return response;
 };
 
-const updateRoomApi = async (payload: RoomModel): Promise<IServerResponse> => {
-  const response = await PostFetch(API_DEFAULT_ROUTE + "updateRoom", payload);
-  return response;
-};
-
 const getSingleRoomApi = async (room_pk: string): Promise<IServerResponse> => {
   const response = await PostFetch(API_DEFAULT_ROUTE + "getSingleRoom", {
     course_pk: room_pk,
@@ -39,10 +34,29 @@ const searchRoomApi = async (search: string): Promise<IServerResponse> => {
   return response;
 };
 
+const updateRoom = async (payload: RoomModel): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "updateRoom", payload);
+  return response;
+};
+
+const toggleRoomStatus = async (room_pk: number): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "toggleRoomStatus", {
+    room_pk,
+  });
+  return response;
+};
+
+const getTotalRoom = async (): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "getTotalRoom", {});
+  return response;
+};
+
 export default {
   getRoomDataTableApi,
   addRoomApi,
-  updateRoomApi,
   getSingleRoomApi,
   searchRoomApi,
+  updateRoom,
+  toggleRoomStatus,
+  getTotalRoom,
 };

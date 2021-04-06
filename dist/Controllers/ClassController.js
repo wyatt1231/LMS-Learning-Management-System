@@ -25,9 +25,17 @@ const ClassController = (app) => __awaiter(void 0, void 0, void 0, function* () 
         const payload = req.body;
         res.json(yield ClassRepository_1.default.getTutorClassTable(payload, req.user_id));
     }));
-    router.post("/getStudentUnenrolledClassTable", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getStudentAvailableClassTable", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
-        res.json(yield ClassRepository_1.default.getStudentUnenrolledClassTable(payload, req.user_id));
+        res.json(yield ClassRepository_1.default.getStudentAvailableClassTable(payload, req.user_id));
+    }));
+    router.post("/getStudentOngoingClassTable", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        res.json(yield ClassRepository_1.default.getStudentOngoingClassTable(payload, req.user_id));
+    }));
+    router.post("/getStudentEndedClassTable", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        res.json(yield ClassRepository_1.default.getStudentEndedClassTable(payload, req.user_id));
     }));
     router.post("/getStudentEnrolledClasses", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield ClassRepository_1.default.getStudentEnrolledClasses(parseInt(req.user_id)));
@@ -41,12 +49,61 @@ const ClassController = (app) => __awaiter(void 0, void 0, void 0, function* () 
         res.json(yield ClassRepository_1.default.updateClass(payload, req.user_id));
     }));
     router.post("/approveClass", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const class_pk = req.body.class_pk;
-        res.json(yield ClassRepository_1.default.approveClass(class_pk, req.user_id));
+        const payload = req.body;
+        payload.encoder_pk = req.user_id;
+        res.json(yield ClassRepository_1.default.approveClass(payload));
+    }));
+    router.post("/endClass", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.encoder_pk = req.user_id;
+        res.json(yield ClassRepository_1.default.endClass(payload));
+    }));
+    router.post("/rateClass", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.encoded_by = parseInt(req.user_id);
+        res.json(yield ClassRepository_1.default.rateClass(payload));
+    }));
+    router.post("/declineClass", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.encoder_pk = req.user_id;
+        res.json(yield ClassRepository_1.default.declineClass(payload));
     }));
     router.post("/getSingleClass", Authorize_1.default("admin,tutor,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const class_pk = req.body.class_pk;
-        res.json(yield ClassRepository_1.default.getSingleClass(class_pk));
+        res.json(yield ClassRepository_1.default.getSingleClass(class_pk, parseInt(req.user_id), req.user_type));
+    }));
+    router.post("/getAllTutorClasses", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const tutor_pk = req.body.tutor_pk;
+        res.json(yield ClassRepository_1.default.getAllTutorClasses(tutor_pk));
+    }));
+    //new
+    router.post("/getStudentClassByStudentPk", Authorize_1.default("admin,tutor,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const student_pk = req.body.student_pk;
+        res.json(yield ClassRepository_1.default.getStudentClassByStudentPk(student_pk));
+    }));
+    router.post("/getTotalClasses", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield ClassRepository_1.default.getTotalClasses());
+    }));
+    router.post("/getClassSummaryStats", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield ClassRepository_1.default.getClassSummaryStats());
+    }));
+    router.post("/getOpenClassProgressStats", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield ClassRepository_1.default.getOpenClassProgressStats());
+    }));
+    //new
+    router.post("/getTotalTutorClassStats", Authorize_1.default("tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield ClassRepository_1.default.getTotalTutorClassStats(parseInt(req.user_id)));
+    }));
+    //new
+    router.post("/getTotalStudentClassStats", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield ClassRepository_1.default.getTotalStudentClassStats(parseInt(req.user_id)));
+    }));
+    router.post("/getEndedClassRatingStats", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield ClassRepository_1.default.getEndedClassRatingStats());
+    }));
+    router.post("/getClassRatings", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const class_pk = req.body.class_pk;
+        res.json(yield ClassRepository_1.default.getClassRatings(class_pk));
     }));
     app.use("/api/class/", router);
 });

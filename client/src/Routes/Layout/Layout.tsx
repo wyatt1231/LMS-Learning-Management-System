@@ -70,8 +70,8 @@ const generateNavLinks = (user: any): Array<IPageNavLinks> => {
   } else if (user?.user_type === "tutor") {
     PageNavLinks = [
       {
-        to: "/tutor/home",
-        text: "Home",
+        to: "/tutor/dashboard",
+        text: "Dashboard",
         hasSubLinks: false,
       },
       {
@@ -83,13 +83,13 @@ const generateNavLinks = (user: any): Array<IPageNavLinks> => {
   } else if (user?.user_type === "student") {
     PageNavLinks = [
       {
-        to: "/student/home",
-        text: "Home",
+        to: "/student/dashboard",
+        text: "Dashboard",
         hasSubLinks: false,
       },
       {
-        to: "/student/class",
-        text: "Classes",
+        to: "/student/class/records/ongoing-class",
+        text: "Class Records",
         hasSubLinks: false,
       },
     ];

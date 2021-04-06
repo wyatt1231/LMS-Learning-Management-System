@@ -33,7 +33,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const Authorize_1 = __importDefault(require("../Middlewares/Authorize"));
-const user_repo = __importStar(require("../Repositories/UserRepository"));
+const UserRepository_1 = __importStar(require("../Repositories/UserRepository")), user_repo = UserRepository_1;
 const UserController = (app) => __awaiter(void 0, void 0, void 0, function* () {
     const router = express_1.Router();
     router.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -44,6 +44,17 @@ const UserController = (app) => __awaiter(void 0, void 0, void 0, function* () {
     }));
     router.post("/currentUser", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield user_repo.currentUser(req.user_id));
+    }));
+    router.post("/changeAdminPassword", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.user_id = req.user_id;
+        res.json(yield UserRepository_1.default.changeAdminPassword(payload));
+    }));
+    router.post("/getUserLogs", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield UserRepository_1.default.getUserLogs(parseInt(req.user_id)));
+    }));
+    router.post("/getAllLogs", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield UserRepository_1.default.getAllLogs());
     }));
     app.use("/api/users/", router);
 });

@@ -1,5 +1,5 @@
-import { Chip, Container, Grid, useTheme } from "@material-ui/core";
-import { Skeleton } from "@material-ui/lab";
+import { Chip, Container, Grid, Tooltip, useTheme } from "@material-ui/core";
+import { Rating, Skeleton } from "@material-ui/lab";
 import React, { FC, memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Switch, useParams } from "react-router";
@@ -10,15 +10,17 @@ import {
   InvalidDateTimeToDefault,
   InvalidDateToDefault,
 } from "../../../Hooks/UseDateParser";
+import { StringEmptyToDefault } from "../../../Hooks/UseStringFormatter";
 import {
-  nullToEmptyString,
-  StringEmptyToDefault,
-} from "../../../Hooks/UseStringFormatter";
-import { setSelectedAdminAction } from "../../../Services/Actions/AdminActions";
-import { setPageLinks } from "../../../Services/Actions/PageActions";
-import { setSingleTutor } from "../../../Services/Actions/TutorActions";
+  setGeneralPrompt,
+  setPageLinks,
+} from "../../../Services/Actions/PageActions";
+import TutorActions, {
+  setSingleTutor,
+} from "../../../Services/Actions/TutorActions";
 import { RootStore } from "../../../Services/Store";
 import EditTutorDialog from "./EditTutorDialog";
+import EditTutorImageDialog from "./EditTutorImageDialog";
 import TutorAssignedClassView from "./TutorAssignedClassView";
 import TutorCalendarView from "./TutorCalendarView";
 import TutorRatingView from "./TutorRatingView";
@@ -43,18 +45,39 @@ export const ManageAdminAdminView: FC<ManageAdminAdminProps> = memo(() => {
   );
 
   const [open_edit_tutor, set_open_edit_tutor] = useState(false);
-
   const handleOpenEditTutor = useCallback(() => {
     set_open_edit_tutor(true);
   }, []);
-
   const handleCloseEditTutor = useCallback(() => {
     set_open_edit_tutor(false);
   }, []);
 
-  const handleToggleActive = useCallback(() => {
-    console.log(`handlActive`);
+  const [open_change_image, set_open_change_image] = useState(false);
+  const handleOpenChangeImage = useCallback(() => {
+    set_open_change_image(true);
   }, []);
+  const handleCloseChangeImage = useCallback(() => {
+    set_open_change_image(false);
+  }, []);
+
+  const handleToggleActive = useCallback(() => {
+    if (selected_tutor?.tutor_pk) {
+      dispatch(
+        setGeneralPrompt({
+          open: true,
+          continue_callback: () =>
+            dispatch(
+              TutorActions.toggleActiveStatus(
+                parseInt(selected_tutor.tutor_pk),
+                (msg: string) => {
+                  dispatch(setSingleTutor(selected_tutor.tutor_pk));
+                }
+              )
+            ),
+        })
+      );
+    }
+  }, [dispatch, selected_tutor]);
 
   useEffect(() => {
     if (params.tutor_pk) {
@@ -86,6 +109,13 @@ export const ManageAdminAdminView: FC<ManageAdminAdminProps> = memo(() => {
         color: "primary",
         handleClick: () => {
           handleOpenEditTutor();
+        },
+      },
+      {
+        text: "Change Image",
+        color: "primary",
+        handleClick: () => {
+          handleOpenChangeImage();
         },
       },
       {
@@ -169,6 +199,20 @@ export const ManageAdminAdminView: FC<ManageAdminAdminProps> = memo(() => {
 
                     <Grid item xs={12}>
                       <div className="info-container">
+                        <div className="form-group">
+                          <div className="label">Average Rating</div>
+                          <div className="value">
+                            <Tooltip
+                              title={selected_tutor?.average_rating + " stars"}
+                            >
+                              <Rating
+                                readOnly
+                                name="rating"
+                                value={selected_tutor?.average_rating}
+                              />
+                            </Tooltip>
+                          </div>
+                        </div>
                         <div className="form-group">
                           <div className="label">Active</div>
                           <div className="value">
@@ -255,10 +299,10 @@ export const ManageAdminAdminView: FC<ManageAdminAdminProps> = memo(() => {
                     label: "Assigned Classes",
                     link: `/${user_type}/tutor/${params.tutor_pk}/assigned-classes`,
                   },
-                  {
-                    label: "Ratings",
-                    link: `/${user_type}/tutor/${params.tutor_pk}/ratings`,
-                  },
+                  // {
+                  //   label: "Ratings",
+                  //   link: `/${user_type}/tutor/${params.tutor_pk}/ratings`,
+                  // },
                 ]}
                 RenderSwitchComponent={
                   <Switch>
@@ -288,11 +332,18 @@ export const ManageAdminAdminView: FC<ManageAdminAdminProps> = memo(() => {
         </Grid>
 
         {selected_tutor && (
-          <EditTutorDialog
-            initial_form_values={selected_tutor}
-            open={open_edit_tutor}
-            handleClose={handleCloseEditTutor}
-          />
+          <>
+            <EditTutorDialog
+              initial_form_values={selected_tutor}
+              open={open_edit_tutor}
+              handleClose={handleCloseEditTutor}
+            />
+            <EditTutorImageDialog
+              initial_form_values={selected_tutor}
+              open={open_change_image}
+              handleClose={handleCloseChangeImage}
+            />
+          </>
         )}
       </Container>
     </>

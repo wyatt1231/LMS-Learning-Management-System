@@ -4,10 +4,11 @@ import { Route, Switch } from "react-router-dom";
 import AdminActivityView from "../Views/AdminViews/AdminActivityView";
 import AddClassAdminView from "../Views/AdminViews/AdminClassView/AddClassAdminView";
 import { DataTableClassAdminView } from "../Views/AdminViews/AdminClassView/DataTableClassAdminView";
-import ManageClassAdminView from "../Views/AdminViews/AdminClassView/ManageClassAdminView";
+import ManageClassAdminView from "../Views/SharedViews/Class/ManageClassView";
 import AddCourseAdminView from "../Views/AdminViews/AdminCourseView/AddCourseAdminView";
 import { DataTableCourseAdminView } from "../Views/AdminViews/AdminCourseView/DataTableCourseAdminView";
 import DashboardAdminView from "../Views/AdminViews/AdminDashboardView/DashboardAdminView";
+import AdminProfileView from "../Views/AdminViews/AdminProfileView";
 import DataTableStudentAdminView from "../Views/AdminViews/AdminStudentView/DatatableStudentAdminView";
 import ManageStudentAdminView from "../Views/AdminViews/AdminStudentView/ManageStudentAdminView";
 import AddAdminTutorView from "../Views/AdminViews/AdminTutorView/AddAdminTutorView";
@@ -74,6 +75,9 @@ const SysAdminRoutes = () => {
         </Route>
         <Route path="/admin/co-administrator/add" exact>
           <AddCoAdminView />
+        </Route>
+        <Route path="/admin/profile" exact>
+          <AdminProfileView />
         </Route>
       </Switch>
     </>

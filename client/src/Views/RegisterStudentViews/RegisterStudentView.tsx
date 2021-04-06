@@ -62,8 +62,10 @@ const formSchema = yup.object({
   mob_no: yup
     .string()
     .required()
-    .label("Mobile Number")
-    .matches(validateMobile, "Mobile number has invalid format"),
+    .matches(
+      /^(09|\+639)\d{9}$/,
+      "Mobile number must be a valid philippine mobile number."
+    ),
   gender: yup.string().nullable().required().max(1).label("Gender"),
   complete_address: yup.string().required().max(255).label("Complete Address"),
   user: yup.object({

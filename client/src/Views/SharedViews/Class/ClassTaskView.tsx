@@ -21,6 +21,10 @@ interface ClassTaskProps {
 export const ClassTaskView: FC<ClassTaskProps> = memo(({ class_pk }) => {
   const dispatch = useDispatch();
 
+  const user_type = useSelector(
+    (store: RootStore) => store.UserReducer.user.user_type
+  );
+
   const all_class_task = useSelector(
     (store: RootStore) => store.ClassSessionTaskReducer.all_class_task
   );
@@ -29,16 +33,7 @@ export const ClassTaskView: FC<ClassTaskProps> = memo(({ class_pk }) => {
   );
 
   useEffect(() => {
-    let mounted = true;
-
-    const fetchAllTasks = () => {
-      dispatch(ClassSessionTaskActions.setAllClassTask(class_pk));
-    };
-    mounted && fetchAllTasks();
-
-    return () => {
-      mounted = false;
-    };
+    dispatch(ClassSessionTaskActions.setAllClassTask(class_pk));
   }, [dispatch, class_pk]);
 
   return (
@@ -52,17 +47,18 @@ export const ClassTaskView: FC<ClassTaskProps> = memo(({ class_pk }) => {
               <TableCell width="50%">Description/Instruction</TableCell>
               <TableCell width="10%">Status</TableCell>
               <TableCell width="15%">Due Date</TableCell>
-              <TableCell width="5%"></TableCell>
+              {user_type !== "admin" && <TableCell width="5%"></TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
-            {all_class_task?.length <= 0 && (
+            {all_class_task?.length < 1 && (
               <TableRow>
-                <TableCell colSpan={5} align="center" rowSpan={3}>
-                  No records are found!
+                <TableCell align="center" colSpan={5}>
+                  <span className="empty-rows">No records to show.</span>
                 </TableCell>
               </TableRow>
             )}
+
             {all_class_task?.map((t, i) => (
               <TableRow key={i}>
                 <TableCell>{t.task_title}</TableCell>
@@ -83,23 +79,25 @@ export const ClassTaskView: FC<ClassTaskProps> = memo(({ class_pk }) => {
                     {parseDateTimeOrDefault(t.due_date, "")}
                   </small>
                 </TableCell>
-                <TableCell align="center">
-                  <IconButtonPopper
-                    style={{ justifySelf: `end` }}
-                    buttons={[
-                      {
-                        text: "Go to Task",
-                        handleClick: () => {
-                          dispatch(
-                            ClassSessionTaskActions.setSingleClassTask(
-                              t.class_task_pk
-                            )
-                          );
+                {user_type !== "admin" && (
+                  <TableCell align="center">
+                    <IconButtonPopper
+                      style={{ justifySelf: `end` }}
+                      buttons={[
+                        {
+                          text: "Go to Task",
+                          handleClick: () => {
+                            dispatch(
+                              ClassSessionTaskActions.setSingleClassTask(
+                                t.class_task_pk
+                              )
+                            );
+                          },
                         },
-                      },
-                    ]}
-                  />
-                </TableCell>
+                      ]}
+                    />
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

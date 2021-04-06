@@ -231,10 +231,172 @@ const getSingleAdmin = (admin_pk) => __awaiter(void 0, void 0, void 0, function*
         };
     }
 });
+const getLoggedAdmin = (user_id) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const data = yield con.QuerySingle(`select * from administrators where user_id = @user_id`, {
+            user_id,
+        });
+        data.picture = yield useFileUploader_1.GetUploadedImage(data.picture);
+        con.Commit();
+        return {
+            success: true,
+            data: data,
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
+const updateAdminInfo = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        payload.birth_date = useDateParser_1.parseInvalidDateToDefault(payload.birth_date);
+        const admin_updated_rows = yield con.Modify(`UPDATE administrators SET
+        position=@position,
+        firstname=@firstname,
+        middlename=@middlename,
+        lastname=@lastname,
+        suffix=@suffix,
+        prefix=@prefix,
+        birth_date=@birth_date,
+        mob_no=@mob_no,
+        gender=@gender
+        WHERE admin_pk=@admin_pk;
+        ;`, payload);
+        if (admin_updated_rows > 0) {
+            const audit_log = yield con.Insert(`insert into audit_log set 
+        user_pk=@user_pk,
+        activity=@activity;
+        `, {
+                user_pk: payload.user_id,
+                activity: `updated profile information.`,
+            });
+            if (audit_log.insertedId <= 0) {
+                con.Rollback();
+                return {
+                    success: false,
+                    message: "The activity was not logged!",
+                };
+            }
+            con.Commit();
+            return {
+                success: true,
+                message: "The process has been executed succesfully!",
+            };
+        }
+        else {
+            con.Rollback();
+            return {
+                success: true,
+                message: "The were no affected rows during the process!",
+            };
+        }
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
+const updateAdminImage = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        if (useValidator_1.isValidPicture(payload.picture)) {
+            const upload_result = yield useFileUploader_1.UploadImage({
+                base_url: "./src/Storage/Files/Images/",
+                extension: "jpg",
+                file_name: payload.user_id,
+                file_to_upload: payload.picture,
+            });
+            if (upload_result.success) {
+                payload.picture = upload_result.data;
+                const sql_update_pic = yield con.Modify(`
+            UPDATE administrators set
+            picture=@picture
+            WHERE
+            admin_pk=@admin_pk;
+          `, payload);
+                if (sql_update_pic < 1) {
+                    con.Rollback();
+                    return {
+                        success: false,
+                        message: "There were no rows affected while updating the picture.",
+                    };
+                }
+            }
+            else {
+                return upload_result;
+            }
+        }
+        const audit_log = yield con.Insert(`insert into audit_log set 
+      user_pk=@user_pk,
+      activity=@activity;
+      `, {
+            user_pk: payload.user_id,
+            activity: `updated profile picture.`,
+        });
+        if (audit_log.insertedId <= 0) {
+            con.Rollback();
+            return {
+                success: false,
+                message: "The activity was not logged!",
+            };
+        }
+        con.Commit();
+        return {
+            success: true,
+            message: "The process has been executed succesfully!",
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
+const getTotalAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const res_sql_count = yield con.QuerySingle(`select count(*) as total from administrators WHERE is_active='y';`, {});
+        con.Commit();
+        return {
+            success: true,
+            data: res_sql_count.total,
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
 exports.default = {
     addAdmin,
     updateAdmin,
     getAdminDataTable,
     getSingleAdmin,
+    updateAdminInfo,
+    updateAdminImage,
+    getLoggedAdmin,
+    getTotalAdmin, //new
 };
 //# sourceMappingURL=AdminRepository.js.map

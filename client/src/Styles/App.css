@@ -212,7 +212,7 @@ table tbody td {
 
 .info-group .label {
   font-weight: 400;
-  font-size: 0.9em;
+  font-size: 0.8em;
 }
 
 .info-group .value {
@@ -241,7 +241,7 @@ table tr .table-profile {
 .table-cell-profile {
   display: grid;
   grid-template-areas: "img title" "img sub";
-  grid-gap: 0.2em;
+  grid-gap: 0.5em;
   align-items: center;
   align-content: center;
   justify-content: start;
@@ -264,6 +264,20 @@ table tr .table-profile {
   font-size: 0.87em;
   font-weight: 600;
   color: rgba(0, 0, 0, 0.55);
+}
+
+.table-cell-rating {
+  display: grid;
+  font-size: 0.87em;
+  font-weight: 500;
+}
+
+.table-cell-rating .value {
+  justify-self: end;
+}
+
+.table-cell-rating .star {
+  justify-self: start;
 }
 
 .autocomplete-picture {
@@ -352,13 +366,14 @@ table tr .table-profile {
 }
 
 .container-title {
-  font-weight: 900 !important;
-  opacity: 0.8 !important;
-  font-size: 0.8em !important;
+  font-weight: 600 !important;
+  opacity: 0.6 !important;
+  font-size: 0.9em !important;
   padding: 1em !important;
-  color: black !important;
-  letter-spacing: 0.3pt;
-  word-spacing: 0.3pt;
+  color: #333 !important;
+  letter-spacing: 0.3pt !important;
+  word-spacing: 0.3pt !important;
+  padding-top: 0.3em !important;
 }
 
 .container-title small {
@@ -450,3 +465,15 @@ span.MuiTab-wrapper {
   grid-gap: 0.5em;
   justify-content: start;
 }
+
+.MuiChip-root {
+  border-radius: 7px !important;
+  font-size: 0.82em !important;
+  letter-spacing: 0.3pt;
+  word-spacing: 0.3pt;
+  height: 24px !important;
+}
+
+/* .MuiChip-label {
+  padding: 0.3em !important;
+} */

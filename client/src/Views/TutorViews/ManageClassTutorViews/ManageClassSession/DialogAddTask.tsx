@@ -318,9 +318,6 @@ export const DialogAddTask: FC<IDialogAddTask> = memo(({ open, setOpen }) => {
           >
             Save Task
           </Button>
-          <Button variant="contained" color="secondary">
-            Cancel/Close
-          </Button>
         </>
       }
     />

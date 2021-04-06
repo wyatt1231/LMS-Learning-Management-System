@@ -76,6 +76,7 @@ export const TutorRatingStudentView: FC<TutorRatingStudentViewInterface> = memo(
         title="Please rate these tutors to let us find the best one for you."
         open={user?.rated_tutor === "n"}
         minWidth={400}
+        hideCloseButton={true}
         body={
           <>
             {rateTutors &&

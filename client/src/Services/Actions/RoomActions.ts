@@ -92,7 +92,7 @@ export const addRoomAction = (
   }
 };
 
-export const updateRoomAction = (
+const updateRoom = (
   payload: RoomModel,
   onSuccess: (msg: string) => any
 ) => async (dispatch: Dispatch<RoomReducerTypes | PageReducerTypes>) => {
@@ -104,7 +104,7 @@ export const updateRoomAction = (
         show: true,
       },
     });
-    const response: IServerResponse = await RoomApi.updateRoomApi(payload);
+    const response: IServerResponse = await RoomApi.updateRoom(payload);
     dispatch({
       type: "SET_PAGE_LOADING",
       page_loading: {
@@ -115,10 +115,64 @@ export const updateRoomAction = (
       if (typeof onSuccess === "function") {
         onSuccess(response.message.toString());
       }
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
     } else {
       helperErrorMessage(dispatch, response);
     }
   } catch (error) {
     console.error(`action error`, error);
   }
+};
+
+const toggleRoomStatus = (
+  room_pk: number,
+  onSuccess: (msg: string) => any
+) => async (dispatch: Dispatch<RoomReducerTypes | PageReducerTypes>) => {
+  try {
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        loading_message: "Loading, thank you for your patience!",
+        show: true,
+      },
+    });
+    const response: IServerResponse = await RoomApi.toggleRoomStatus(room_pk);
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+      },
+    });
+    if (response.success) {
+      if (typeof onSuccess === "function") {
+        onSuccess(response.message.toString());
+      }
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
+    } else {
+      helperErrorMessage(dispatch, response);
+    }
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+export default {
+  updateRoom,
+  toggleRoomStatus,
 };

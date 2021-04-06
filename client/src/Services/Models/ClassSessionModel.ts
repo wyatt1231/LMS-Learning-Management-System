@@ -1,3 +1,6 @@
+import { ClassModel } from "./ClassModel";
+import { StatusMasterModel } from "./StatusMasterModel";
+
 export interface ClassSessionModel {
   session_pk?: number;
   class_pk?: number;
@@ -18,6 +21,8 @@ export interface ClassSessionModel {
   began?: Date;
   ended?: Date;
   hash_pk?: string;
+  class_info?: ClassModel;
+  status_info?: StatusMasterModel;
 }
 
 export interface TutorFutureSessionModel {

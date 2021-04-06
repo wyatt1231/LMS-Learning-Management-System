@@ -38,11 +38,17 @@ const ClassSessionController = (app) => __awaiter(void 0, void 0, void 0, functi
     }));
     router.post("/startClassSession", Authorize_1.default("tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
+        payload.encoder_pk = req.user_id;
         res.json(yield ClassSessionRepository_1.default.startClassSession(payload));
     }));
     router.post("/endClassSession", Authorize_1.default("tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
+        payload.encoder_pk = req.user_id;
         res.json(yield ClassSessionRepository_1.default.endClassSession(payload));
+    }));
+    router.post("/unattendedClassSession", Authorize_1.default("tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        res.json(yield ClassSessionRepository_1.default.unattendedClassSession(payload));
     }));
     router.post("/getAllMessage", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body.session_pk;
@@ -57,6 +63,21 @@ const ClassSessionController = (app) => __awaiter(void 0, void 0, void 0, functi
         const payload = req.body;
         payload.user_pk = parseInt(req.user_id);
         res.json(yield ClassSessionRepository_1.default.hideMessage(payload));
+    }));
+    router.post("/getTutorSessionCal", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const tutor_pk = req.body.tutor_pk;
+        res.json(yield ClassSessionRepository_1.default.getTutorSessionCal(tutor_pk));
+    }));
+    router.post("/getStudentSessionCal", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const student_pk = req.body.student_pk;
+        res.json(yield ClassSessionRepository_1.default.getStudentSessionCal(student_pk));
+    }));
+    //new
+    router.post("/getLoggedInTutorSessionCalendar", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield ClassSessionRepository_1.default.getLoggedInTutorSessionCalendar(parseInt(req.user_id)));
+    }));
+    router.post("/getLoggedStudentCalendar", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield ClassSessionRepository_1.default.getLoggedStudentCalendar(parseInt(req.user_id)));
     }));
     app.use("/api/classsession/", router);
 });

@@ -2,8 +2,9 @@ import { DatabaseConnection } from "../Configurations/DatabaseConfig";
 import { ErrorMessage } from "../Hooks/useErrorMessage";
 import { GetUploadedImage } from "../Hooks/useFileUploader";
 import { CreateToken } from "../Hooks/useJwt";
+import { AuditLogModel } from "../Models/AuditLogModel";
 import { ResponseModel } from "../Models/ResponseModel";
-import { UserClaims, UserLogin } from "../Models/UserModel";
+import { UserClaims, UserLogin, UserModel } from "../Models/UserModel";
 
 export const loginUser = async (payload: UserLogin): Promise<ResponseModel> => {
   const con = await DatabaseConnection();
@@ -125,4 +126,168 @@ export const currentUser = async (user_id: string): Promise<ResponseModel> => {
       message: ErrorMessage(error),
     };
   }
+};
+
+const changeAdminPassword = async (
+  payload: UserModel
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const total_found_user: any = await con.QuerySingle(
+      `
+    SELECT COUNT(*) AS total FROM users WHERE password = AES_ENCRYPT(@old_password,username) AND user_id = @user_id LIMIT 1
+    `,
+      payload
+    );
+
+    console.log(`payload`, payload);
+    console.log(`total_found_user`, total_found_user);
+
+    if (total_found_user.total <= 0) {
+      con.Rollback();
+      return {
+        success: false,
+        message:
+          "You must have entered an incorrect old password. Please try again!",
+      };
+    }
+
+    const res_update_user = await con.Modify(
+      `UPDATE users SET
+       password = AES_ENCRYPT(@password,username)
+       WHERE user_id =@user_id;`,
+      payload
+    );
+
+    if (res_update_user > 0) {
+      const res_audit_log = await con.Insert(
+        `insert into audit_log set 
+        user_pk=@user_pk,
+        activity=@activity;
+        `,
+        {
+          user_pk: payload.user_id,
+          activity: `change password`,
+        }
+      );
+
+      if (res_audit_log.insertedId <= 0) {
+        con.Rollback();
+        return {
+          success: true,
+          message: "The activity was not logged!",
+        };
+      }
+
+      con.Commit();
+      return {
+        success: true,
+        message: "The process has been executed succesfully!",
+      };
+    } else {
+      con.Rollback();
+      return {
+        success: true,
+        message: "The were no affected rows during the process!",
+      };
+    }
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const getUserLogs = async (user_pk: number): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const res_tbl_audit_log: Array<AuditLogModel> = await con.Query(
+      `
+      select * from audit_log where user_pk=@user_pk order by encoded_at desc;
+    `,
+      {
+        user_pk: user_pk,
+      }
+    );
+
+    for (const log of res_tbl_audit_log) {
+      log.user = await con.QuerySingle(
+        `select * from vw_user_info where user_id=@user_id`,
+        {
+          user_id: log.user_pk,
+        }
+      );
+    }
+
+    con.Commit();
+    return {
+      success: true,
+      data: res_tbl_audit_log,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const getAllLogs = async (): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const res_tbl_audit_log: Array<AuditLogModel> = await con.Query(
+      `
+      select * from audit_log order by encoded_at desc;
+    `,
+      {}
+    );
+
+    for (const log of res_tbl_audit_log) {
+      log.user = await con.QuerySingle(
+        `select * from vw_user_info where user_id=@user_id`,
+        {
+          user_id: log.user_pk,
+        }
+      );
+
+      if (log.user) {
+        log.user.picture = await GetUploadedImage(log.user.picture);
+      } else {
+        log.user = {
+          fullname: "Super Admin",
+          picture: null,
+        };
+      }
+    }
+
+    con.Commit();
+    return {
+      success: true,
+      data: res_tbl_audit_log,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error ..`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+export default {
+  changeAdminPassword,
+  getUserLogs,
+  getAllLogs,
 };

@@ -1,4 +1,6 @@
 import { ClassSessionModel } from "./ClassSessionModel";
+import { CourseModel } from "./CourseModel";
+import { StatusMasterModel } from "./StatusMasterModel";
 import { TutorModel } from "./TutorModels";
 
 export interface ClassModel {
@@ -27,4 +29,9 @@ export interface ClassModel {
   is_ongoing?: 1 | 0;
   class_sessions: Array<ClassSessionModel>;
   tutor_info?: TutorModel;
+  status?: StatusMasterModel;
+  ended_session?: number;
+  course_info?: CourseModel;
+  student_rating?: number;
+  average_rating?: number;
 }

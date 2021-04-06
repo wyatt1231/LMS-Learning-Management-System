@@ -49,6 +49,46 @@ const TutorReducer = (
         reload_single_tutor: state.reload_single_tutor++,
       };
     }
+    //
+    case "loggedin_tutor": {
+      return {
+        ...state,
+        loggedin_tutor: action.loggedin_tutor,
+      };
+    }
+    case "fetch_loggedin_tutor": {
+      return {
+        ...state,
+        fetch_loggedin_tutor: action.fetch_loggedin_tutor,
+      };
+    }
+    //
+    case "single_tutor_to_student": {
+      return {
+        ...state,
+        single_tutor_to_student: action.single_tutor_to_student,
+      };
+    }
+    case "fetch_single_tutor_to_student": {
+      return {
+        ...state,
+        fetch_single_tutor_to_student: action.fetch_single_tutor_to_student,
+      };
+    }
+
+    //
+    case "most_rated_tutors": {
+      return {
+        ...state,
+        most_rated_tutors: action.most_rated_tutors,
+      };
+    }
+    case "fetch_most_rated_tutors": {
+      return {
+        ...state,
+        fetch_most_rated_tutors: action.fetch_most_rated_tutors,
+      };
+    }
 
     default:
       return state;

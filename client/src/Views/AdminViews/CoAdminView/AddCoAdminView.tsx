@@ -339,6 +339,7 @@ export const AddCoAdminView: FC<AddCoAdminViewInterface> = memo(() => {
                         required
                       />
                     </Grid>
+
                     <Grid xs={12} sm={6} item>
                       <FormikInputField
                         label="Phone Number"

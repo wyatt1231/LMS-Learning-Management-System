@@ -20,13 +20,6 @@ const addCourseApi = async (payload: CourseModel): Promise<IServerResponse> => {
   return response;
 };
 
-const updateCourseApi = async (
-  payload: CourseModel
-): Promise<IServerResponse> => {
-  const response = await PostFetch(API_DEFAULT_ROUTE + "updateCourse", payload);
-  return response;
-};
-
 const getSingleCourseApi = async (
   course_pk: string
 ): Promise<IServerResponse> => {
@@ -52,11 +45,43 @@ const searchCourseApi = async (search: string): Promise<IServerResponse> => {
   return response;
 };
 
+const updateCourse = async (payload: CourseModel): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "updateCourse", payload);
+  return response;
+};
+
+const toggleCourseStatus = async (
+  course_pk: number
+): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "toggleCourseStatus", {
+    course_pk,
+  });
+  return response;
+};
+
+const updateCourseImage = async (
+  payload: CourseModel
+): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "updateCourseImage",
+    payload
+  );
+  return response;
+};
+
+const getTotalCourses = async (): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "getTotalCourses", {});
+  return response;
+};
+
 export default {
   getCourseDataTableApi,
   addCourseApi,
-  updateCourseApi,
   getSingleCourseApi,
   searchCourseApi,
   getCourseDurationApi,
+  updateCourse,
+  toggleCourseStatus,
+  updateCourseImage,
+  getTotalCourses,
 };

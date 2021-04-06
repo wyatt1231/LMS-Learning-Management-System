@@ -56,6 +56,48 @@ const getSingleClassSession = async (
       }
     );
 
+    data.status_info = await con.QuerySingle(
+      `select * from status_master where sts_pk=@sts_pk`,
+      {
+        sts_pk: data.sts_pk,
+      }
+    );
+
+    data.class_info = await con.QuerySingle(
+      `
+      select * from classes where class_pk = @class_pk;
+    `,
+      { class_pk: data.class_pk }
+    );
+
+    data.class_info.course_info = await con.QuerySingle(
+      `
+      select * from courses where course_pk = @course_pk;
+    `,
+      {
+        course_pk: data.class_info.course_pk,
+      }
+    );
+
+    data.class_info.course_info.picture = await GetUploadedImage(
+      data.class_info.course_info.picture
+    );
+
+    if (data.tutor_pk) {
+      data.class_info.tutor_info = await con.QuerySingle(
+        `
+        select * from tutors where tutor_pk = @tutor_pk;
+      `,
+        {
+          tutor_pk: data.tutor_pk,
+        }
+      );
+
+      data.class_info.tutor_info.picture = await GetUploadedImage(
+        data.class_info.tutor_info.picture
+      );
+    }
+
     con.Commit();
     return {
       success: true,
@@ -236,29 +278,45 @@ const startClassSession = async (
       `SELECT sts_pk from class_sessions where session_pk=@session_pk;`,
       payload
     );
-    if (sts_pk.sts_pk === "s") {
+
+    if (sts_pk.sts_pk !== "p") {
+      con.Commit();
       return {
         success: false,
-        message: "The session cannot be started because it has already began.",
-      };
-    }
-    if (sts_pk.sts_pk === "e") {
-      return {
-        success: false,
-        message: "The session cannot be started because it has already ended.",
+        message:
+          "Only sessions that are currenly 'PENDING' can be marked as STARTED.",
       };
     }
 
     const sql_update_session = await con.Modify(
-      `UPDATE class_sessions set sts_pk='s',began=NOW() where session_pk=@session_pk`,
+      `UPDATE class_sessions set sts_pk='s',began=NOW(),remarks=@remarks  where session_pk=@session_pk`,
       payload
     );
 
     if (sql_update_session > 0) {
+      const audit_log = await con.Insert(
+        `insert into audit_log set 
+        user_pk=@user_pk,
+        activity=CONCAT('set the class session of ',(select class_desc from classes where class_pk=@class_pk limit 1),' to STARTED ');
+        `,
+        {
+          user_pk: payload.encoder_pk,
+          class_pk: payload.class_pk,
+        }
+      );
+
+      if (audit_log.insertedId <= 0) {
+        con.Rollback();
+        return {
+          success: false,
+          message: "The activity was not logged!",
+        };
+      }
+
       con.Commit();
       return {
         success: true,
-        message: `The class session has started!`,
+        message: `The class has been marked as 'STARTED'!`,
       };
     } else {
       con.Rollback();
@@ -292,9 +350,11 @@ const endClassSession = async (
     );
 
     if (session_sts_pk.sts_pk !== "s") {
+      con.Rollback();
       return {
         success: false,
-        message: "Only sessions that are on-going cant be marked as 'ENDED'",
+        message:
+          "Only sessions that are currently marked as 'STARTED' can be marked as 'ENDED'",
       };
     }
 
@@ -304,10 +364,100 @@ const endClassSession = async (
     );
 
     if (sql_update_session > 0) {
+      const audit_log = await con.Insert(
+        `insert into audit_log set 
+        user_pk=@user_pk,
+        activity=CONCAT('marked the class session ',(select class_desc from classes where class_pk=@class_pk limit 1),' to ENDED ');
+        `,
+        {
+          user_pk: payload.encoder_pk,
+          class_pk: payload.class_pk,
+        }
+      );
+
+      if (audit_log.insertedId <= 0) {
+        con.Rollback();
+        return {
+          success: false,
+          message: "The activity was not logged!",
+        };
+      }
+
       con.Commit();
       return {
         success: true,
-        message: `The class session has ended!`,
+        message: `The class has been marked as ended!`,
+      };
+    } else {
+      con.Rollback();
+      return {
+        success: false,
+        message:
+          "Only sessions that are marked as 'STARTED' can be updated to 'ENDED'",
+      };
+    }
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const unattendedClassSession = async (
+  payload: ClassSessionModel
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const session_sts_pk = await con.QuerySingle(
+      `SELECT sts_pk from class_sessions where session_pk=@session_pk;`,
+      {
+        session_pk: payload.session_pk,
+      }
+    );
+
+    if (session_sts_pk.sts_pk !== "p") {
+      con.Rollback();
+      return {
+        success: false,
+        message:
+          "Only sessions that are marked as 'PENDING' can be updated to 'UNATTENDED'",
+      };
+    }
+
+    const sql_update_session = await con.Modify(
+      `UPDATE class_sessions set sts_pk='u',remarks=@remarks  where session_pk=@session_pk`,
+      payload
+    );
+
+    if (sql_update_session > 0) {
+      const audit_log = await con.Insert(
+        `insert into audit_log set 
+        user_pk=@user_pk,
+        activity=CONCAT('marked the class session ',(select class_desc from classes where class_pk=@class_pk limit 1),' to UNATTENDED ');
+        `,
+        {
+          user_pk: payload.encoder_pk,
+          class_pk: payload.class_pk,
+        }
+      );
+
+      if (audit_log.insertedId <= 0) {
+        con.Rollback();
+        return {
+          success: false,
+          message: "The activity was not logged!",
+        };
+      }
+
+      con.Commit();
+      return {
+        success: true,
+        message: `The class has been marked as unattended!`,
       };
     } else {
       con.Rollback();
@@ -318,7 +468,6 @@ const endClassSession = async (
     }
   } catch (error) {
     await con.Rollback();
-    console.error(`error`, error);
     return {
       success: false,
       message: ErrorMessage(error),
@@ -440,6 +589,178 @@ const hideMessage = async (
   }
 };
 
+const getTutorSessionCal = async (tutor_pk: number): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const data: any = await con.Query(
+      `
+      SELECT cs.session_pk id,
+      CONCAT(cs.start_date,' ',cs.start_time) AS 'start',
+      CONCAT(cs.start_date,' ',cs.end_time) AS 'end',
+      c.class_desc 'title',
+      sm.sts_bgcolor AS 'backgroundColor',
+      sm.sts_color AS  'textColor',
+      sm.sts_desc AS 'status',
+      sm.sts_pk 
+      FROM classes c 
+      JOIN class_sessions cs ON c.class_pk = cs.class_pk 
+      JOIN status_master sm ON cs.sts_pk = sm.sts_pk
+      WHERE c.tutor_pk =@tutor_pk;
+      `,
+      {
+        tutor_pk,
+      }
+    );
+
+    con.Commit();
+    return {
+      success: true,
+      data: data,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const getStudentSessionCal = async (
+  student_pk: number
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const data: any = await con.Query(
+      `
+      SELECT  cs.session_pk id,
+      CONCAT(cs.start_date,' ',cs.start_time) AS 'start',
+      CONCAT(cs.start_date,' ',cs.end_time) AS 'end',
+      c.class_desc 'title',
+      sm.sts_bgcolor AS 'backgroundColor',
+      sm.sts_color AS  'textColor',
+      sm.sts_desc AS 'status',
+      sm.sts_pk 
+      FROM classes c 
+      JOIN class_sessions cs ON c.class_pk = cs.class_pk 
+      JOIN status_master sm ON cs.sts_pk = sm.sts_pk
+      JOIN class_students s ON s.class_pk =  c.class_pk
+      WHERE s.student_pk =@student_pk GROUP BY cs.session_pk;
+      `,
+      {
+        student_pk,
+      }
+    );
+
+    con.Commit();
+    return {
+      success: true,
+      data: data,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const getLoggedInTutorSessionCalendar = async (
+  user_pk: number
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const data: any = await con.Query(
+      `
+      SELECT cs.session_pk id,
+      CONCAT(cs.start_date,' ',cs.start_time) AS 'start',
+      CONCAT(cs.start_date,' ',cs.end_time) AS 'end',
+      c.class_desc 'title',
+      sm.sts_bgcolor AS 'backgroundColor',
+      sm.sts_color AS  'textColor',
+      sm.sts_desc AS 'status',
+      sm.sts_pk 
+      FROM classes c 
+      JOIN class_sessions cs ON c.class_pk = cs.class_pk 
+      JOIN status_master sm ON cs.sts_pk = sm.sts_pk
+      WHERE c.tutor_pk =(SELECT tutor_pk FROM tutors WHERE user_id = @user_pk limit 1);
+      `,
+      {
+        user_pk,
+      }
+    );
+
+    con.Commit();
+    return {
+      success: true,
+      data: data,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const getLoggedStudentCalendar = async (
+  user_pk: number
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const data: any = await con.Query(
+      `
+      SELECT cs.session_pk id,
+      CONCAT(cs.start_date,' ',cs.start_time) AS 'start',
+      CONCAT(cs.start_date,' ',cs.end_time) AS 'end',
+      c.class_desc 'title',
+      sm.sts_bgcolor AS 'backgroundColor',
+      sm.sts_color AS  'textColor',
+      sm.sts_desc AS 'status',
+      sm.sts_pk 
+      FROM classes c 
+      JOIN class_sessions cs ON c.class_pk = cs.class_pk 
+      JOIN status_master sm ON cs.sts_pk = sm.sts_pk  
+      JOIN class_students cst ON cst.class_pk = c.class_pk
+      JOIN students s ON s.student_pk = cst.student_pk 
+      WHERE s.user_id =@user_pk
+      GROUP BY cs.session_pk;
+      `,
+      {
+        user_pk,
+      }
+    );
+
+    con.Commit();
+    return {
+      success: true,
+      data: data,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+//getStudentSessionCall
+
 export default {
   getTblClassSessions,
   getTutorFutureSessions,
@@ -447,8 +768,13 @@ export default {
   getStatsSessionCalendar,
   startClassSession,
   endClassSession,
+  unattendedClassSession,
   getAllMessage,
   saveMessage,
   hideMessage,
   getSingleClassSession,
+  getTutorSessionCal,
+  getStudentSessionCal,
+  getLoggedInTutorSessionCalendar,
+  getLoggedStudentCalendar,
 };

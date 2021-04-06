@@ -1,20 +1,17 @@
 import {
-  TableContainer,
+  Chip,
   Table,
+  TableBody,
+  TableCell,
+  TableContainer,
   TableHead,
   TableRow,
-  TableCell,
-  TableBody,
-  Chip,
 } from "@material-ui/core";
-import React, { FC, memo, useCallback, useEffect } from "react";
+import React, { FC, memo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopper";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
-import {
-  parseDateAndDayOfWeekOrDefault,
-  parseDateTimeOrDefault,
-} from "../../../Hooks/UseDateParser";
+import { parseDateTimeOrDefault } from "../../../Hooks/UseDateParser";
 import ClassSessionTaskActions from "../../../Services/Actions/ClassSessionTaskActions";
 import { RootStore } from "../../../Services/Store";
 interface ManageClassMaterialTutorInterface {

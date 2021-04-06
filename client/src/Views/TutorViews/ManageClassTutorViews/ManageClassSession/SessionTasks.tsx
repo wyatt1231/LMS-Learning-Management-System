@@ -45,7 +45,7 @@ export const SessionTasks: FC<ISessionTasks> = memo(() => {
   }, [dispatch, params.class_pk]);
 
   return (
-    <Grid item xs={12} md={2}>
+    <>
       <div className="task-ctnr">
         <div className="ctnr-title">Tasks</div>
         {user_type === "tutor" && (
@@ -96,7 +96,7 @@ export const SessionTasks: FC<ISessionTasks> = memo(() => {
         </div>
       </div>
       <DialogAddTask open={open_add_task} setOpen={handleSetOpenAddTask} />
-    </Grid>
+    </>
   );
 });
 

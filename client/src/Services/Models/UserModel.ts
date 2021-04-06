@@ -15,10 +15,13 @@ export interface UserModel {
   confirm_password?: string;
   user_type?: string;
   full_name?: string;
+  fullname?: string;
   online_count?: string;
   sts_pk?: string;
   sts_desc?: string;
   encoded_at?: Date;
   encoder_id?: string;
   encoder_name?: string;
+  old_password?: string;
+  picture?: string;
 }

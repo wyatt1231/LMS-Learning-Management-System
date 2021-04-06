@@ -49,10 +49,13 @@ const IconButtonPopper: React.FC<IIconButtonPopper> = memo(
           color="primary"
           aria-describedby={id}
           onClick={handleClick}
-          size={size}
+          // size={size}
+          size="small"
           style={{
-            backgroundColor: `#e3f2fd`,
-            color: `#1a237e`,
+            padding: `.3em`,
+            // color: `#e3f2fd`,
+            boxShadow: `0 2px 4px rgba(0,0,0,.1)`,
+            // backgroundColor: `#1a237e`,
           }}
         >
           <MoreVertIcon />

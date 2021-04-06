@@ -2,7 +2,7 @@ import { Grid } from "@material-ui/core";
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 
@@ -61,6 +61,8 @@ const LinkTabs: React.FC<ILinkTabs> = memo(
   ({ tabs, RenderSwitchComponent }) => {
     const history = useHistory();
 
+    const [click_counter, set_click_counter] = useState(0);
+
     return (
       <StyledLinkTabs>
         <Grid container>
@@ -83,6 +85,7 @@ const LinkTabs: React.FC<ILinkTabs> = memo(
                   key={index}
                   value={index}
                   onClick={() => {
+                    set_click_counter((prev) => prev + 1);
                     history.push(value.link);
                   }}
                 ></AntTab>

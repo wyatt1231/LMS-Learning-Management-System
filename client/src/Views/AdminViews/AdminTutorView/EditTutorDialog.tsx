@@ -12,7 +12,11 @@ import * as yup from "yup";
 import FormDialog from "../../../Component/FormDialog/FormDialog";
 import FormikInputField from "../../../Component/Formik/FormikInputField";
 import FormikRadio from "../../../Component/Formik/FormikRadio";
-import { ClassModel } from "../../../Services/Models/ClassModel";
+import MaskedPhoneNumber from "../../../Component/Mask/MaskedPhoneNumber";
+import { setGeneralPrompt } from "../../../Services/Actions/PageActions";
+import TutorActions, {
+  setSingleTutor,
+} from "../../../Services/Actions/TutorActions";
 import { TutorModel } from "../../../Services/Models/TutorModels";
 import { DbTutorPositions } from "../../../Storage/LocalDatabase";
 interface IEditTutorDialog {
@@ -28,6 +32,14 @@ const formSchema = yup.object({
   birth_date: yup.date().nullable().label("Birth Date"),
   gender: yup.string().nullable().required().max(1).label("Gender"),
   complete_address: yup.string().required().max(255).label("Complete Address"),
+  email: yup.string().email().required().label("Email Address"),
+  mob_no: yup
+    .string()
+    .required()
+    .matches(
+      /^(09|\+639)\d{9}$/,
+      "Mobile number must be a valid philippine mobile number."
+    ),
 });
 
 export const EditTutorDialog: FC<IEditTutorDialog> = memo(
@@ -40,24 +52,20 @@ export const EditTutorDialog: FC<IEditTutorDialog> = memo(
 
         payload.tutor_pk = initial_form_values.tutor_pk;
 
-        console.log(`payload`, payload);
-
-        //   dispatch(
-        //     setGeneralPrompt({
-        //       open: true,
-        //       continue_callback: () =>
-        //         dispatch(
-        //           addClassAction(form_values, (msg: string) => {
-        //             setSuccessDialog({
-        //               message: msg,
-        //               open: true,
-        //             });
-        //           })
-        //         ),
-        //     })
-        //   );
+        dispatch(
+          setGeneralPrompt({
+            open: true,
+            continue_callback: () =>
+              dispatch(
+                TutorActions.updateTutor(payload, (msg: string) => {
+                  handleClose();
+                  dispatch(setSingleTutor(payload.tutor_pk));
+                })
+              ),
+          })
+        );
       },
-      [initial_form_values.tutor_pk]
+      [dispatch, handleClose, initial_form_values.tutor_pk]
     );
 
     return (
@@ -87,17 +95,6 @@ export const EditTutorDialog: FC<IEditTutorDialog> = memo(
                     id="form-edit-tutor"
                   >
                     <Grid container justify="center" spacing={3}>
-                      <Grid xs={12} item>
-                        <FormikInputField
-                          label="Prefix"
-                          placeholder="Enter prefix"
-                          name="prefix"
-                          variant="outlined"
-                          InputLabelProps={{ shrink: true }}
-                          fullWidth
-                        />
-                      </Grid>
-
                       <Grid xs={12} item>
                         <FormikInputField
                           label="First Name"
@@ -223,6 +220,33 @@ export const EditTutorDialog: FC<IEditTutorDialog> = memo(
                             </MuiPickersUtilsProvider>
                           );
                         })()}
+                      </Grid>
+
+                      <Grid xs={12} item>
+                        <FormikInputField
+                          label="Email Address"
+                          name="email"
+                          variant="outlined"
+                          placeholder="Email Address"
+                          InputLabelProps={{ shrink: true }}
+                          fullWidth
+                          type="email"
+                          required
+                        />
+                      </Grid>
+                      <Grid xs={12} item>
+                        <FormikInputField
+                          label="Phone Number"
+                          name="mob_no"
+                          variant="outlined"
+                          placeholder="Phone Number"
+                          InputLabelProps={{ shrink: true }}
+                          fullWidth
+                          InputProps={{
+                            inputComponent: MaskedPhoneNumber,
+                          }}
+                          required
+                        />
                       </Grid>
                       <Grid xs={12} item>
                         <FormikInputField

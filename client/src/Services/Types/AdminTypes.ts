@@ -16,6 +16,14 @@ export type AdminReducerTypes =
   | {
       type: "fetching_selected_admin";
       fetching_selected_admin: boolean;
+    }
+  | {
+      type: "set_logged_admin";
+      logged_admin: AdminModel;
+    }
+  | {
+      type: "fetching_logged_admin";
+      fetching_logged_admin: boolean;
     };
 
 export interface AdminReducerModel {
@@ -23,6 +31,9 @@ export interface AdminReducerModel {
   fetching_admin_data_table: boolean;
   selected_admin?: AdminModel;
   fetching_selected_admin: boolean;
+
+  logged_admin?: AdminModel;
+  fetching_logged_admin?: boolean;
 }
 
 interface AdminDataTable {

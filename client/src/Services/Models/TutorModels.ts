@@ -18,4 +18,8 @@ export interface TutorModel {
   is_active?: "y" | "n";
   encoded_at?: Date;
   encoder_pk?: number | string;
+  favorited?: "y" | "n";
+  rating?: number;
+  average_rating?: number;
+  fav_count?: number;
 }

@@ -12,6 +12,7 @@ import ClassSessionReducer from "./ClassSessionReducer";
 import ClassStudentReducer from "./ClassStudentReducer";
 import ClassMaterialReducer from "./ClassMaterialReducer";
 import ClassSessionTaskReducer from "./ClassSessionTaskReducer";
+import SharedReducer from "./SharedReducer";
 
 const RootReducer = combineReducers({
   UserReducer,
@@ -26,6 +27,7 @@ const RootReducer = combineReducers({
   ClassStudentReducer,
   ClassMaterialReducer,
   ClassSessionTaskReducer,
+  SharedReducer,
 });
 
 export default RootReducer;

@@ -120,7 +120,6 @@ export const AddRoomAdminView: FC<AddRoomAdminViewInterface> = memo(() => {
                       required
                     />
                   </Grid>
-
                   <Grid xs={12} item>
                     <FormikInputField
                       label="Notes/Notice"

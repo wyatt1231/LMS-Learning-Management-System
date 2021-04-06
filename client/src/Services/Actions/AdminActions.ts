@@ -1,6 +1,6 @@
 import { Dispatch } from "react";
 import helperErrorMessage from "../../Helpers/helperErrorMessage";
-import {
+import AdminApi, {
   addAdminApi,
   getAdminDataTableApi,
   getSingleAdminApi,
@@ -123,4 +123,114 @@ export const updateAdminAction = (
   } catch (error) {
     console.error(`action error`, error);
   }
+};
+
+const getLoggedAdmin = () => async (dispatch: Dispatch<AdminReducerTypes>) => {
+  try {
+    dispatch({
+      type: "fetching_logged_admin",
+      fetching_logged_admin: true,
+    });
+    const response: IServerResponse = await AdminApi.getLoggedAdmin();
+
+    if (response.success) {
+      dispatch({
+        type: "set_logged_admin",
+        logged_admin: response.data,
+      });
+    }
+
+    dispatch({
+      type: "fetching_logged_admin",
+      fetching_logged_admin: false,
+    });
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+export const updateAdminInfo = (
+  payload: AdminModel,
+  onSuccess: (msg: string) => any
+) => async (dispatch: Dispatch<AdminReducerTypes | PageReducerTypes>) => {
+  try {
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        loading_message: "Loading, thank you for your patience!",
+        show: true,
+      },
+    });
+    const response: IServerResponse = await AdminApi.updateAdminInfo(payload);
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+      },
+    });
+    if (response.success) {
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
+      if (typeof onSuccess === "function") {
+        onSuccess(response.message.toString());
+      }
+    } else {
+      helperErrorMessage(dispatch, response);
+    }
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+export const updateAdminImage = (
+  payload: AdminModel,
+  onSuccess: (msg: string) => any
+) => async (dispatch: Dispatch<AdminReducerTypes | PageReducerTypes>) => {
+  try {
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        loading_message: "Loading, thank you for your patience!",
+        show: true,
+      },
+    });
+    const response: IServerResponse = await AdminApi.updateAdminImage(payload);
+    dispatch({
+      type: "SET_PAGE_LOADING",
+      page_loading: {
+        show: false,
+      },
+    });
+    if (response.success) {
+      dispatch({
+        type: "SET_PAGE_SNACKBAR",
+        page_snackbar: {
+          message: response.message.toString(),
+          options: {
+            variant: "success",
+          },
+        },
+      });
+      if (typeof onSuccess === "function") {
+        onSuccess(response.message.toString());
+      }
+    } else {
+      helperErrorMessage(dispatch, response);
+    }
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
+export default {
+  getLoggedAdmin,
+  updateAdminInfo,
+  updateAdminImage,
 };

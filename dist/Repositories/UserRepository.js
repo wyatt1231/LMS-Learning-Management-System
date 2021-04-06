@@ -114,4 +114,131 @@ const currentUser = (user_id) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.currentUser = currentUser;
+const changeAdminPassword = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const total_found_user = yield con.QuerySingle(`
+    SELECT COUNT(*) AS total FROM users WHERE password = AES_ENCRYPT(@old_password,username) AND user_id = @user_id LIMIT 1
+    `, payload);
+        console.log(`payload`, payload);
+        console.log(`total_found_user`, total_found_user);
+        if (total_found_user.total <= 0) {
+            con.Rollback();
+            return {
+                success: false,
+                message: "You must have entered an incorrect old password. Please try again!",
+            };
+        }
+        const res_update_user = yield con.Modify(`UPDATE users SET
+       password = AES_ENCRYPT(@password,username)
+       WHERE user_id =@user_id;`, payload);
+        if (res_update_user > 0) {
+            const res_audit_log = yield con.Insert(`insert into audit_log set 
+        user_pk=@user_pk,
+        activity=@activity;
+        `, {
+                user_pk: payload.user_id,
+                activity: `change password`,
+            });
+            if (res_audit_log.insertedId <= 0) {
+                con.Rollback();
+                return {
+                    success: true,
+                    message: "The activity was not logged!",
+                };
+            }
+            con.Commit();
+            return {
+                success: true,
+                message: "The process has been executed succesfully!",
+            };
+        }
+        else {
+            con.Rollback();
+            return {
+                success: true,
+                message: "The were no affected rows during the process!",
+            };
+        }
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
+const getUserLogs = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const res_tbl_audit_log = yield con.Query(`
+      select * from audit_log where user_pk=@user_pk order by encoded_at desc;
+    `, {
+            user_pk: user_pk,
+        });
+        for (const log of res_tbl_audit_log) {
+            log.user = yield con.QuerySingle(`select * from vw_user_info where user_id=@user_id`, {
+                user_id: log.user_pk,
+            });
+        }
+        con.Commit();
+        return {
+            success: true,
+            data: res_tbl_audit_log,
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
+const getAllLogs = () => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const res_tbl_audit_log = yield con.Query(`
+      select * from audit_log order by encoded_at desc;
+    `, {});
+        for (const log of res_tbl_audit_log) {
+            log.user = yield con.QuerySingle(`select * from vw_user_info where user_id=@user_id`, {
+                user_id: log.user_pk,
+            });
+            if (log.user) {
+                log.user.picture = yield useFileUploader_1.GetUploadedImage(log.user.picture);
+            }
+            else {
+                log.user = {
+                    fullname: "Super Admin",
+                    picture: null,
+                };
+            }
+        }
+        con.Commit();
+        return {
+            success: true,
+            data: res_tbl_audit_log,
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error ..`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
+exports.default = {
+    changeAdminPassword,
+    getUserLogs,
+    getAllLogs,
+};
 //# sourceMappingURL=UserRepository.js.map

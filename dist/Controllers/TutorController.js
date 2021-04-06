@@ -33,6 +33,10 @@ const TutorController = (app) => __awaiter(void 0, void 0, void 0, function* () 
         const tutor_pk = req.body.tutor_pk;
         res.json(yield TutorRepository_1.default.getSingleTutor(tutor_pk));
     }));
+    router.post("/getSingTutorToStudent", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const tutor_pk = req.body.tutor_pk;
+        res.json(yield TutorRepository_1.default.getSingTutorToStudent(tutor_pk, parseInt(req.user_id)));
+    }));
     router.post("/searchTutor", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const search = req.body.value;
         res.json(yield TutorRepository_1.default.searchTutor(search));
@@ -43,6 +47,38 @@ const TutorController = (app) => __awaiter(void 0, void 0, void 0, function* () 
     router.post("/insertDummyTutorRatings", Authorize_1.default("admin,tutor,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield TutorRepository_1.default.insertDummyTutorRatings(payload, parseInt(req.user_id)));
+    }));
+    router.post("/toggleActiveStatus", Authorize_1.default("admin,tutor,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const tutor_pk = req.body.tutor_pk;
+        res.json(yield TutorRepository_1.default.toggleActiveStatus(tutor_pk, parseInt(req.user_id)));
+    }));
+    router.post("/updateTutorImage", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.user_id = parseInt(req.user_id);
+        res.json(yield TutorRepository_1.default.updateTutorImage(payload));
+    }));
+    router.post("/getTotalTutors", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield TutorRepository_1.default.getTotalTutors());
+    }));
+    router.post("/getLoggedInTutor", Authorize_1.default("tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield TutorRepository_1.default.getLoggedInTutor(parseInt(req.user_id)));
+    }));
+    router.post("/updateLoggedInTutorBio", Authorize_1.default("tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        res.json(yield TutorRepository_1.default.updateLoggedInTutorBio(payload));
+    }));
+    router.post("/rateTutor", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.encoded_by = parseInt(req.user_id);
+        res.json(yield TutorRepository_1.default.rateTutor(payload));
+    }));
+    router.post("/favoriteTutor", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.encoded_by = parseInt(req.user_id);
+        res.json(yield TutorRepository_1.default.favoriteTutor(payload));
+    }));
+    router.post("/getMostRatedTutors", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield TutorRepository_1.default.getMostRatedTutors());
     }));
     app.use("/api/tutor/", router);
 });

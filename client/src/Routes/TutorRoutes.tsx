@@ -1,15 +1,15 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-import CalendarTutorView from "../Views/TutorViews/CalendarTutorView";
 import DataClassTutorView from "../Views/TutorViews/ClassTutorViews/DataClassTutorView";
-import ManageClassSelectedSessionTutorView from "../Views/TutorViews/ManageClassTutorViews/ManageClassSelectedSessionTutorView";
-import SessionTutorView from "../Views/TutorViews/ManageClassTutorViews/ManageClassTutorView";
+import DashboardTutorView from "../Views/TutorViews/DashboardTutorView";
+import ManageClassSelectedSessionTutorView from "../Views/TutorViews/ManageClassTutorViews/ManageClassSession";
+import ManageClassAdminView from "../Views/SharedViews/Class/ManageClassView";
 
 const TutorRoutes = () => {
   return (
     <Switch>
-      <Route path="/tutor/home" exact>
-        <CalendarTutorView />
+      <Route path="/tutor/dashboard" exact>
+        <DashboardTutorView />
       </Route>
 
       <Route path="/tutor/class" exact>
@@ -21,7 +21,7 @@ const TutorRoutes = () => {
       </Route>
 
       <Route path="/tutor/class/:class_pk" strict>
-        <SessionTutorView />
+        <ManageClassAdminView />
       </Route>
     </Switch>
   );

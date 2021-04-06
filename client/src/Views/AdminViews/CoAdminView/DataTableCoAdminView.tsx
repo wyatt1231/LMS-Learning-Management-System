@@ -292,15 +292,17 @@ export const DataTableCoAdminView: FC<DataTableCoAdminViewInterface> = memo(
                                 0
                               )}${row.lastname?.charAt(0)}`}
                             />
-                            <NavLink
-                              className="title"
-                              to={`/admin/co-administrator/${row.admin_pk}`}
-                            >
-                              <span style={{ textTransform: "capitalize" }}>
+                            <div className="title">
+                              <span
+                                style={{
+                                  textTransform: "capitalize",
+                                  fontWeight: 500,
+                                }}
+                              >
                                 {row.prefix} {row.firstname} {row.middlename}{" "}
                                 {row.lastname} {row.suffix}
                               </span>
-                            </NavLink>
+                            </div>
                             <div className="sub-title">{row.position}</div>
                           </div>
                         </TableCell>

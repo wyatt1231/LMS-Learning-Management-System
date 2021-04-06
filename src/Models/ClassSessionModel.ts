@@ -1,3 +1,6 @@
+import { ClassModel } from "./ClassModel";
+import { StatusMasterModel } from "./StatusMasterModel";
+
 export interface ClassSessionModel {
   session_pk?: number;
   class_pk?: number;
@@ -16,6 +19,8 @@ export interface ClassSessionModel {
   sts_bgcolor?: string;
   sts_color?: string;
   hash_pk?: string;
+  class_info?: ClassModel;
+  status_info?: StatusMasterModel;
 }
 
 export interface TutorFutureSessionModel {

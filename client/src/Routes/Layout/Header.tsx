@@ -95,24 +95,30 @@ const Header: React.FC<IHeader> = memo(
           </nav>
 
           <section className="tools">
-            {user?.user_type === "tutor" && (
+            {/* {user?.user_type === "tutor" && (
               <>
                 <TaskMenu />
               </>
             )}
 
             <Notification />
-            <Message />
-            <IconButton
-              color="inherit"
-              size="small"
-              onClick={() => {
-                dispatch(toggleActivitySidebar(true));
-              }}
-              className="icon-header"
-            >
-              <AssignmentRoundedIcon />
-            </IconButton>
+            <Message /> */}
+
+            {user?.user_type === "admin" && (
+              <>
+                <IconButton
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    dispatch(toggleActivitySidebar(true));
+                  }}
+                  className="icon-header"
+                >
+                  <AssignmentRoundedIcon />
+                </IconButton>
+              </>
+            )}
+
             <UserProfile user={user} variant={mobile ? "mobile" : "desktop"} />
           </section>
 

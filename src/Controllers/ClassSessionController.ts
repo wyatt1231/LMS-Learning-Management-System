@@ -67,6 +67,7 @@ const ClassSessionController = async (app: Express): Promise<void> => {
     Authorize("tutor"),
     async (req: Request & UserClaims, res: Response) => {
       const payload: ClassSessionModel = req.body;
+      payload.encoder_pk = req.user_id;
       res.json(await ClassSessionRepository.startClassSession(payload));
     }
   );
@@ -76,7 +77,17 @@ const ClassSessionController = async (app: Express): Promise<void> => {
     Authorize("tutor"),
     async (req: Request & UserClaims, res: Response) => {
       const payload: ClassSessionModel = req.body;
+      payload.encoder_pk = req.user_id;
       res.json(await ClassSessionRepository.endClassSession(payload));
+    }
+  );
+
+  router.post(
+    "/unattendedClassSession",
+    Authorize("tutor"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: ClassSessionModel = req.body;
+      res.json(await ClassSessionRepository.unattendedClassSession(payload));
     }
   );
 
@@ -106,6 +117,50 @@ const ClassSessionController = async (app: Express): Promise<void> => {
       const payload: ClassSesMsgModel = req.body;
       payload.user_pk = parseInt(req.user_id);
       res.json(await ClassSessionRepository.hideMessage(payload));
+    }
+  );
+
+  router.post(
+    "/getTutorSessionCal",
+    Authorize(),
+    async (req: Request & UserClaims, res: Response) => {
+      const tutor_pk: number = req.body.tutor_pk;
+      res.json(await ClassSessionRepository.getTutorSessionCal(tutor_pk));
+    }
+  );
+
+  router.post(
+    "/getStudentSessionCal",
+    Authorize(),
+    async (req: Request & UserClaims, res: Response) => {
+      const student_pk: number = req.body.student_pk;
+      res.json(await ClassSessionRepository.getStudentSessionCal(student_pk));
+    }
+  );
+
+  //new
+
+  router.post(
+    "/getLoggedInTutorSessionCalendar",
+    Authorize(),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(
+        await ClassSessionRepository.getLoggedInTutorSessionCalendar(
+          parseInt(req.user_id)
+        )
+      );
+    }
+  );
+
+  router.post(
+    "/getLoggedStudentCalendar",
+    Authorize("student"),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(
+        await ClassSessionRepository.getLoggedStudentCalendar(
+          parseInt(req.user_id)
+        )
+      );
     }
   );
 

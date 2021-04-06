@@ -25,10 +25,6 @@ const RoomController = (app) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield RoomRepository_1.default.addRoom(payload, req.user_id));
     }));
-    router.post("/updateRoom", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const payload = req.body;
-        res.json(yield RoomRepository_1.default.updateRoom(payload, req.user_id));
-    }));
     router.post("/getSingleRoom", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const room_pk = req.body.room_pk;
         res.json(yield RoomRepository_1.default.getSingleRoom(room_pk));
@@ -36,6 +32,18 @@ const RoomController = (app) => __awaiter(void 0, void 0, void 0, function* () {
     router.post("/searchRoom", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const search = req.body.value;
         res.json(yield RoomRepository_1.default.searchRoom(search));
+    }));
+    router.post("/updateRoom", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.encoder_pk = req.user_id;
+        res.json(yield RoomRepository_1.default.updateRoom(payload));
+    }));
+    router.post("/toggleRoomStatus", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const pk = req.body.room_pk;
+        res.json(yield RoomRepository_1.default.toggleRoomStatus(pk, parseInt(req.user_id)));
+    }));
+    router.post("/getTotalRoom", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield RoomRepository_1.default.getTotalRoom());
     }));
     app.use("/api/room/", router);
 });

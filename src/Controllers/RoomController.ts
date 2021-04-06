@@ -27,15 +27,6 @@ const RoomController = async (app: Express): Promise<void> => {
   );
 
   router.post(
-    "/updateRoom",
-    Authorize("admin"),
-    async (req: Request & UserClaims, res: Response) => {
-      const payload: RoomModel = req.body;
-      res.json(await RoomRepository.updateRoom(payload, req.user_id));
-    }
-  );
-
-  router.post(
     "/getSingleRoom",
     Authorize("admin"),
     async (req: Request & UserClaims, res: Response) => {
@@ -50,6 +41,35 @@ const RoomController = async (app: Express): Promise<void> => {
     async (req: Request & UserClaims, res: Response) => {
       const search: string = req.body.value;
       res.json(await RoomRepository.searchRoom(search));
+    }
+  );
+
+  router.post(
+    "/updateRoom",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: RoomModel = req.body;
+      payload.encoder_pk = req.user_id;
+      res.json(await RoomRepository.updateRoom(payload));
+    }
+  );
+
+  router.post(
+    "/toggleRoomStatus",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      const pk: number = req.body.room_pk;
+      res.json(
+        await RoomRepository.toggleRoomStatus(pk, parseInt(req.user_id))
+      );
+    }
+  );
+
+  router.post(
+    "/getTotalRoom",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(await RoomRepository.getTotalRoom());
     }
   );
 

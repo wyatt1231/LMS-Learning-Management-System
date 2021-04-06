@@ -43,25 +43,30 @@ export const ManageTaskView: FC<IManageTaskView> = memo(() => {
   useEffect(() => {
     let mounted = true;
     const loadTabs = () => {
+      const gen_tab = [
+        {
+          label: "Questions",
+          RenderComponent: (
+            <ManageTaskQuesView
+              class_task_pk={single_class_task?.class_task_pk}
+            />
+          ),
+        },
+      ];
+
+      if (user?.user_type === "tutor") {
+        gen_tab.push({
+          label: "Submissions",
+          RenderComponent: (
+            <ManageTaskSubmit
+              class_task_pk={single_class_task?.class_task_pk}
+            />
+          ),
+        });
+      }
+
       set_tabls((tabs) => {
-        return [
-          {
-            label: "Questions",
-            RenderComponent: (
-              <ManageTaskQuesView
-                class_task_pk={single_class_task?.class_task_pk}
-              />
-            ),
-          },
-          {
-            label: "Submissions",
-            RenderComponent: (
-              <ManageTaskSubmit
-                class_task_pk={single_class_task?.class_task_pk}
-              />
-            ),
-          },
-        ];
+        return [...gen_tab];
       });
     };
 
@@ -250,7 +255,7 @@ export const ManageTaskView: FC<IManageTaskView> = memo(() => {
                   <div>
                     {parseDateTimeOrDefault(single_class_task?.due_date, "-")}
                   </div>
-                  <div>
+                  {/* <div>
                     <Chip
                       label={single_class_task?.status_dtls?.sts_desc}
                       title={single_class_task?.status_dtls?.sts_desc}
@@ -260,7 +265,7 @@ export const ManageTaskView: FC<IManageTaskView> = memo(() => {
                           single_class_task?.status_dtls?.sts_bgcolor,
                       }}
                     />
-                  </div>
+                  </div> */}
                   <div>{single_class_task?.task_desc}</div>
                 </Grid>
                 <Grid item xs={12}>
@@ -269,7 +274,7 @@ export const ManageTaskView: FC<IManageTaskView> = memo(() => {
               </Grid>
             </Container>
           }
-          actions={<>Some Actions</>}
+          // actions={<>Some Actions</>}
         />
       )}
 

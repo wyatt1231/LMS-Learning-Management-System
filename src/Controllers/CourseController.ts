@@ -27,15 +27,6 @@ const CourseController = async (app: Express): Promise<void> => {
   );
 
   router.post(
-    "/updateCourse",
-    Authorize("admin"),
-    async (req: Request & UserClaims, res: Response) => {
-      const payload: CourseModel = req.body;
-      res.json(await CourseRepository.updateCourse(payload, req.user_id));
-    }
-  );
-
-  router.post(
     "/getSingleCourse",
     Authorize("admin"),
     async (req: Request & UserClaims, res: Response) => {
@@ -59,6 +50,45 @@ const CourseController = async (app: Express): Promise<void> => {
     async (req: Request & UserClaims, res: Response) => {
       const search: string = req.body.value;
       res.json(await CourseRepository.searchCourse(search));
+    }
+  );
+
+  router.post(
+    "/updateCourse",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: CourseModel = req.body;
+      payload.encoder_pk = req.user_id;
+      res.json(await CourseRepository.updateCourse(payload));
+    }
+  );
+
+  router.post(
+    "/toggleCourseStatus",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      const pk: number = req.body.course_pk;
+      res.json(
+        await CourseRepository.toggleCourseStatus(pk, parseInt(req.user_id))
+      );
+    }
+  );
+
+  router.post(
+    "/updateCourseImage",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: CourseModel = req.body;
+      payload.encoder_pk = req.user_id;
+      res.json(await CourseRepository.updateCourseImage(payload));
+    }
+  );
+
+  router.post(
+    "/getTotalCourses",
+    Authorize("admin"),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(await CourseRepository.getTotalCourses());
     }
   );
 

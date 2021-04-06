@@ -22,6 +22,33 @@ export type TutorReducerTypes =
     }
   | {
       type: "RELOAD_SINGLE_TUTOR";
+    }
+  //
+  | {
+      type: "loggedin_tutor";
+      loggedin_tutor: TutorModel;
+    }
+  | {
+      type: "fetch_loggedin_tutor";
+      fetch_loggedin_tutor: boolean;
+    }
+  //
+  | {
+      type: "single_tutor_to_student";
+      single_tutor_to_student: TutorModel;
+    }
+  | {
+      type: "fetch_single_tutor_to_student";
+      fetch_single_tutor_to_student: boolean;
+    }
+  //
+  | {
+      type: "most_rated_tutors";
+      most_rated_tutors: Array<TutorModel>;
+    }
+  | {
+      type: "fetch_most_rated_tutors";
+      fetch_most_rated_tutors: boolean;
     };
 
 export interface TutorReducerModel {
@@ -32,6 +59,15 @@ export interface TutorReducerModel {
   single_tutor?: TutorModel;
   fetching_single_tutor: boolean;
   reload_single_tutor: number;
+  //
+  loggedin_tutor?: TutorModel;
+  fetch_loggedin_tutor?: boolean;
+  //
+  single_tutor_to_student?: TutorModel;
+  fetch_single_tutor_to_student?: boolean;
+  //
+  most_rated_tutors?: Array<TutorModel>;
+  fetch_most_rated_tutors?: boolean;
 }
 
 interface TutorDataTable {

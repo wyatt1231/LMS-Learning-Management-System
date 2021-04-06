@@ -44,6 +44,8 @@ export const ClassMaterialView: FC<ClassMaterialProps> = memo(
       (store: RootStore) => store.ClassMaterialReducer.tbl_class_materials
     );
 
+    console.log(`selectedMaterial`, selectedMaterial);
+
     const fetch_class_material = useSelector(
       (store: RootStore) => store.ClassMaterialReducer.fetch_class_material
     );
@@ -97,6 +99,13 @@ export const ClassMaterialView: FC<ClassMaterialProps> = memo(
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  {tbl_class_materials?.length < 1 && (
+                    <TableRow>
+                      <TableCell align="center" colSpan={5}>
+                        <span className="empty-rows">No records to show.</span>
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {tbl_class_materials?.map((material, index) => (
                     <TableRow key={index}>
                       <TableCell>
@@ -191,7 +200,7 @@ export const ClassMaterialView: FC<ClassMaterialProps> = memo(
               }}
             >
               {({ setFieldValue }) => (
-                <Form>
+                <Form id="form-save-material">
                   <Grid container spacing={4} style={{ padding: `1em 0` }}>
                     <Grid item xs={12}>
                       {/* <BtnFileUpload /> */}
@@ -221,23 +230,23 @@ export const ClassMaterialView: FC<ClassMaterialProps> = memo(
                         }}
                       />
                     </Grid>
-
-                    <Grid item xs={12} container justify="flex-end">
-                      <Grid item>
-                        <Button
-                          color="primary"
-                          type="submit"
-                          disableElevation
-                          variant="contained"
-                        >
-                          Save Material
-                        </Button>
-                      </Grid>
-                    </Grid>
                   </Grid>
                 </Form>
               )}
             </Formik>
+          }
+          actions={
+            <>
+              <Button
+                color="primary"
+                type="submit"
+                disableElevation
+                variant="contained"
+                form="form-save-material"
+              >
+                Save Material
+              </Button>
+            </>
           }
         />
 

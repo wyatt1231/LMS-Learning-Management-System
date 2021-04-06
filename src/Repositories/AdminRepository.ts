@@ -273,9 +273,205 @@ const getSingleAdmin = async (admin_pk: string): Promise<ResponseModel> => {
   }
 };
 
+const getLoggedAdmin = async (user_id: string): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const data: AdminModel = await con.QuerySingle(
+      `select * from administrators where user_id = @user_id`,
+      {
+        user_id,
+      }
+    );
+
+    data.picture = await GetUploadedImage(data.picture);
+
+    con.Commit();
+    return {
+      success: true,
+      data: data,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const updateAdminInfo = async (payload: AdminModel): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    payload.birth_date = parseInvalidDateToDefault(payload.birth_date);
+
+    const admin_updated_rows = await con.Modify(
+      `UPDATE administrators SET
+        position=@position,
+        firstname=@firstname,
+        middlename=@middlename,
+        lastname=@lastname,
+        suffix=@suffix,
+        prefix=@prefix,
+        birth_date=@birth_date,
+        mob_no=@mob_no,
+        gender=@gender
+        WHERE admin_pk=@admin_pk;
+        ;`,
+      payload
+    );
+
+    if (admin_updated_rows > 0) {
+      const audit_log = await con.Insert(
+        `insert into audit_log set 
+        user_pk=@user_pk,
+        activity=@activity;
+        `,
+        {
+          user_pk: payload.user_id,
+          activity: `updated profile information.`,
+        }
+      );
+
+      if (audit_log.insertedId <= 0) {
+        con.Rollback();
+        return {
+          success: false,
+          message: "The activity was not logged!",
+        };
+      }
+
+      con.Commit();
+      return {
+        success: true,
+        message: "The process has been executed succesfully!",
+      };
+    } else {
+      con.Rollback();
+      return {
+        success: true,
+        message: "The were no affected rows during the process!",
+      };
+    }
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const updateAdminImage = async (
+  payload: AdminModel
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    if (isValidPicture(payload.picture)) {
+      const upload_result = await UploadImage({
+        base_url: "./src/Storage/Files/Images/",
+        extension: "jpg",
+        file_name: payload.user_id,
+        file_to_upload: payload.picture,
+      });
+
+      if (upload_result.success) {
+        payload.picture = upload_result.data;
+        const sql_update_pic = await con.Modify(
+          `
+            UPDATE administrators set
+            picture=@picture
+            WHERE
+            admin_pk=@admin_pk;
+          `,
+          payload
+        );
+
+        if (sql_update_pic < 1) {
+          con.Rollback();
+          return {
+            success: false,
+            message: "There were no rows affected while updating the picture.",
+          };
+        }
+      } else {
+        return upload_result;
+      }
+    }
+
+    const audit_log = await con.Insert(
+      `insert into audit_log set 
+      user_pk=@user_pk,
+      activity=@activity;
+      `,
+      {
+        user_pk: payload.user_id,
+        activity: `updated profile picture.`,
+      }
+    );
+
+    if (audit_log.insertedId <= 0) {
+      con.Rollback();
+      return {
+        success: false,
+        message: "The activity was not logged!",
+      };
+    }
+
+    con.Commit();
+    return {
+      success: true,
+      message: "The process has been executed succesfully!",
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const getTotalAdmin = async (): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const res_sql_count = await con.QuerySingle(
+      `select count(*) as total from administrators WHERE is_active='y';`,
+      {}
+    );
+
+    con.Commit();
+    return {
+      success: true,
+      data: res_sql_count.total,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
 export default {
   addAdmin,
   updateAdmin,
   getAdminDataTable,
   getSingleAdmin,
+  updateAdminInfo,
+  updateAdminImage,
+  getLoggedAdmin,
+  getTotalAdmin, //new
 };
