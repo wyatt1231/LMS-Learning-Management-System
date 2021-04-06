@@ -584,7 +584,7 @@ export const DashboardAdminView: FC<IDashboardAdminView> = memo(() => {
                               justifySelf: `end`,
                             }}
                           >
-                            {t?.average_rating.toFixed(1)} stars
+                            {t?.average_rating?.toFixed(1)} stars
                           </div>
                           <Rating
                             name="rating"

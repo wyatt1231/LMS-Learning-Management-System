@@ -397,6 +397,6 @@ exports.default = {
     updateAdminInfo,
     updateAdminImage,
     getLoggedAdmin,
-    getTotalAdmin, //new
+    getTotalAdmin,
 };
 //# sourceMappingURL=AdminRepository.js.map
