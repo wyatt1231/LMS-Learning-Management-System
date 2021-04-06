@@ -2,6 +2,8 @@ import mysql, { OkPacket, RowDataPacket } from "mysql";
 import { DatabaseConnectionModel, InsertModel } from "../Models/DatabaseModel";
 import { PaginationModel } from "../Models/PaginationModel";
 
+let DatabaseConfig: mysql.PoolOptions | null = null;
+
 // export const DatabaseConfig = mysql.createPool({
 //   host: "us-cdbr-east-03.cleardb.com",
 //   user: "b25793f72a1e8c",
@@ -10,13 +12,27 @@ import { PaginationModel } from "../Models/PaginationModel";
 //   port: 3306,
 // });
 
-export const DatabaseConfig = mysql.createPool({
-  host: "127.0.0.1",
-  user: "root",
-  password: "root sa",
-  database: "lms",
-  port: 3309,
-});
+if (process.env.NODE_ENV === "production") {
+  DatabaseConfig = {
+    host: "sql6.freemysqlhosting.net",
+    user: "sql6403664",
+    password: "tZkb3jBQbm",
+    database: "sql6403664",
+    port: 3306,
+    connectionLimit: 10,
+    waitForConnections: true,
+  };
+} else {
+  DatabaseConfig = {
+    host: "localhost",
+    user: "root",
+    password: "root sa",
+    database: "lms",
+    port: 3309,
+    connectionLimit: 10,
+    waitForConnections: true,
+  };
+}
 
 export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
   return new Promise((resolve, reject) => {
