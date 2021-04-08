@@ -1248,11 +1248,11 @@ const getTotalTutorClassStats = async (
 
     const data: Array<StatsModel> = await con.Query(
       `SELECT * FROM (
-        SELECT 'For Approval Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'fa' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = 95)
+        SELECT 'For Approval Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'fa' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = @user_pk)
         UNION 
-        SELECT 'Approved Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'a' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = 95)
+        SELECT 'Approved Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'a' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = @user_pk)
         UNION 
-        SELECT 'Ended Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'e' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = 95)
+        SELECT 'Ended Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'e' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = @user_pk)
         ) tmp
         `,
       {

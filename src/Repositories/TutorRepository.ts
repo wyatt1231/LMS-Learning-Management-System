@@ -908,7 +908,7 @@ const getMostRatedTutors = async (): Promise<ResponseModel> => {
         (
         SELECT *,
         COALESCE((SELECT  SUM(rating)/COUNT(*) FROM tutor_ratings WHERE tutor_pk = t.tutor_pk), 0) AS average_rating 
-        FROM tutors t where t,is_dummy='n'
+        FROM tutors t where is_dummy='n' 
         ) tmp
         where average_rating > 0 
         ORDER BY average_rating DESC LIMIT 15
