@@ -623,7 +623,7 @@ const getTotalTutors = async (): Promise<ResponseModel> => {
     await con.BeginTransaction();
 
     const res_sql_count = await con.QuerySingle(
-      `select count(*) as total from tutors  WHERE is_active='y';`,
+      `select count(*) as total from tutors  WHERE is_active='y' and is_dummy='n';`,
       {}
     );
 
