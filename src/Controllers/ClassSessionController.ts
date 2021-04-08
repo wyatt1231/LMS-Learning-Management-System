@@ -58,7 +58,13 @@ const ClassSessionController = async (app: Express): Promise<void> => {
     Authorize(),
     async (req: Request & UserClaims, res: Response) => {
       const session_pk: number = req.body.session_pk;
-      res.json(await ClassSessionRepository.getSingleClassSession(session_pk));
+      res.json(
+        await ClassSessionRepository.getSingleClassSession(
+          session_pk,
+          parseInt(req.user_id),
+          req.user_type
+        )
+      );
     }
   );
 

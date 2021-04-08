@@ -39,7 +39,7 @@ const Authorize = (roles) => {
                                 }
                                 else {
                                     req.user_id = user.user_id;
-                                    req.user_type = user.user_id;
+                                    req.user_type = user.user_type;
                                     next();
                                 }
                             }

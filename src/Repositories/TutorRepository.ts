@@ -497,7 +497,7 @@ const searchTutor = async (search: string): Promise<ResponseModel> => {
     await con.BeginTransaction();
 
     const data: any = await con.Query(
-      `SELECT * FROM (select tutor_pk id, concat(firstname,' ',lastname) label,picture from tutors) tmp 
+      `SELECT * FROM (select tutor_pk id, concat(firstname,' ',lastname) label,picture from tutors where is_dummy='n') tmp 
        ${GenerateSearch(search, "label")} limit 50
       `,
       {

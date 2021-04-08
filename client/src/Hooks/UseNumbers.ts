@@ -12,6 +12,17 @@ const toDecimal = (
   }
 };
 
+const toNumber = (num: any, replacement?: number): number => {
+  try {
+    const val = parseInt(num);
+
+    return val;
+  } catch (error) {
+    return replacement;
+  }
+};
+
 export default {
   toDecimal,
+  toNumber,
 };

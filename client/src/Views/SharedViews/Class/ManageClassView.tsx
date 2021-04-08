@@ -11,6 +11,7 @@ import {
   InvalidDateToDefault,
   InvalidTimeToDefault,
 } from "../../../Hooks/UseDateParser";
+import UseNumbers from "../../../Hooks/UseNumbers";
 import { StringEmptyToDefault } from "../../../Hooks/UseStringFormatter";
 import ClassActions, {
   setSelectedClassAction,
@@ -274,7 +275,10 @@ export const ManageClassView: FC<IManageClassView> = memo(() => {
                               <Rating
                                 precision={0.1}
                                 readOnly
-                                value={selected_class?.average_rating}
+                                value={UseNumbers.toNumber(
+                                  selected_class?.average_rating,
+                                  0
+                                )}
                               />
                             ) : (
                               <b>TBD</b>
@@ -286,28 +290,33 @@ export const ManageClassView: FC<IManageClassView> = memo(() => {
                           <div className="form-group">
                             <div className="label">You Rated</div>
                             <div className="value">
-                              {selected_class?.student_rating && (
-                                <Rating
-                                  value={selected_class?.student_rating}
-                                  name="avearge_rating"
-                                  onChange={(event, val) => {
-                                    const payload: ClassRatingModel = {
-                                      rate_val: val,
-                                      class_pk: selected_class.class_pk,
-                                    };
+                              {/* {selected_class?.student_rating && (
+                                
+                                
+                              )} */}
+                              <Rating
+                                value={UseNumbers.toNumber(
+                                  selected_class?.student_rating,
+                                  0
+                                )}
+                                name="avearge_rating"
+                                onChange={(event, val) => {
+                                  const payload: ClassRatingModel = {
+                                    rate_val: val,
+                                    class_pk: selected_class.class_pk,
+                                  };
 
-                                    dispatch(
-                                      ClassActions.rateClass(payload, () => {
-                                        dispatch(
-                                          setSelectedClassAction(
-                                            selected_class.class_pk
-                                          )
-                                        );
-                                      })
-                                    );
-                                  }}
-                                />
-                              )}
+                                  dispatch(
+                                    ClassActions.rateClass(payload, () => {
+                                      dispatch(
+                                        setSelectedClassAction(
+                                          selected_class.class_pk
+                                        )
+                                      );
+                                    })
+                                  );
+                                }}
+                              />
                             </div>
                           </div>
                         )}

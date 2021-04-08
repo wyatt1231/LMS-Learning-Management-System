@@ -34,7 +34,7 @@ const ClassSessionController = (app) => __awaiter(void 0, void 0, void 0, functi
     }));
     router.post("/getSingleClassSession", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const session_pk = req.body.session_pk;
-        res.json(yield ClassSessionRepository_1.default.getSingleClassSession(session_pk));
+        res.json(yield ClassSessionRepository_1.default.getSingleClassSession(session_pk, parseInt(req.user_id), req.user_type));
     }));
     router.post("/startClassSession", Authorize_1.default("tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;

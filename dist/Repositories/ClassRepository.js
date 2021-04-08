@@ -45,6 +45,7 @@ const addClass = (payload, user_id) => __awaiter(void 0, void 0, void 0, functio
                 session.start_date = useDateParser_1.parseInvalidDateToDefault(session.start_date);
                 session.start_time = useDateParser_1.parseInvalidTimeToDefault(payload.start_time);
                 session.end_time = useDateParser_1.parseInvalidTimeToDefault(payload.end_time);
+                console.log(`session`, session);
                 const sql_insert_session = yield con.Insert(`
             INSERT INTO class_sessions SET
             class_pk=@class_pk,
@@ -318,10 +319,28 @@ const endClass = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         };
     }
 });
-const rateClass = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const rateClass = (payload, user_type) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
+        if (user_type === "student") {
+            const count_student_session = yield con.QuerySingle(`
+      SELECT COUNT(*) AS total FROM class_students cs 
+      JOIN class_sessions s ON s.class_pk = cs.class_pk
+      WHERE cs.student_pk = (SELECT student_pk FROM students WHERE user_id =@user_pk) AND s.class_pk = @class_pk
+
+      `, {
+                user_pk: payload.encoded_by,
+                class_pk: payload.class_pk,
+            });
+            if ((count_student_session === null || count_student_session === void 0 ? void 0 : count_student_session.total) <= 0) {
+                yield con.Rollback();
+                return {
+                    success: false,
+                    message: "You cannot participate a class session that you have not enrolled yet.",
+                };
+            }
+        }
         const res_count_rating = yield con.QuerySingle(`
     SELECT class_rate_pk FROM class_rating WHERE class_pk =@class_pk AND student_pk =(select student_pk from students where user_id=@encoded_by limit 1);`, payload);
         if (res_count_rating === null || res_count_rating === void 0 ? void 0 : res_count_rating.class_rate_pk) {
@@ -539,7 +558,9 @@ const getSingleClass = (class_pk, user_pk, user_type) => __awaiter(void 0, void 
                 user_pk: user_pk,
                 class_pk: data.class_pk,
             });
-            data.student_rating = student_rating.rate_val;
+            if (student_rating === null || student_rating === void 0 ? void 0 : student_rating.rate_val) {
+                data.student_rating = student_rating === null || student_rating === void 0 ? void 0 : student_rating.rate_val;
+            }
         }
         const average_summary = yield con.QuerySingle(`SELECT (SUM(rate_val)/COUNT(*)) average_summary FROM class_rating WHERE class_pk =@class_pk`, {
             class_pk: data.class_pk,

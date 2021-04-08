@@ -4,6 +4,7 @@ import React, { FC, memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import FormDialog from "../../../Component/FormDialog/FormDialog";
+import UseNumbers from "../../../Hooks/UseNumbers";
 import SharedActions from "../../../Services/Actions/SharedActions";
 import TutorActions from "../../../Services/Actions/TutorActions";
 import { getSingleTutorApi } from "../../../Services/Api/TutorApi";
@@ -106,7 +107,11 @@ export const RateTutorDialog: FC<IRateTutorDialog> = memo(() => {
                     <div className="label">Rating</div>
                     <div className="value">
                       <Rating
-                        value={single_tutor_to_student?.rating}
+                        value={UseNumbers.toNumber(
+                          single_tutor_to_student?.rating,
+                          0
+                        )}
+                        name="rating"
                         onChange={(event, newValue) => {
                           const payload: TutorRatingsModel = {
                             rating: newValue,
@@ -160,9 +165,9 @@ export const RateTutorDialog: FC<IRateTutorDialog> = memo(() => {
         }
         actions={
           <>
-            <Button color="primary" variant="contained">
+            {/* <Button color="primary" variant="contained">
               Save Changes
-            </Button>
+            </Button> */}
           </>
         }
       />

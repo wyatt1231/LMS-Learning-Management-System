@@ -72,7 +72,6 @@ export const EditRoomDialog: FC<IEditRoomDialog> = memo(
                     }}
                     noValidate
                   >
-                    {JSON.stringify(errors, null, 2)}
                     <Grid container justify="center" spacing={3}>
                       <Grid xs={12} item>
                         <FormikInputField

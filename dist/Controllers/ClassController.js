@@ -61,7 +61,7 @@ const ClassController = (app) => __awaiter(void 0, void 0, void 0, function* () 
     router.post("/rateClass", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         payload.encoded_by = parseInt(req.user_id);
-        res.json(yield ClassRepository_1.default.rateClass(payload));
+        res.json(yield ClassRepository_1.default.rateClass(payload, req.user_type));
     }));
     router.post("/declineClass", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;

@@ -397,7 +397,7 @@ const searchTutor = (search) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
-        const data = yield con.Query(`SELECT * FROM (select tutor_pk id, concat(firstname,' ',lastname) label,picture from tutors) tmp 
+        const data = yield con.Query(`SELECT * FROM (select tutor_pk id, concat(firstname,' ',lastname) label,picture from tutors where is_dummy='n') tmp 
        ${useSearch_1.GenerateSearch(search, "label")} limit 50
       `, {
             search,

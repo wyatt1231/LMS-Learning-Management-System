@@ -118,7 +118,7 @@ const ClassController = async (app: Express): Promise<void> => {
     async (req: Request & UserClaims, res: Response) => {
       const payload: ClassRatingModel = req.body;
       payload.encoded_by = parseInt(req.user_id);
-      res.json(await ClassRepository.rateClass(payload));
+      res.json(await ClassRepository.rateClass(payload, req.user_type));
     }
   );
 

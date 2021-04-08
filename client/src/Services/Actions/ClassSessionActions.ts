@@ -88,7 +88,7 @@ export const getClassSessionsAction = (class_pk: number) => async (
 };
 
 export const setSingleClassSession = (session_pk: number) => async (
-  dispatch: Dispatch<ClassSessionReducerTypes>
+  dispatch: Dispatch<ClassSessionReducerTypes | PageReducerTypes>
 ) => {
   try {
     dispatch({
@@ -104,6 +104,8 @@ export const setSingleClassSession = (session_pk: number) => async (
         type: "single_class_session",
         single_class_session: response.data,
       });
+    } else {
+      helperErrorMessage(dispatch, response);
     }
     dispatch({
       type: "fetch_single_class_session",

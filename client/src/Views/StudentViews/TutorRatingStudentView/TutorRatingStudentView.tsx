@@ -1,16 +1,16 @@
-import { Avatar, Button, Chip, Container } from "@material-ui/core";
+import { Avatar, Button } from "@material-ui/core";
+import { Rating } from "@material-ui/lab";
 import React, { FC, memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import FormDialog from "../../../Component/FormDialog/FormDialog";
-
 import styled from "styled-components";
-import { Rating } from "@material-ui/lab";
-import { getDummyTutorsApi } from "../../../Services/Api/TutorApi";
-import { RootStore } from "../../../Services/Store";
-import { TutorRatingsModel } from "../../../Services/Models/TutorRatingsModel";
+import FormDialog from "../../../Component/FormDialog/FormDialog";
 import { setGeneralPrompt } from "../../../Services/Actions/PageActions";
 import { insertDummyTutorRatingsAction } from "../../../Services/Actions/TutorActions";
 import { SetCurrentUserAction } from "../../../Services/Actions/UserActions";
+import { getDummyTutorsApi } from "../../../Services/Api/TutorApi";
+import { TutorRatingsModel } from "../../../Services/Models/TutorRatingsModel";
+import { RootStore } from "../../../Services/Store";
+
 interface TutorRatingStudentViewInterface {}
 
 interface RateTutorInterface {

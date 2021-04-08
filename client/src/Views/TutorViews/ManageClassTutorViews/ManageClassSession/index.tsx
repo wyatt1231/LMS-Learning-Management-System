@@ -35,6 +35,8 @@ export const ManageClassSelectedSessionTutorView: FC<ManageClassSelectedSessionT
       (store: RootStore) => store.ClassSessionReducer.single_class_session
     );
 
+    console.log(`single_class_session ->`, single_class_session);
+
     useEffect(() => {
       let mounted = true;
 

@@ -53,6 +53,9 @@ const addClass = async (
         session.start_date = parseInvalidDateToDefault(session.start_date);
         session.start_time = parseInvalidTimeToDefault(payload.start_time);
         session.end_time = parseInvalidTimeToDefault(payload.end_time);
+
+        console.log(`session`, session);
+
         const sql_insert_session = await con.Insert(
           `
             INSERT INTO class_sessions SET
@@ -374,10 +377,37 @@ const endClass = async (payload: ClassModel): Promise<ResponseModel> => {
   }
 };
 
-const rateClass = async (payload: ClassRatingModel): Promise<ResponseModel> => {
+const rateClass = async (
+  payload: ClassRatingModel,
+  user_type: string
+): Promise<ResponseModel> => {
   const con = await DatabaseConnection();
   try {
     await con.BeginTransaction();
+
+    if (user_type === "student") {
+      const count_student_session = await con.QuerySingle(
+        `
+      SELECT COUNT(*) AS total FROM class_students cs 
+      JOIN class_sessions s ON s.class_pk = cs.class_pk
+      WHERE cs.student_pk = (SELECT student_pk FROM students WHERE user_id =@user_pk) AND s.class_pk = @class_pk
+
+      `,
+        {
+          user_pk: payload.encoded_by,
+          class_pk: payload.class_pk,
+        }
+      );
+
+      if (count_student_session?.total <= 0) {
+        await con.Rollback();
+        return {
+          success: false,
+          message:
+            "You cannot participate a class session that you have not enrolled yet.",
+        };
+      }
+    }
 
     const res_count_rating = await con.QuerySingle(
       `
@@ -669,7 +699,9 @@ const getSingleClass = async (
         }
       );
 
-      data.student_rating = student_rating.rate_val;
+      if (student_rating?.rate_val) {
+        data.student_rating = student_rating?.rate_val;
+      }
     }
 
     const average_summary = await con.QuerySingle(

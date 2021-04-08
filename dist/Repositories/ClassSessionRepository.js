@@ -37,10 +37,46 @@ const getTblClassSessions = (class_pk) => __awaiter(void 0, void 0, void 0, func
         };
     }
 });
-const getSingleClassSession = (session_pk) => __awaiter(void 0, void 0, void 0, function* () {
+const getSingleClassSession = (session_pk, user_pk, user_type) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
+        if (user_type === "student") {
+            const count_student_session = yield con.QuerySingle(`
+      SELECT COUNT(*) AS total FROM class_students cs 
+      JOIN class_sessions s ON s.class_pk = cs.class_pk
+      WHERE cs.student_pk = (SELECT student_pk FROM students WHERE user_id =@user_pk) AND s.session_pk = @session_pk
+
+      `, {
+                user_pk: user_pk,
+                session_pk: session_pk,
+            });
+            if ((count_student_session === null || count_student_session === void 0 ? void 0 : count_student_session.total) <= 0) {
+                yield con.Rollback();
+                return {
+                    success: false,
+                    message: "You cannot participate a class session that you have not enrolled yet.",
+                };
+            }
+        }
+        else if (user_type === "tutor") {
+            const count_tutor_session = yield con.QuerySingle(`
+        SELECT COUNT(*) FROM class_sessions cs
+        JOIN classes c ON cs.class_pk = c.class_pk    
+             WHERE cs.session_pk = @session_pk AND c.tutor_pk = (SELECT tutor_pk FROM tutors WHERE user_id = @user_pk); 
+         
+      `, {
+                user_pk: user_pk,
+                session_pk: session_pk,
+            });
+            if ((count_tutor_session === null || count_tutor_session === void 0 ? void 0 : count_tutor_session.total) <= 0) {
+                yield con.Rollback();
+                return {
+                    success: false,
+                    message: "You cannot enter a class session that you are not assigned to.",
+                };
+            }
+        }
         const data = yield con.QuerySingle(`SELECT s.*,md5(session_pk) hash_pk, c.class_desc,c.course_desc FROM class_sessions s JOIN classes c
        ON s.class_pk = c.class_pk WHERE s.session_pk=@session_pk;`, {
             session_pk: session_pk,
