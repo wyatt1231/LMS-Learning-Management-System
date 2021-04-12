@@ -4,7 +4,7 @@ const toDecimal = (
   replacement?: number | string
 ) => {
   try {
-    const val = num.toFixed(decimal_places);
+    const val = parseInt(num).toFixed(decimal_places);
 
     return val;
   } catch (error) {

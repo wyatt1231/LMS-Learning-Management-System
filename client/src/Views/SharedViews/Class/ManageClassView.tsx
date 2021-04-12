@@ -49,6 +49,8 @@ export const ManageClassView: FC<IManageClassView> = memo(() => {
     (store: RootStore) => store.ClassReducer.selected_class
   );
 
+  console.log(`selected_class`, selected_class);
+
   const fetching_selected_class = useSelector(
     (store: RootStore) => store.ClassReducer.fetching_selected_class
   );
@@ -180,30 +182,56 @@ export const ManageClassView: FC<IManageClassView> = memo(() => {
     });
   }
 
-  let Tabs: Array<ITab> = [
-    {
-      label: "Session",
-      link: `/${user_type}/class/${params.class_pk}/session`,
-    },
-    {
-      label: "Student",
-      link: `/${user_type}/class/${params.class_pk}/student`,
-    },
-    {
-      label: "Material",
-      link: `/${user_type}/class/${params.class_pk}/material`,
-    },
-    {
-      label: "Task",
-      link: `/${user_type}/class/${params.class_pk}/task`,
-    },
-  ];
+  let Tabs: Array<ITab> = [];
 
-  if (user_type === "admin") {
+  if (user_type === "admin" || user_type === "student") {
+    const t = [
+      {
+        label: "Sessions",
+        link: `/${user_type}/class/${params.class_pk}/session`,
+      },
+      {
+        label: "Students",
+        link: `/${user_type}/class/${params.class_pk}/student`,
+      },
+      {
+        label: "Materials",
+        link: `/${user_type}/class/${params.class_pk}/material`,
+      },
+      {
+        label: "Tasks",
+        link: `/${user_type}/class/${params.class_pk}/task`,
+      },
+      {
+        label: "Ratings",
+        link: `/${user_type}/class/${params.class_pk}/rating`,
+      },
+    ];
+    Tabs = t;
+  } else if (user_type === "tutor") {
     Tabs.push({
-      label: "Rating",
-      link: `/${user_type}/class/${params.class_pk}/rating`,
+      label: "Sessions",
+      link: `/${user_type}/class/${params.class_pk}/session`,
     });
+
+    if (
+      selected_class?.sts_pk === "a" ||
+      selected_class?.sts_pk === "s" ||
+      selected_class?.sts_pk === "e"
+    ) {
+      Tabs.push({
+        label: "Students",
+        link: `/${user_type}/class/${params.class_pk}/student`,
+      });
+      Tabs.push({
+        label: "Materials",
+        link: `/${user_type}/class/${params.class_pk}/material`,
+      });
+      Tabs.push({
+        label: "Tasks",
+        link: `/${user_type}/class/${params.class_pk}/task`,
+      });
+    }
   }
 
   return (

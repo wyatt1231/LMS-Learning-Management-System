@@ -542,6 +542,7 @@ const getSingleClass = (class_pk, user_pk, user_type) => __awaiter(void 0, void 
       ON crs.course_pk = c.course_pk where c.class_pk=@class_pk limit 1`, {
             class_pk: class_pk,
         });
+        console.log(`data single class`, data);
         if (data === null || data === void 0 ? void 0 : data.pic) {
             data.pic = yield useFileUploader_1.GetUploadedImage(data.pic);
         }
@@ -900,27 +901,30 @@ const getClassSummaryStats = () => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 const getOpenClassProgressStats = () => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
-        const data = yield con.Query(`SELECT c.class_pk,c.class_desc,c.session_count,c.course_desc,c.start_time, c.end_time,t.picture tutor_pic, c.tutor_name,
-      IF((SELECT COUNT(*) FROM class_sessions WHERE sts_pk ='s' AND class_pk = c.class_pk ) > 0 , TRUE, FALSE) is_ongoing
+        const class_table = yield con.Query(`SELECT c.*,IF((SELECT COUNT(*) FROM class_sessions WHERE sts_pk ='s' AND class_pk = c.class_pk ) > 0 , TRUE, FALSE) is_ongoing
       FROM classes c
-      LEFT JOIN tutors t ON c.tutor_pk = c.tutor_pk
-      LEFT JOIN class_students cs ON cs.class_pk = c.class_pk
       GROUP BY c.class_pk`, null);
-        for (const t of data) {
-            t.tutor_pic = yield useFileUploader_1.GetUploadedImage(t.tutor_pic);
-            t.course_pic = yield useFileUploader_1.GetUploadedImage(t.course_pic);
-            const sql_total_ended_session = yield con.QuerySingle(`SELECT COUNT(*) AS total FROM class_sessions WHERE sts_pk = 'e' AND class_pk =@class_pk;`, {
-                class_pk: t.class_pk,
+        for (const c of class_table) {
+            c.tutor_info = yield con.QuerySingle(`select * from tutors where tutor_pk=@tutor_pk;`, {
+                tutor_pk: c.tutor_pk,
             });
-            t.ended_session = sql_total_ended_session.total;
+            if ((_a = c === null || c === void 0 ? void 0 : c.tutor_info) === null || _a === void 0 ? void 0 : _a.picture) {
+                c.tutor_info.picture = yield useFileUploader_1.GetUploadedImage((_b = c === null || c === void 0 ? void 0 : c.tutor_info) === null || _b === void 0 ? void 0 : _b.picture);
+            }
+            c.course_pic = yield useFileUploader_1.GetUploadedImage(c.course_pic);
+            const sql_total_ended_session = yield con.QuerySingle(`SELECT COUNT(*) AS total FROM class_sessions WHERE sts_pk = 'e' AND class_pk =@class_pk;`, {
+                class_pk: c.class_pk,
+            });
+            c.ended_session = sql_total_ended_session.total;
         }
         con.Commit();
         return {
             success: true,
-            data: data,
+            data: class_table,
         };
     }
     catch (error) {
@@ -957,11 +961,11 @@ const getTotalTutorClassStats = (user_pk) => __awaiter(void 0, void 0, void 0, f
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`SELECT * FROM (
-        SELECT 'For Approval Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'fa' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = 95)
+        SELECT 'For Approval Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'fa' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = @user_pk)
         UNION 
-        SELECT 'Approved Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'a' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = 95)
+        SELECT 'Approved Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'a' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = @user_pk)
         UNION 
-        SELECT 'Ended Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'e' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = 95)
+        SELECT 'Ended Classes' AS label, COUNT(*) AS value FROM classes WHERE sts_pk = 'e' AND tutor_pk = (SELECT  tutor_pk FROM tutors WHERE user_id = @user_pk)
         ) tmp
         `, {
             user_pk,

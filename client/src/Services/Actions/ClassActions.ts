@@ -128,10 +128,8 @@ export const setSelectedClassAction = (course_pk: number) => async (
       course_pk
     );
 
-    dispatch({
-      type: "fetching_selected_class",
-      fetching_selected_class: false,
-    });
+    console.log(`approve`, course_pk, response);
+
     if (response.success) {
       dispatch({
         type: "set_selected_class",
@@ -139,6 +137,11 @@ export const setSelectedClassAction = (course_pk: number) => async (
       });
     } else {
     }
+
+    dispatch({
+      type: "fetching_selected_class",
+      fetching_selected_class: false,
+    });
   } catch (error) {
     console.error(`action error`, error);
   }

@@ -42,8 +42,8 @@ export const TutorCalendarView: FC<ITutorCalendarView> = memo(
             views={{
               timeGridFourDay: {
                 type: "timeGrid",
-                duration: { days: 3 },
-                buttonText: "3 day",
+                duration: { days: 5 },
+                buttonText: "5 day",
               },
             }}
             events={tutor_session_cal}

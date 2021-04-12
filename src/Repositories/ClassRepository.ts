@@ -673,6 +673,9 @@ const getSingleClass = async (
         class_pk: class_pk,
       }
     );
+
+    console.log(`data single class`, data);
+
     if (data?.pic) {
       data.pic = await GetUploadedImage(data.pic);
     }
@@ -1175,34 +1178,41 @@ const getOpenClassProgressStats = async (): Promise<ResponseModel> => {
   try {
     await con.BeginTransaction();
 
-    const data: Array<ClassModel> = await con.Query(
-      `SELECT c.class_pk,c.class_desc,c.session_count,c.course_desc,c.start_time, c.end_time,t.picture tutor_pic, c.tutor_name,
-      IF((SELECT COUNT(*) FROM class_sessions WHERE sts_pk ='s' AND class_pk = c.class_pk ) > 0 , TRUE, FALSE) is_ongoing
+    const class_table: Array<ClassModel> = await con.Query(
+      `SELECT c.*,IF((SELECT COUNT(*) FROM class_sessions WHERE sts_pk ='s' AND class_pk = c.class_pk ) > 0 , TRUE, FALSE) is_ongoing
       FROM classes c
-      LEFT JOIN tutors t ON c.tutor_pk = c.tutor_pk
-      LEFT JOIN class_students cs ON cs.class_pk = c.class_pk
       GROUP BY c.class_pk`,
       null
     );
 
-    for (const t of data) {
-      t.tutor_pic = await GetUploadedImage(t.tutor_pic);
-      t.course_pic = await GetUploadedImage(t.course_pic);
+    for (const c of class_table) {
+      c.tutor_info = await con.QuerySingle(
+        `select * from tutors where tutor_pk=@tutor_pk;`,
+        {
+          tutor_pk: c.tutor_pk,
+        }
+      );
+
+      if (c?.tutor_info?.picture) {
+        c.tutor_info.picture = await GetUploadedImage(c?.tutor_info?.picture);
+      }
+
+      c.course_pic = await GetUploadedImage(c.course_pic);
 
       const sql_total_ended_session = await con.QuerySingle(
         `SELECT COUNT(*) AS total FROM class_sessions WHERE sts_pk = 'e' AND class_pk =@class_pk;`,
         {
-          class_pk: t.class_pk,
+          class_pk: c.class_pk,
         }
       );
 
-      t.ended_session = sql_total_ended_session.total;
+      c.ended_session = sql_total_ended_session.total;
     }
 
     con.Commit();
     return {
       success: true,
-      data: data,
+      data: class_table,
     };
   } catch (error) {
     await con.Rollback();

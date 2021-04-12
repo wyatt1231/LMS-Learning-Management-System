@@ -16,11 +16,11 @@ if (process.env.NODE_ENV === "production") {
   };
 } else {
   con = {
-    host: "localhost",
-    user: "root",
-    password: "root sa",
-    database: "lms",
-    port: 3309,
+    host: "sql6.freemysqlhosting.net",
+    user: "sql6403664",
+    password: "tZkb3jBQbm",
+    database: "sql6403664",
+    port: 3306,
     connectionLimit: 10,
     waitForConnections: true,
   };
@@ -69,12 +69,17 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             }
           }
 
-          const full_query = `
+          const full_query =
+            `
           ${query} 
-          ORDER BY ${sort.column} ${sort.direction}
-          LIMIT ${mysql.escape(page.begin)}, ${mysql.escape(page.limit)} `;
+          ORDER BY ${sort.column} ${sort.direction}` +
+            (page
+              ? `
+        LIMIT ${mysql.escape(page.begin)}, ${mysql.escape(page.limit)} `
+              : "");
           connection.query(full_query, (err, result: RowDataPacket[][]) => {
             if (err) {
+              console.log(`full_query `, full_query);
               reject(err);
             } else {
               resolve(result);
@@ -82,6 +87,7 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
           });
         });
       };
+
       const Modify = (sql: string, binding: any): Promise<number> => {
         return new Promise((resolve, reject) => {
           const { success, message, query } = queryFormat(sql, binding);
@@ -211,10 +217,17 @@ const queryFormat = (query: string, values: any): QueryFormatModel => {
             return "(NULL)";
           }
           if (values[key] instanceof Array) {
-            const formatArritem = values[key].map((v) => mysql.escape(v));
-            const arr_rep: string = formatArritem.join(",");
-            return ` (${arr_rep}) `;
+            const furnished_arr = values[key].filter((v) => !!v);
+
+            if (furnished_arr.length > 0) {
+              const formatArritem = furnished_arr.map((v) => mysql.escape(v));
+              const arr_rep: string = formatArritem.join(",");
+              return ` (${arr_rep}) `;
+            } else {
+              return ` ('') `;
+            }
           }
+
           return mysql.escape(values[key]);
         } else {
           if (typeof formattedQuery.message === "undefined") {
@@ -225,14 +238,20 @@ const queryFormat = (query: string, values: any): QueryFormatModel => {
         }
       }
 
-      if (key instanceof Array) {
-        for (let i = 0; i < key.length; i++) {
-          key[i] = mysql.escape(key[i]);
-        }
-        const joined_arr = key.join(",");
+      // if (key instanceof Array) {
+      //   console.log(`array -> array `);
+      //   if (key.length > 0) {
+      //     for (let i = 0; i < key.length; i++) {
+      //       key[i] = mysql.escape(key[i]);
+      //     }
+      //     const joined_arr = key.join(",");
 
-        return joined_arr;
-      }
+      //     return joined_arr;
+      //   } else {
+      //     console.log(`key`, key);
+      //     return "";
+      //   }
+      // }
 
       return str;
     }

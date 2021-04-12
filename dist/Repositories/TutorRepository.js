@@ -495,7 +495,7 @@ const getTotalTutors = () => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
-        const res_sql_count = yield con.QuerySingle(`select count(*) as total from tutors  WHERE is_active='y';`, {});
+        const res_sql_count = yield con.QuerySingle(`select count(*) as total from tutors  WHERE is_active='y' and is_dummy='n';`, {});
         con.Commit();
         return {
             success: true,
@@ -713,7 +713,7 @@ const getMostRatedTutors = () => __awaiter(void 0, void 0, void 0, function* () 
         (
         SELECT *,
         COALESCE((SELECT  SUM(rating)/COUNT(*) FROM tutor_ratings WHERE tutor_pk = t.tutor_pk), 0) AS average_rating 
-        FROM tutors t
+        FROM tutors t where is_dummy='n' 
         ) tmp
         where average_rating > 0 
         ORDER BY average_rating DESC LIMIT 15

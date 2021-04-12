@@ -570,7 +570,9 @@ const getLoggedInTutorSessionCalendar = (user_pk) => __awaiter(void 0, void 0, v
       FROM classes c 
       JOIN class_sessions cs ON c.class_pk = cs.class_pk 
       JOIN status_master sm ON cs.sts_pk = sm.sts_pk
-      WHERE c.tutor_pk =(SELECT tutor_pk FROM tutors WHERE user_id = @user_pk limit 1);
+      WHERE c.tutor_pk =(SELECT tutor_pk FROM tutors WHERE user_id = @user_pk limit 1)
+      and c.sts_pk not in ('c','fa','p')
+      ;
       `, {
             user_pk,
         });

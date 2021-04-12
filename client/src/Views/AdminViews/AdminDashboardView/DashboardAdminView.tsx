@@ -376,7 +376,15 @@ export const DashboardAdminView: FC<IDashboardAdminView> = memo(() => {
                 }}
               >
                 <div className="container-title">
-                  Open Classes <small>(10 classes are currently opened)</small>
+                  Open Classes{" "}
+                  <small>
+                    (
+                    {UseNumbers.toNumber(
+                      open_class_progress_stats?.length,
+                      -1
+                    ) + 1}{" "}
+                    classes are open)
+                  </small>
                 </div>
 
                 <TableContainer
@@ -406,11 +414,13 @@ export const DashboardAdminView: FC<IDashboardAdminView> = memo(() => {
                           <TableCell>
                             <div className="table-profile">
                               <CustomAvatar
-                                src={c?.tutor_pic}
+                                src={c?.tutor_info?.picture}
                                 errorMessage={c?.tutor_name?.charAt(0)}
                               />
                               <NavLink to={`/admin/tutor/${c?.tutor_pk}`}>
-                                {c?.tutor_name}
+                                {c?.tutor_info?.firstname}{" "}
+                                {c?.tutor_info?.middlename}{" "}
+                                {c?.tutor_info?.lastname}
                               </NavLink>
                             </div>
                           </TableCell>
