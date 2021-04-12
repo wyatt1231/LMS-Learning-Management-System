@@ -6,20 +6,29 @@ let con: mysql.PoolOptions | null = null;
 
 if (process.env.NODE_ENV === "production") {
   con = {
-    host: "sql6.freemysqlhosting.net",
-    user: "sql6403664",
-    password: "tZkb3jBQbm",
-    database: "sql6403664",
+    host: "freedb.tech",
+    user: "freedbtech_ghfhwecxvcedas",
+    password: "ghfhwecxvcedas",
+    database: "freedbtech_ghfhwecxvcedas",
     port: 3306,
     connectionLimit: 10,
     waitForConnections: true,
   };
 } else {
+  // con = {
+  //   host: "sql6.freemysqlhosting.net",
+  //   user: "sql6403664",
+  //   password: "tZkb3jBQbm",
+  //   database: "sql6403664",
+  //   port: 3306,
+  //   connectionLimit: 10,
+  //   waitForConnections: true,
+  // };
   con = {
-    host: "sql6.freemysqlhosting.net",
-    user: "sql6403664",
-    password: "tZkb3jBQbm",
-    database: "sql6403664",
+    host: "freedb.tech",
+    user: "freedbtech_ghfhwecxvcedas",
+    password: "ghfhwecxvcedas",
+    database: "freedbtech_ghfhwecxvcedas",
     port: 3306,
     connectionLimit: 10,
     waitForConnections: true,
