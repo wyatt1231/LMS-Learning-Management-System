@@ -1,4 +1,5 @@
 import { Express, Response, Request, Router } from "express";
+import UseCollabFilter from "../Hooks/UseCollabFilter";
 import Authorize from "../Middlewares/Authorize";
 import { PaginationModel } from "../Models/PaginationModel";
 import { TutorFavModel } from "../Models/TutorFavModel";
@@ -167,6 +168,19 @@ const TutorController = async (app: Express): Promise<void> => {
       res.json(await TutorRepository.getMostRatedTutors());
     }
   );
+
+  router.get("/pcc", async (req: Request & UserClaims, res: Response) => {
+    // const sim_score = UseCollabFilter.PearsonCorrelation(
+    //   // [1, 0, 3, 0, 0, 5, 0, 0, 5, 0, 4, 0] //active
+    //   // [0, 0, 0, 2, 4, 5, 0], //active
+    //   // [4, 0, 0, 5, 1, 0, 0]
+    //   [1, 0, 3, 0, 3, 0, 0, 2, 0, 0, 4, 0],
+    //   [1, 0, 3, 0, 0, 5, 0, 0, 5, 0, 4, 0]
+    //   //
+    // );
+
+    res.json(await TutorRepository.getRecommendedTutors(parseInt(req.user_id)));
+  });
 
   app.use("/api/tutor/", router);
 };

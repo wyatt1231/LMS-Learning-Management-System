@@ -49,8 +49,6 @@ export const ManageClassView: FC<IManageClassView> = memo(() => {
     (store: RootStore) => store.ClassReducer.selected_class
   );
 
-  console.log(`selected_class`, selected_class);
-
   const fetching_selected_class = useSelector(
     (store: RootStore) => store.ClassReducer.fetching_selected_class
   );

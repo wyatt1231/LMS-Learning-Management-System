@@ -8,13 +8,11 @@ const mysql2_1 = __importDefault(require("mysql2"));
 let con = null;
 if (process.env.NODE_ENV === "production") {
     con = {
-        host: "freedb.tech",
-        user: "freedbtech_ghfhwecxvcedas",
-        password: "ghfhwecxvcedas",
-        database: "freedbtech_ghfhwecxvcedas",
+        host: "31.170.167.52",
+        user: "u498243179_lms",
+        password: "LMS@capstone22",
+        database: "u498243179_lms",
         port: 3306,
-        connectionLimit: 10,
-        waitForConnections: true,
     };
 }
 else {
@@ -28,13 +26,11 @@ else {
     //   waitForConnections: true,
     // };
     con = {
-        host: "freedb.tech",
-        user: "freedbtech_ghfhwecxvcedas",
-        password: "ghfhwecxvcedas",
-        database: "freedbtech_ghfhwecxvcedas",
+        host: "31.170.167.52",
+        user: "u498243179_lms",
+        password: "LMS@capstone2",
+        database: "u498243179_lms",
         port: 3306,
-        connectionLimit: 10,
-        waitForConnections: true,
     };
 }
 exports.DatabaseConfig = mysql2_1.default.createPool(con);

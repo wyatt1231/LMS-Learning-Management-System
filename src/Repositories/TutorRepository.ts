@@ -1,4 +1,5 @@
 import { DatabaseConnection } from "../Configurations/DatabaseConfig";
+import UseCollabFilter from "../Hooks/UseCollabFilter";
 import { parseInvalidDateToDefault } from "../Hooks/useDateParser";
 import { ErrorMessage } from "../Hooks/useErrorMessage";
 import { GetUploadedImage, UploadImage } from "../Hooks/useFileUploader";
@@ -271,7 +272,6 @@ const toggleActiveStatus = async (
   const con = await DatabaseConnection();
   try {
     await con.BeginTransaction();
-    console.log(`tutor_pk`, tutor_pk);
 
     const tutor_active_status = await con.QuerySingle(
       `
@@ -451,8 +451,6 @@ const getSingTutorToStudent = async (
         user_pk: user_pk,
       }
     );
-
-    console.log(`favorited?.is_fav`, favorited?.is_fav);
 
     if (favorited?.is_fav) {
       data.favorited = favorited?.is_fav;
@@ -835,8 +833,6 @@ const favoriteTutor = async (
         payload
       );
 
-      console.log(`updated`, payload.tutor_fav_pk);
-
       if (sql_change_fav < 1) {
         con.Rollback();
         return {
@@ -860,8 +856,6 @@ const favoriteTutor = async (
         };
       }
     }
-
-    console.log(`fav`);
 
     const audit_log = await con.Insert(
       `insert into audit_log set 
@@ -935,6 +929,82 @@ const getMostRatedTutors = async (): Promise<ResponseModel> => {
   }
 };
 
+const getRecommendedTutors = async (
+  user_pk: number
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const student_pk = 10;
+    const unrated_tutors: Array<TutorRatingsModel> = await con.Query(
+      `SELECT t.tutor_pk FROM tutors t WHERE t.tutor_pk NOT IN (SELECT tutor_pk FROM tutor_ratings WHERE student_pk = @student_pk)`,
+      {
+        student_pk,
+      }
+    );
+
+    console.log(`unrated_tutors`, unrated_tutors);
+
+    const student_ratings: Array<TutorRatingsModel> = await con.Query(
+      `SELECT tutor_pk,rating FROM tutor_ratings WHERE student_pk = @student_pk order by student_pk asc;
+        `,
+      {
+        student_pk,
+      }
+    );
+
+    console.log(`student_ratings`, student_ratings);
+
+    const tutors: Array<TutorRatingsModel> = await con.Query(
+      `SELECT tutor_pk FROM tutor_ratings GROUP BY tutor_pk  ORDER BY tutor_pk`,
+      {}
+    );
+
+    const students: Array<TutorRatingsModel> = await con.Query(
+      `SELECT student_pk FROM tutor_ratings GROUP BY student_pk  ORDER BY student_pk
+      `,
+      {}
+    );
+
+    const ratings: Array<TutorRatingsModel> = await con.Query(
+      `SELECT rating,student_pk,tutor_pk FROM tutor_ratings order by student_pk asc;
+      `,
+      {}
+    );
+
+    for (const ut of unrated_tutors) {
+      const rating_prediction = await UseCollabFilter.RatingPrediction(
+        ut.tutor_pk,
+        tutors,
+        students,
+        ratings,
+        student_ratings
+      );
+
+      console.log(
+        `rating_prediction of ${ut.tutor_pk} is :`,
+        rating_prediction
+      );
+    }
+
+    con.Commit();
+    return {
+      success: true,
+      data: {
+        // rating_prediction,
+      },
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
 export default {
   addTutor,
   updateTutor,
@@ -952,4 +1022,5 @@ export default {
   favoriteTutor,
   getSingTutorToStudent,
   getMostRatedTutors,
+  getRecommendedTutors,
 };

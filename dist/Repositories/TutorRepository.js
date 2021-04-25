@@ -8,8 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const DatabaseConfig_1 = require("../Configurations/DatabaseConfig");
+const UseCollabFilter_1 = __importDefault(require("../Hooks/UseCollabFilter"));
 const useDateParser_1 = require("../Hooks/useDateParser");
 const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
@@ -223,7 +227,6 @@ const toggleActiveStatus = (tutor_pk, user_pk) => __awaiter(void 0, void 0, void
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
-        console.log(`tutor_pk`, tutor_pk);
         const tutor_active_status = yield con.QuerySingle(`
     select is_active from tutors where tutor_pk = @tutor_pk;
     `, {
@@ -359,7 +362,6 @@ const getSingTutorToStudent = (tutor_pk, user_pk) => __awaiter(void 0, void 0, v
             tutor_pk: tutor_pk,
             user_pk: user_pk,
         });
-        console.log(`favorited?.is_fav`, favorited === null || favorited === void 0 ? void 0 : favorited.is_fav);
         if (favorited === null || favorited === void 0 ? void 0 : favorited.is_fav) {
             data.favorited = favorited === null || favorited === void 0 ? void 0 : favorited.is_fav;
         }
@@ -653,7 +655,6 @@ const favoriteTutor = (payload) => __awaiter(void 0, void 0, void 0, function* (
             const sql_change_fav = yield con.Modify(`
         UPDATE tutor_fav set is_fav=if(is_fav = 'y', 'n','y') where tutor_fav_pk=@tutor_fav_pk;
       `, payload);
-            console.log(`updated`, payload.tutor_fav_pk);
             if (sql_change_fav < 1) {
                 con.Rollback();
                 return {
@@ -674,7 +675,6 @@ const favoriteTutor = (payload) => __awaiter(void 0, void 0, void 0, function* (
                 };
             }
         }
-        console.log(`fav`);
         const audit_log = yield con.Insert(`insert into audit_log set 
       user_pk=@user_pk,
       activity=CONCAT('favorited tutor ',(select concat(firstname,' ',lastname) from tutors where tutor_pk=@tutor_pk limit 1));
@@ -736,6 +736,46 @@ const getMostRatedTutors = () => __awaiter(void 0, void 0, void 0, function* () 
         };
     }
 });
+const getRecommendedTutors = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const student_pk = 10;
+        const unrated_tutors = yield con.Query(`SELECT t.tutor_pk FROM tutors t WHERE t.tutor_pk NOT IN (SELECT tutor_pk FROM tutor_ratings WHERE student_pk = @student_pk)`, {
+            student_pk,
+        });
+        console.log(`unrated_tutors`, unrated_tutors);
+        const student_ratings = yield con.Query(`SELECT tutor_pk,rating FROM tutor_ratings WHERE student_pk = @student_pk order by student_pk asc;
+        `, {
+            student_pk,
+        });
+        console.log(`student_ratings`, student_ratings);
+        const tutors = yield con.Query(`SELECT tutor_pk FROM tutor_ratings GROUP BY tutor_pk  ORDER BY tutor_pk`, {});
+        const students = yield con.Query(`SELECT student_pk FROM tutor_ratings GROUP BY student_pk  ORDER BY student_pk
+      `, {});
+        const ratings = yield con.Query(`SELECT rating,student_pk,tutor_pk FROM tutor_ratings order by student_pk asc;
+      `, {});
+        for (const ut of unrated_tutors) {
+            const rating_prediction = yield UseCollabFilter_1.default.RatingPrediction(ut.tutor_pk, tutors, students, ratings, student_ratings);
+            console.log(`rating_prediction of ${ut.tutor_pk} is :`, rating_prediction);
+        }
+        con.Commit();
+        return {
+            success: true,
+            data: {
+            // rating_prediction,
+            },
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
 exports.default = {
     addTutor,
     updateTutor,
@@ -753,5 +793,6 @@ exports.default = {
     favoriteTutor,
     getSingTutorToStudent,
     getMostRatedTutors,
+    getRecommendedTutors,
 };
 //# sourceMappingURL=TutorRepository.js.map
