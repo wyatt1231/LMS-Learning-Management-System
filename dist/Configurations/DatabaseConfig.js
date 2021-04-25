@@ -10,21 +10,12 @@ if (process.env.NODE_ENV === "production") {
     con = {
         host: "31.170.167.52",
         user: "u498243179_lms",
-        password: "LMS@capstone22",
+        password: "LMS@capstone2",
         database: "u498243179_lms",
         port: 3306,
     };
 }
 else {
-    // con = {
-    //   host: "sql6.freemysqlhosting.net",
-    //   user: "sql6403664",
-    //   password: "tZkb3jBQbm",
-    //   database: "sql6403664",
-    //   port: 3306,
-    //   connectionLimit: 10,
-    //   waitForConnections: true,
-    // };
     con = {
         host: "31.170.167.52",
         user: "u498243179_lms",
