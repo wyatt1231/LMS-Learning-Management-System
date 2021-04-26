@@ -6,7 +6,7 @@ let con: mysql.PoolOptions | null = null;
 
 if (process.env.NODE_ENV === "production") {
   con = {
-    host: "31.170.167.52",
+    host: "109.106.254.1",
     user: "u498243179_lms",
     password: "LMS@capstone2",
     database: "u498243179_lms",
@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === "production") {
   };
 } else {
   con = {
-    host: "31.170.167.52",
+    host: "109.106.254.1",
     user: "u498243179_lms",
     password: "LMS@capstone2",
     database: "u498243179_lms",
