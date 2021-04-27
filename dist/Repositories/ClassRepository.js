@@ -8,11 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const DatabaseConfig_1 = require("../Configurations/DatabaseConfig");
 const useDateParser_1 = require("../Hooks/useDateParser");
 const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
+const UseSms_1 = __importDefault(require("../Hooks/UseSms"));
 const addClass = (payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
@@ -38,6 +42,29 @@ const addClass = (payload, user_id) => __awaiter(void 0, void 0, void 0, functio
         session_count=@session_count,
         encoder_pk=@encoder_pk;
         `, payload);
+        payload.class_pk = sql_insert_class.insertedId;
+        const tutor_info = yield con.QuerySingle(`SELECT * FROM tutors where tutor_pk=@tutor_pk;`, {
+            tutor_pk: payload.tutor_pk,
+        });
+        const msg = `Good day ${tutor_info.firstname} ${tutor_info.lastname}. This is Catalunan Pequeño National High School informing you that a class entitled ${payload.class_desc} has been assigned to you.
+    `;
+        const res = yield UseSms_1.default.SendSms(tutor_info.mob_no, msg);
+        const notif_payload = {
+            body: `A class entitled ${payload.class_desc} has been assigned to you.`,
+            user_pk: tutor_info.user_id,
+            link: `/tutor/class/${payload.class_pk}/session`,
+            user_type: "tutor",
+        };
+        const notif_res = yield con.Insert(`INSERT INTO notif 
+        SET
+        body=@body,
+        link=@link;`, notif_payload);
+        notif_payload.notif_pk = notif_res.insertedId;
+        yield con.Insert(`INSERT INTO notif_users 
+      SET 
+      notif_pk=@notif_pk,
+      user_type=@user_type,
+      user_pk=@user_pk;`, notif_payload);
         if (sql_insert_class.insertedId > 0) {
             for (const session of payload.class_sessions) {
                 session.class_pk = sql_insert_class.insertedId;
@@ -45,7 +72,6 @@ const addClass = (payload, user_id) => __awaiter(void 0, void 0, void 0, functio
                 session.start_date = useDateParser_1.parseInvalidDateToDefault(session.start_date);
                 session.start_time = useDateParser_1.parseInvalidTimeToDefault(payload.start_time);
                 session.end_time = useDateParser_1.parseInvalidTimeToDefault(payload.end_time);
-                console.log(`session`, session);
                 const sql_insert_session = yield con.Insert(`
             INSERT INTO class_sessions SET
             class_pk=@class_pk,
@@ -62,10 +88,16 @@ const addClass = (payload, user_id) => __awaiter(void 0, void 0, void 0, functio
                     };
                 }
             }
+            const tutor_info = yield con.QuerySingle(`select user_id from tutors where tutor_pk = @tutor_pk;`, {
+                tutor_pk: payload.tutor_pk,
+            });
             con.Commit();
             return {
                 success: true,
                 message: "The item has been added successfully",
+                data: {
+                    tutor_user_id: tutor_info.user_id,
+                },
             };
         }
         else {
@@ -542,7 +574,6 @@ const getSingleClass = (class_pk, user_pk, user_type) => __awaiter(void 0, void 
       ON crs.course_pk = c.course_pk where c.class_pk=@class_pk limit 1`, {
             class_pk: class_pk,
         });
-        console.log(`data single class`, data);
         if (data === null || data === void 0 ? void 0 : data.pic) {
             data.pic = yield useFileUploader_1.GetUploadedImage(data.pic);
         }
@@ -846,7 +877,6 @@ const getStudentClassByStudentPk = (student_pk) => __awaiter(void 0, void 0, voi
             });
             t.ended_session = sql_total_ended_session.total;
         }
-        // console.log(`data`, data);
         con.Commit();
         return {
             success: true,

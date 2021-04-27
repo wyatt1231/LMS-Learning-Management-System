@@ -72,7 +72,7 @@ const currentUser = (user_id) => __awaiter(void 0, void 0, void 0, function* () 
             user_id: user_id,
         });
         if (updated_status > 0) {
-            const user_data = yield con.QuerySingle(`SELECT u.user_type,u.username, u.fullname, u.online_count,u.sts_pk FROM users u 
+            const user_data = yield con.QuerySingle(`SELECT u.user_id,u.user_type,u.username, u.fullname, u.online_count,u.sts_pk FROM users u 
         where u.user_id = @user_id
         `, {
                 user_id,
@@ -114,6 +114,29 @@ const currentUser = (user_id) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.currentUser = currentUser;
+const getUserNotif = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const data = yield con.Query(`SELECT n.*,nu.user_pk,nu.user_type,nu.notif_user_pk,nu.checked FROM notif n 
+    JOIN notif_users nu ON n.notif_pk = nu.notif_pk where nu.user_pk = @user_pk;`, {
+            user_pk,
+        });
+        con.Commit();
+        return {
+            success: true,
+            data: data,
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
 const changeAdminPassword = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
@@ -121,8 +144,6 @@ const changeAdminPassword = (payload) => __awaiter(void 0, void 0, void 0, funct
         const total_found_user = yield con.QuerySingle(`
     SELECT COUNT(*) AS total FROM users WHERE password = AES_ENCRYPT(@old_password,username) AND user_id = @user_id LIMIT 1
     `, payload);
-        console.log(`payload`, payload);
-        console.log(`total_found_user`, total_found_user);
         if (total_found_user.total <= 0) {
             con.Rollback();
             return {
@@ -236,9 +257,33 @@ const getAllLogs = () => __awaiter(void 0, void 0, void 0, function* () {
         };
     }
 });
+const checkUserNotif = (notif_user_pk) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const update_res = yield con.Modify(`update notif_users set checked='y' where notif_user_pk=@notif_user_pk;`, {
+            notif_user_pk,
+        });
+        con.Commit();
+        return {
+            success: true,
+            message: "The notification has been marked as checked!",
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
 exports.default = {
     changeAdminPassword,
     getUserLogs,
     getAllLogs,
+    getUserNotif,
+    checkUserNotif,
 };
 //# sourceMappingURL=UserRepository.js.map

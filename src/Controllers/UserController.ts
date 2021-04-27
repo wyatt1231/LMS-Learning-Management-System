@@ -48,6 +48,22 @@ const UserController = async (app: Express): Promise<void> => {
     }
   );
 
+  router.post(
+    "/getUserNotif",
+    Authorize(),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(await UserRepository.getUserNotif(parseInt(req.user_id)));
+    }
+  );
+
+  router.post(
+    "/checkUserNotif",
+    Authorize(),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(await UserRepository.checkUserNotif(req.body.notif_user_pk));
+    }
+  );
+
   app.use("/api/users/", router);
 };
 

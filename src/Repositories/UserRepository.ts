@@ -1,8 +1,10 @@
+import { transform } from "typescript";
 import { DatabaseConnection } from "../Configurations/DatabaseConfig";
 import { ErrorMessage } from "../Hooks/useErrorMessage";
 import { GetUploadedImage } from "../Hooks/useFileUploader";
 import { CreateToken } from "../Hooks/useJwt";
 import { AuditLogModel } from "../Models/AuditLogModel";
+import { NotifModel } from "../Models/NotifModel";
 import { ResponseModel } from "../Models/ResponseModel";
 import { UserClaims, UserLogin, UserModel } from "../Models/UserModel";
 
@@ -76,7 +78,7 @@ export const currentUser = async (user_id: string): Promise<ResponseModel> => {
 
     if (updated_status > 0) {
       const user_data = await con.QuerySingle(
-        `SELECT u.user_type,u.username, u.fullname, u.online_count,u.sts_pk FROM users u 
+        `SELECT u.user_id,u.user_type,u.username, u.fullname, u.online_count,u.sts_pk FROM users u 
         where u.user_id = @user_id
         `,
         {
@@ -128,6 +130,34 @@ export const currentUser = async (user_id: string): Promise<ResponseModel> => {
   }
 };
 
+const getUserNotif = async (user_pk: number): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const data: Array<NotifModel> = await con.Query(
+      `SELECT n.*,nu.user_pk,nu.user_type,nu.notif_user_pk,nu.checked FROM notif n 
+    JOIN notif_users nu ON n.notif_pk = nu.notif_pk where nu.user_pk = @user_pk;`,
+      {
+        user_pk,
+      }
+    );
+
+    con.Commit();
+    return {
+      success: true,
+      data: data,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
 const changeAdminPassword = async (
   payload: UserModel
 ): Promise<ResponseModel> => {
@@ -141,9 +171,6 @@ const changeAdminPassword = async (
     `,
       payload
     );
-
-    console.log(`payload`, payload);
-    console.log(`total_found_user`, total_found_user);
 
     if (total_found_user.total <= 0) {
       con.Rollback();
@@ -286,8 +313,39 @@ const getAllLogs = async (): Promise<ResponseModel> => {
   }
 };
 
+const checkUserNotif = async (
+  notif_user_pk: number
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const update_res = await con.Modify(
+      `update notif_users set checked='y' where notif_user_pk=@notif_user_pk;`,
+      {
+        notif_user_pk,
+      }
+    );
+
+    con.Commit();
+    return {
+      success: true,
+      message: "The notification has been marked as checked!",
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
 export default {
   changeAdminPassword,
   getUserLogs,
   getAllLogs,
+  getUserNotif,
+  checkUserNotif,
 };

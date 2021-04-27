@@ -8,10 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const DatabaseConfig_1 = require("../Configurations/DatabaseConfig");
 const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
+const UseSms_1 = __importDefault(require("../Hooks/UseSms"));
 //Tutor actions
 //select queries
 const getTblClassStudents = (class_pk) => __awaiter(void 0, void 0, void 0, function* () {
@@ -109,6 +113,30 @@ const joinStudentToClass = (payload, user_pk) => __awaiter(void 0, void 0, void 
           aud_by=@encoder_pk
           `, payload);
             if (sql_audit.affectedRows > 0) {
+                const tutor_info = yield con.QuerySingle(`SELECT * FROM tutors where tutor_pk=(SELECT tutor_pk FROM classes WHERE class_pk = @class_pk) limit 1;`, {
+                    class_pk: payload.class_pk,
+                });
+                const student_info = yield con.QuerySingle(`select * from students where user_id = @user_pk limit 1;`, { user_pk: user_pk });
+                const class_info = yield con.QuerySingle(`select * from classes where class_pk = @class_pk limit 1;`, { class_pk: payload.class_pk });
+                const msg = `Good day ${tutor_info.firstname} ${tutor_info.lastname}. This is Catalunan Pequeño National High School informing you that ${student_info.firstname} ${student_info.lastname} wants to join your ${class_info.class_desc} class.
+        `;
+                const res = yield UseSms_1.default.SendSms(tutor_info.mob_no, msg);
+                const notif_payload = {
+                    body: `${student_info.firstname} ${student_info.lastname} wants to join your ${class_info.class_desc} class`,
+                    user_pk: tutor_info.user_id,
+                    link: `/tutor/class/${class_info.class_pk}/student`,
+                    user_type: "tutor",
+                };
+                const notif_res = yield con.Insert(`INSERT INTO notif 
+            SET
+            body=@body,
+            link=@link;`, notif_payload);
+                notif_payload.notif_pk = notif_res.insertedId;
+                yield con.Insert(` INSERT INTO notif_users 
+          SET 
+          notif_pk=@notif_pk,
+          user_type=@user_type,
+          user_pk=@user_pk;`, notif_payload);
                 con.Commit();
                 return {
                     success: true,

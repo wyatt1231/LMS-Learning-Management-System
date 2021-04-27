@@ -5,6 +5,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
+import AssignmentRoundedIcon from "@material-ui/icons/AssignmentRounded";
 import MenuIcon from "@material-ui/icons/Menu";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import clsx from "clsx";
@@ -13,16 +14,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import logo from "../../Assets/Images/Logo/app_logo.png";
-import Message from "../../Component/Message/Message";
 import Notification from "../../Component/Notification/Notification";
 import PageLinks from "../../Component/PageLinks";
-import TaskMenu from "../../Component/TaskMenu/TaskMenu";
 import UserProfile from "../../Component/UserProfile/UserProfile";
 import { APP_NAME } from "../../Helpers/AppConfig";
 import { toggleActivitySidebar } from "../../Services/Actions/PageActions";
 import { RootStore } from "../../Services/Store";
 import { IPageNavLinks } from "./Layout";
-import AssignmentRoundedIcon from "@material-ui/icons/AssignmentRounded";
 interface IHeader {
   PageNavLinks: Array<IPageNavLinks>;
   isOpenMobileHeader: boolean;
@@ -45,6 +43,10 @@ const Header: React.FC<IHeader> = memo(
     const mobile = useMediaQuery(theme.breakpoints.down("sm"));
     const dispatch = useDispatch();
     const history = useHistory();
+
+    const user_loading = useSelector(
+      (store: RootStore) => store.UserReducer.userLoading
+    );
 
     const page_links = useSelector(
       (store: RootStore) => store.PageReducer.page_links
@@ -101,8 +103,9 @@ const Header: React.FC<IHeader> = memo(
               </>
             )}
 
-            <Notification />
             <Message /> */}
+
+            <Notification />
 
             {user?.user_type === "admin" && (
               <>
@@ -119,7 +122,12 @@ const Header: React.FC<IHeader> = memo(
               </>
             )}
 
-            <UserProfile user={user} variant={mobile ? "mobile" : "desktop"} />
+            {!user_loading && !!user && (
+              <UserProfile
+                user={user}
+                variant={mobile ? "mobile" : "desktop"}
+              />
+            )}
           </section>
 
           <IconButton

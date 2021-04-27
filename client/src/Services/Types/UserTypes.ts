@@ -1,4 +1,5 @@
 import { AuditLogModel } from "../Models/AuditLogMode";
+import { NotifModel } from "../Models/NotifModel";
 
 const UserTypes = {
   USER_SET_INFO: `USER_SET_INFO`,
@@ -29,6 +30,15 @@ export type UserReducerTypes =
   | {
       type: "fetching_all_logs";
       fetching_all_logs: boolean;
+    }
+  //
+  | {
+      type: "user_notif";
+      user_notif: Array<NotifModel>;
+    }
+  | {
+      type: "fetch_user_notif";
+      fetch_user_notif: boolean;
     };
 
 export interface UserReducerModel {
@@ -38,6 +48,9 @@ export interface UserReducerModel {
   fetch_user_logs?: boolean;
   all_logs?: Array<AuditLogModel>;
   fetch_all_logs?: boolean;
+  //
+  user_notif?: Array<NotifModel>;
+  fetch_user_notif?: boolean;
 }
 
 export default UserTypes;

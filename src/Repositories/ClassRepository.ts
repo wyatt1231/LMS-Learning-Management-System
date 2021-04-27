@@ -1,3 +1,4 @@
+import axios from "axios";
 import { DatabaseConnection } from "../Configurations/DatabaseConfig";
 import {
   parseInvalidDateToDefault,
@@ -5,12 +6,15 @@ import {
 } from "../Hooks/useDateParser";
 import { ErrorMessage } from "../Hooks/useErrorMessage";
 import { GetUploadedImage } from "../Hooks/useFileUploader";
+import UseSms from "../Hooks/UseSms";
 import { ClassModel } from "../Models/ClassModel";
 import { ClassRatingModel } from "../Models/ClassRatingModel";
+import { NotifModel } from "../Models/NotifModel";
 import { PaginationModel } from "../Models/PaginationModel";
 import { ResponseModel } from "../Models/ResponseModel";
 import { StatsModel } from "../Models/StatsModel";
 import { StatusMasterModel } from "../Models/StatusMasterModel";
+import { TutorModel } from "../Models/TutorModel";
 
 const addClass = async (
   payload: ClassModel,
@@ -46,6 +50,46 @@ const addClass = async (
       payload
     );
 
+    payload.class_pk = sql_insert_class.insertedId;
+
+    const tutor_info: TutorModel = await con.QuerySingle(
+      `SELECT * FROM tutors where tutor_pk=@tutor_pk;`,
+      {
+        tutor_pk: payload.tutor_pk,
+      }
+    );
+
+    const msg = `Good day ${tutor_info.firstname} ${tutor_info.lastname}. This is Catalunan Pequeño National High School informing you that a class entitled ${payload.class_desc} has been assigned to you.
+    `;
+
+    const res = await UseSms.SendSms(tutor_info.mob_no, msg);
+
+    const notif_payload: NotifModel = {
+      body: `A class entitled ${payload.class_desc} has been assigned to you.`,
+      user_pk: tutor_info.user_id,
+      link: `/tutor/class/${payload.class_pk}/session`,
+      user_type: "tutor",
+    };
+
+    const notif_res = await con.Insert(
+      `INSERT INTO notif 
+        SET
+        body=@body,
+        link=@link;`,
+      notif_payload
+    );
+
+    notif_payload.notif_pk = notif_res.insertedId;
+
+    await con.Insert(
+      `INSERT INTO notif_users 
+      SET 
+      notif_pk=@notif_pk,
+      user_type=@user_type,
+      user_pk=@user_pk;`,
+      notif_payload
+    );
+
     if (sql_insert_class.insertedId > 0) {
       for (const session of payload.class_sessions) {
         session.class_pk = sql_insert_class.insertedId;
@@ -53,8 +97,6 @@ const addClass = async (
         session.start_date = parseInvalidDateToDefault(session.start_date);
         session.start_time = parseInvalidTimeToDefault(payload.start_time);
         session.end_time = parseInvalidTimeToDefault(payload.end_time);
-
-        console.log(`session`, session);
 
         const sql_insert_session = await con.Insert(
           `
@@ -78,10 +120,20 @@ const addClass = async (
         }
       }
 
+      const tutor_info: TutorModel = await con.QuerySingle(
+        `select user_id from tutors where tutor_pk = @tutor_pk;`,
+        {
+          tutor_pk: payload.tutor_pk,
+        }
+      );
+
       con.Commit();
       return {
         success: true,
         message: "The item has been added successfully",
+        data: {
+          tutor_user_id: tutor_info.user_id,
+        },
       };
     } else {
       con.Rollback();
@@ -674,8 +726,6 @@ const getSingleClass = async (
       }
     );
 
-    console.log(`data single class`, data);
-
     if (data?.pic) {
       data.pic = await GetUploadedImage(data.pic);
     }
@@ -1105,8 +1155,6 @@ const getStudentClassByStudentPk = async (
 
       t.ended_session = sql_total_ended_session.total;
     }
-
-    // console.log(`data`, data);
 
     con.Commit();
     return {

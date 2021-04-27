@@ -78,21 +78,6 @@ export const SessionDtls: FC<ISessionDtls> = memo(() => {
                 widthSpacing={25}
               />
               <div className="actions">
-                {/* <div
-                  className="rating-col"
-                  style={{
-                    display: `grid`,
-                    gridAutoFlow: `column`,
-                    justifyContent: `start`,
-                    gridGap: `.5em`,
-                    alignItems: `center`,
-                    fontWeight: 600,
-                    fontSize: `.87em`,
-                  }}
-                >
-                  4 stars
-                  <Rating value={4} precision={0.1} readOnly />
-                </div> */}
                 {user?.user_type === "tutor" &&
                   single_class_session?.sts_pk === "p" && (
                     <>

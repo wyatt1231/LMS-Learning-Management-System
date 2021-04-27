@@ -158,7 +158,6 @@ const DatabaseConnection = () => {
                                 }
                                 else {
                                     if (result.length > 0) {
-                                        // console.log(`result[0]`, result[0]);
                                         return resolve(result[0]);
                                     }
                                     else {
@@ -246,7 +245,6 @@ const DatabaseConnection = () => {
             });
         }
         catch (error) {
-            console.log(`error ---------------------------------------`, error);
             reject(error);
         }
     });
@@ -286,7 +284,6 @@ const queryFormat = (query, values) => {
         }
         return str;
     });
-    // console.log(`formattedQuery`, formattedQuery);
     return formattedQuery;
 };
 //# sourceMappingURL=DatabaseConfig.js.map

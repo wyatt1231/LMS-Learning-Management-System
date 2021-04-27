@@ -1,44 +1,37 @@
+import "@fullcalendar/daygrid/main.css";
+import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
 import "@fullcalendar/timegrid/main.css";
-import "@fullcalendar/daygrid/main.css";
-import "../../../Component/Calendar/calendar.css";
 import {
   Avatar,
   Button,
   Chip,
   CircularProgress,
   Grid,
-  Table,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Tooltip,
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
-import React, { memo, FC, useEffect, useState, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import CustomAvatar from "../../../Component/CustomAvatar";
-import { setPageLinks } from "../../../Services/Actions/PageActions";
-import { StyledDashboardStudent } from "./styles";
-import { StyledDashboardItem } from "../../../Styles/GlobalStyles";
-import { Rating } from "@material-ui/lab";
 import LocalLibraryRoundedIcon from "@material-ui/icons/LocalLibraryRounded";
-import ChangePasswordDialog from "../../SharedViews/ChangePasswordDialog";
-import EditTutorBiography, { EditStudentInfo } from "./EditStudentInfo";
-import EditTutorPicture from "./EditStudentPicture";
-import TutorActions from "../../../Services/Actions/TutorActions";
-import { RootStore } from "../../../Services/Store";
-import { StringEmptyToDefault } from "../../../Hooks/UseStringFormatter";
+import { Rating } from "@material-ui/lab";
+import "chartjs-plugin-labels";
+import React, { FC, memo, useCallback, useEffect, useState } from "react";
+import { Pie } from "react-chartjs-2";
+import { useDispatch, useSelector } from "react-redux";
+import "../../../Component/Calendar/calendar.css";
+import CustomAvatar from "../../../Component/CustomAvatar";
+import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import ClassActions from "../../../Services/Actions/ClassActions";
 import ClassSessionActions from "../../../Services/Actions/ClassSessionActions";
-import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
+import { setPageLinks } from "../../../Services/Actions/PageActions";
 import StudentActions from "../../../Services/Actions/StudentActions";
-import { Bar, Pie } from "react-chartjs-2";
-import "chartjs-plugin-labels";
+import { RootStore } from "../../../Services/Store";
+import { StyledDashboardItem } from "../../../Styles/GlobalStyles";
+import ChangePasswordDialog from "../../SharedViews/ChangePasswordDialog";
+import { EditStudentInfo } from "./EditStudentInfo";
+import EditTutorPicture from "./EditStudentPicture";
+import { StyledDashboardStudent } from "./styles";
 interface IDashboardTutorView {}
 export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
   const dispatch = useDispatch();
@@ -66,6 +59,10 @@ export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
   }, []);
 
   const [open_edit_student_info, set_open_edit_student_info] = useState(false);
+
+  // const set_notif = useSelector(
+  //   (store: RootStore) => store.SocketReducer.set_notif
+  // );
 
   const handleOpenEditStudentInfo = useCallback(() => {
     set_open_edit_student_info(true);

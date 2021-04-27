@@ -29,6 +29,7 @@ import { StringEmptyToDefault } from "../../../Hooks/UseStringFormatter";
 import ClassActions from "../../../Services/Actions/ClassActions";
 import ClassSessionActions from "../../../Services/Actions/ClassSessionActions";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
+import CircularLoadingProgress from "../../../Component/CircularLoadingProgress";
 
 interface IDashboardTutorView {}
 export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
@@ -89,8 +90,6 @@ export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
       store.ClassSessionReducer.fetch_logged_in_tutor_session_cal
   );
 
-  console.log(`logged_in_tutor_session_cal`, logged_in_tutor_session_cal);
-
   useEffect(() => {
     dispatch(TutorActions.getLoggedInTutor());
   }, [dispatch]);
@@ -126,7 +125,7 @@ export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
         <Grid container spacing={4}>
           <Grid item xs={12}>
             {fetch_loggedin_tutor && !loggedin_tutor ? (
-              <CircularProgress />
+              <CircularLoadingProgress />
             ) : (
               <Grid
                 container
@@ -290,8 +289,6 @@ export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
                   height={700}
                   allDaySlot={false}
                   eventContent={(e) => {
-                    console.log(`e`, e);
-
                     const data = e.event;
 
                     return (

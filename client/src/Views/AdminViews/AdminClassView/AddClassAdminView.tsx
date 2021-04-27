@@ -32,7 +32,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import FormikAutocomplete from "../../../Component/Formik/FormikAutocomplete";
 import FormikInputField from "../../../Component/Formik/FormikInputField";
@@ -62,6 +62,7 @@ import {
   TutorFutureSessionModel,
 } from "../../../Services/Models/ClassSessionModel";
 import InfoDialog from "../../../Component/InfoDialog";
+import { RootStore } from "../../../Services/Store";
 
 interface AddClassAdminViewInterface {}
 
@@ -176,6 +177,10 @@ export const AddClassAdminView: FC<AddClassAdminViewInterface> = memo(() => {
 
   const formRef = useRef<FormikProps<ClassModel> | null>(null);
 
+  const set_notif_socket = useSelector(
+    (store: RootStore) => store.SocketReducer.set_notif
+  );
+
   const [reschedProps, setReschedProps] = useState<ReschedRpopsInterface>({
     open: false,
     index: null,
@@ -204,7 +209,7 @@ export const AddClassAdminView: FC<AddClassAdminViewInterface> = memo(() => {
           open: true,
           continue_callback: () =>
             dispatch(
-              addClassAction(form_values, (msg: string) => {
+              addClassAction(form_values, set_notif_socket, (msg: string) => {
                 setSuccessDialog({
                   message: msg,
                   open: true,

@@ -28,8 +28,6 @@ export const ManageClassStudentView: FC<ManageClassStudentViewInterface> = memo(
       (store: RootStore) => store.ClassReducer.fetching_selected_class
     );
 
-    console.log(`selected_class`, selected_class);
-
     useEffect(() => {
       let mounted = true;
 

@@ -163,7 +163,6 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
                   reject(err);
                 } else {
                   if (result.length > 0) {
-                    // console.log(`result[0]`, result[0]);
                     return resolve(result[0]);
                   } else {
                     return resolve(null);
@@ -245,7 +244,6 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
         });
       });
     } catch (error) {
-      console.log(`error ---------------------------------------`, error);
       reject(error);
     }
   });
@@ -294,8 +292,6 @@ const queryFormat = (query: string, values: any): QueryFormatModel => {
       return str;
     }
   );
-
-  // console.log(`formattedQuery`, formattedQuery);
 
   return formattedQuery;
 };

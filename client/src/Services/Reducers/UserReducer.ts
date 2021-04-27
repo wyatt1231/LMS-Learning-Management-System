@@ -51,6 +51,20 @@ const UserReducer = (
         fetching_all_logs: action.fetching_all_logs,
       };
     }
+    //
+    case "user_notif": {
+      return {
+        ...state,
+        user_notif: action.user_notif,
+      };
+    }
+    //
+    case "fetch_user_notif": {
+      return {
+        ...state,
+        fetch_user_notif: action.fetch_user_notif,
+      };
+    }
 
     default:
       return state;

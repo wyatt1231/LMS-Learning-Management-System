@@ -107,6 +107,30 @@ const getAllLogs = () => async (dispatch: Dispatch<UserReducerTypes>) => {
   }
 };
 
+const getUserNotif = () => async (dispatch: Dispatch<UserReducerTypes>) => {
+  try {
+    dispatch({
+      type: "fetch_user_notif",
+      fetch_user_notif: true,
+    });
+    const response: IServerResponse = await UserApi.getUserNotif();
+
+    if (response.success) {
+      dispatch({
+        type: "user_notif",
+        user_notif: response.data,
+      });
+    }
+
+    dispatch({
+      type: "fetch_user_notif",
+      fetch_user_notif: false,
+    });
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
 export const changeAdminPassword = (
   payload: UserModel,
   onSuccess: (msg: string) => any
@@ -149,8 +173,21 @@ export const changeAdminPassword = (
   }
 };
 
+const checkUserNotif = (notif_user_pk: number) => async (
+  dispatch: Dispatch<any>
+) => {
+  try {
+    await UserApi.checkUserNotif(notif_user_pk);
+    dispatch(getUserNotif());
+  } catch (error) {
+    console.error(`action error`, error);
+  }
+};
+
 export default {
   getUserLogs,
   changeAdminPassword,
   getAllLogs,
+  getUserNotif,
+  checkUserNotif,
 };

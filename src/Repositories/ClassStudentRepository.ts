@@ -1,8 +1,13 @@
 import { DatabaseConnection } from "../Configurations/DatabaseConfig";
 import { ErrorMessage } from "../Hooks/useErrorMessage";
 import { GetUploadedImage } from "../Hooks/useFileUploader";
+import UseSms from "../Hooks/UseSms";
+import { ClassModel } from "../Models/ClassModel";
 import { ClassStudentModel } from "../Models/ClassStudentModel";
+import { NotifModel } from "../Models/NotifModel";
 import { ResponseModel } from "../Models/ResponseModel";
+import { StudentModel } from "../Models/StudentModel";
+import { TutorModel } from "../Models/TutorModel";
 
 //Tutor actions
 //select queries
@@ -137,6 +142,53 @@ const joinStudentToClass = async (
       );
 
       if (sql_audit.affectedRows > 0) {
+        const tutor_info: TutorModel = await con.QuerySingle(
+          `SELECT * FROM tutors where tutor_pk=(SELECT tutor_pk FROM classes WHERE class_pk = @class_pk) limit 1;`,
+          {
+            class_pk: payload.class_pk,
+          }
+        );
+
+        const student_info: StudentModel = await con.QuerySingle(
+          `select * from students where user_id = @user_pk limit 1;`,
+          { user_pk: user_pk }
+        );
+        const class_info: ClassModel = await con.QuerySingle(
+          `select * from classes where class_pk = @class_pk limit 1;`,
+          { class_pk: payload.class_pk }
+        );
+
+        const msg = `Good day ${tutor_info.firstname} ${tutor_info.lastname}. This is Catalunan Pequeño National High School informing you that ${student_info.firstname} ${student_info.lastname} wants to join your ${class_info.class_desc} class.
+        `;
+
+        const res = await UseSms.SendSms(tutor_info.mob_no, msg);
+
+        const notif_payload: NotifModel = {
+          body: `${student_info.firstname} ${student_info.lastname} wants to join your ${class_info.class_desc} class`,
+          user_pk: tutor_info.user_id,
+          link: `/tutor/class/${class_info.class_pk}/student`,
+          user_type: "tutor",
+        };
+
+        const notif_res = await con.Insert(
+          `INSERT INTO notif 
+            SET
+            body=@body,
+            link=@link;`,
+          notif_payload
+        );
+
+        notif_payload.notif_pk = notif_res.insertedId;
+
+        await con.Insert(
+          ` INSERT INTO notif_users 
+          SET 
+          notif_pk=@notif_pk,
+          user_type=@user_type,
+          user_pk=@user_pk;`,
+          notif_payload
+        );
+
         con.Commit();
         return {
           success: true,

@@ -1,9 +1,10 @@
-import { Chip, Grid, useTheme } from "@material-ui/core";
+import { Chip, CircularProgress, Grid, useTheme } from "@material-ui/core";
 import { Rating, Skeleton } from "@material-ui/lab";
 import React, { FC, memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, useParams } from "react-router";
 import { Route } from "react-router-dom";
+import CircularLoadingProgress from "../../../Component/CircularLoadingProgress";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopper";
 import LinkTabs, { ITab } from "../../../Component/LinkTabs";
@@ -43,6 +44,14 @@ export const ManageClassView: FC<IManageClassView> = memo(() => {
 
   const user_type = useSelector(
     (store: RootStore) => store.UserReducer.user?.user_type
+  );
+
+  const user_id = useSelector(
+    (store: RootStore) => store.UserReducer.user.user_id
+  );
+
+  const set_notif = useSelector(
+    (store: RootStore) => store.SocketReducer.set_notif
   );
 
   const selected_class = useSelector(
@@ -147,7 +156,6 @@ export const ManageClassView: FC<IManageClassView> = memo(() => {
         text: "End this class",
         color: "primary",
         handleClick: () => {
-          set_new_status("e");
           handleOpenEditClassStatus();
         },
       });
@@ -170,7 +178,13 @@ export const ManageClassView: FC<IManageClassView> = memo(() => {
                 ClassStudentActions.joinStudentToClassAction(
                   payload,
                   (msg: string) => {
-                    dispatch(setSelectedClassAction(selected_class.class_pk));
+                    dispatch(
+                      setSelectedClassAction(
+                        selected_class.class_pk,
+                        selected_class.tutor_info.user_id,
+                        set_notif
+                      )
+                    );
                   }
                 )
               ),
@@ -439,53 +453,57 @@ export const ManageClassView: FC<IManageClassView> = memo(() => {
 
           <Grid item xs={12} md={8} lg={9}>
             <div className="container-body ">
-              <LinkTabs
-                tabs={Tabs}
-                RenderSwitchComponent={
-                  <Switch>
-                    <Route
-                      path={`/${user_type}/class/${params.class_pk}/session`}
-                      exact
-                    >
-                      <ClassSessionView class_pk={params.class_pk} />
-                    </Route>
-                    <Route
-                      path={`/${user_type}/class/${params.class_pk}/student`}
-                      exact
-                    >
-                      <ClassStudentView class_pk={params.class_pk} />
-                    </Route>
-                    <Route
-                      path={`/${user_type}/class/${params.class_pk}/material`}
-                      exact
-                    >
-                      <ClassMaterialView class_pk={params.class_pk} />
-                    </Route>
-
-                    <Route
-                      path={`/${user_type}/class/${params.class_pk}/task`}
-                      exact
-                    >
-                      <ClassTaskView class_pk={params.class_pk} />
-                    </Route>
-                    {user_type === "admin" && (
+              {fetching_selected_class && Tabs.length > 0 && !!user_type ? (
+                <CircularLoadingProgress />
+              ) : (
+                <LinkTabs
+                  tabs={Tabs}
+                  RenderSwitchComponent={
+                    <Switch>
                       <Route
-                        path={`/${user_type}/class/${params.class_pk}/rating`}
+                        path={`/${user_type}/class/${params.class_pk}/session`}
                         exact
                       >
-                        <ClassRatingView class_pk={params.class_pk} />
+                        <ClassSessionView class_pk={params.class_pk} />
                       </Route>
-                    )}
+                      <Route
+                        path={`/${user_type}/class/${params.class_pk}/student`}
+                        exact
+                      >
+                        <ClassStudentView class_pk={params.class_pk} />
+                      </Route>
+                      <Route
+                        path={`/${user_type}/class/${params.class_pk}/material`}
+                        exact
+                      >
+                        <ClassMaterialView class_pk={params.class_pk} />
+                      </Route>
 
-                    {/* <Route
+                      <Route
+                        path={`/${user_type}/class/${params.class_pk}/task`}
+                        exact
+                      >
+                        <ClassTaskView class_pk={params.class_pk} />
+                      </Route>
+                      {user_type === "admin" && (
+                        <Route
+                          path={`/${user_type}/class/${params.class_pk}/rating`}
+                          exact
+                        >
+                          <ClassRatingView class_pk={params.class_pk} />
+                        </Route>
+                      )}
+
+                      {/* <Route
                       path={`/${user_type}/class/${params.class_pk}/attendance`}
                       exact
                     >
                       <div>Attendance</div>
                     </Route> */}
-                  </Switch>
-                }
-              />
+                    </Switch>
+                  }
+                />
+              )}
             </div>
           </Grid>
         </Grid>

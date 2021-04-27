@@ -50,5 +50,36 @@ export const StyledNotificationPopOver = styled.div`
         color: blue;
       }
     }
+
+    .notif-item-ctnr {
+      display: grid;
+      grid-gap: 0.8em;
+      margin-top: 0.3em;
+
+      .notif-item {
+        display: grid;
+        grid-gap: 0.3em;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        padding: 0.5em;
+
+        &:hover {
+          background-color: #f5f5f5;
+          border-radius: 7px;
+          cursor: pointer;
+        }
+
+        .body {
+          color: black !important;
+        }
+
+        .dt {
+          color: rgba(0, 0, 0, 0.6);
+          font-weight: 500;
+          &.checked {
+            color: blue !important;
+          }
+        }
+      }
+    }
   }
 `;

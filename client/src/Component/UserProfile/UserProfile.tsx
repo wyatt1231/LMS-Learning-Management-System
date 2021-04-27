@@ -62,8 +62,14 @@ const UserProfile: React.FC<IUserProfile> = memo(({ variant, user }) => {
 
         {variant === "mobile" ? null : (
           <div className="user">
-            <div className="fullname">{user?.fullname}</div>
-            <div className="designation">{user?.user_type}</div>
+            <div className="fullname">
+              {" "}
+              {!!user?.fullname ? user?.fullname : "U"}
+            </div>
+            <div className="designation">
+              {" "}
+              {!!user?.user_type ? user?.user_type : "U"}
+            </div>
           </div>
         )}
       </div>
@@ -89,20 +95,24 @@ const UserProfile: React.FC<IUserProfile> = memo(({ variant, user }) => {
               className="content-header-image"
             />
             <div className="content-header-user">
-              <div className="name">{user?.fullname}</div>
-              <div className="designation">{user?.user_type}</div>
+              <div className="name">
+                {!!user?.fullname ? user?.fullname : "U"}
+              </div>
+              <div className="designation">
+                {!!user?.user_type ? user?.user_type : "U"}
+              </div>
             </div>
           </div>
           <div className="content-body">
             <div className="content-title">MENUS</div>
             <div className="content-items">
-              <NavLink
+              {/* <NavLink
                 to={`/${user?.user_type}/profile`}
                 className="link"
                 onClick={handleClose}
               >
                 My Profile
-              </NavLink>
+              </NavLink> */}
               <div className="link" onClick={handleLogout}>
                 Logout
               </div>

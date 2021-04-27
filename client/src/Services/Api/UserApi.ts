@@ -26,6 +26,15 @@ const changeAdminPassword = async (
   return response;
 };
 
+const checkUserNotif = async (
+  notif_user_pk: number
+): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "checkUserNotif", {
+    notif_user_pk,
+  });
+  return response;
+};
+
 const getUserLogs = async (): Promise<IServerResponse> => {
   const response = await PostFetch(API_DEFAULT_ROUTE + "getUserLogs", null);
   return response;
@@ -36,8 +45,15 @@ const getAllLogs = async (): Promise<IServerResponse> => {
   return response;
 };
 
+const getUserNotif = async (): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "getUserNotif", null);
+  return response;
+};
+
 export default {
   changeAdminPassword,
   getUserLogs,
   getAllLogs,
+  getUserNotif,
+  checkUserNotif,
 };

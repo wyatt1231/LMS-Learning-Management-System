@@ -56,6 +56,12 @@ const UserController = (app) => __awaiter(void 0, void 0, void 0, function* () {
     router.post("/getAllLogs", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield UserRepository_1.default.getAllLogs());
     }));
+    router.post("/getUserNotif", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield UserRepository_1.default.getUserNotif(parseInt(req.user_id)));
+    }));
+    router.post("/checkUserNotif", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield UserRepository_1.default.checkUserNotif(req.body.notif_user_pk));
+    }));
     app.use("/api/users/", router);
 });
 exports.default = UserController;

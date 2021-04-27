@@ -116,9 +116,11 @@ export const setStudentEnrolledClassTable = () => async (
   }
 };
 
-export const setSelectedClassAction = (course_pk: number) => async (
-  dispatch: Dispatch<ClassReducerTypes>
-) => {
+export const setSelectedClassAction = (
+  course_pk: number,
+  user_id?: number,
+  set_notif?: any
+) => async (dispatch: Dispatch<ClassReducerTypes>) => {
   try {
     dispatch({
       type: "fetching_selected_class",
@@ -128,14 +130,17 @@ export const setSelectedClassAction = (course_pk: number) => async (
       course_pk
     );
 
-    console.log(`approve`, course_pk, response);
-
     if (response.success) {
       dispatch({
         type: "set_selected_class",
         selected_class: response.data,
       });
-    } else {
+
+      console.log(`set_notif`, set_notif, user_id);
+
+      if (typeof set_notif !== "undefined" && typeof user_id !== "undefined") {
+        set_notif.emit("notify_tutors", user_id);
+      }
     }
 
     dispatch({
@@ -149,6 +154,7 @@ export const setSelectedClassAction = (course_pk: number) => async (
 
 export const addClassAction = (
   payload: ClassModel,
+  set_notif_socket: any,
   onSuccess: (msg: string) => any
 ) => async (dispatch: Dispatch<ClassReducerTypes | PageReducerTypes>) => {
   try {
@@ -168,7 +174,11 @@ export const addClassAction = (
     });
     if (response.success) {
       if (typeof onSuccess === "function") {
-        onSuccess(response.message.toString());
+        onSuccess(response?.message.toString());
+
+        if (!!set_notif_socket && !!response?.data?.tutor_user_id) {
+          set_notif_socket.emit("notify_tutors", response.data.tutor_user_id);
+        }
       }
     } else {
       helperErrorMessage(dispatch, response);
