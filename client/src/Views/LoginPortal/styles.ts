@@ -81,13 +81,13 @@ export const LoginStyles = styled(Paper)`
         /* text-align: center; */
 
         .brand-logo {
-          height: 4em;
-
-          width: 4em;
+          height: 8em;
+          width: 8em;
         }
         .brand-name {
           padding: 0.5em 0;
           text-align: center;
+          font-size: 1em;
         }
       }
 

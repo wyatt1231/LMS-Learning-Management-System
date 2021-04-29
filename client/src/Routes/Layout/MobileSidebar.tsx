@@ -8,7 +8,7 @@ import {
 import MenuOpenIcon from "@material-ui/icons/MenuOpen";
 import React, { memo, useEffect } from "react";
 import { NavLink, useHistory } from "react-router-dom";
-import logo from "../../Assets/Images/Logo/app_logo.png";
+import logo from "../../Assets/Images/Logo/school_logo.jpg";
 import NavSidebarDropDown from "../../Component/NavLinks/NavSidebarDropDown";
 import { APP_NAME } from "../../Helpers/AppConfig";
 import { IPageNavLinks } from "./Layout";

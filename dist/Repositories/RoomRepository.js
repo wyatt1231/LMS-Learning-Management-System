@@ -109,7 +109,7 @@ const searchRoom = (search) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
-        const data = yield con.Query(`select room_pk id, room_desc label from rooms 
+        const data = yield con.Query(`select room_pk id, room_desc label from (select * from rooms where is_active = 1) tmp
        ${useSearch_1.GenerateSearch(search, "room_desc")}
       `, {
             search,

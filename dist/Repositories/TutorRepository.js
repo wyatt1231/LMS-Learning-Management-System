@@ -740,25 +740,42 @@ const getRecommendedTutors = (user_pk) => __awaiter(void 0, void 0, void 0, func
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
-        const student_pk = 10;
+        const student_pk = 18;
         const unrated_tutors = yield con.Query(`SELECT t.tutor_pk FROM tutors t WHERE t.tutor_pk NOT IN (SELECT tutor_pk FROM tutor_ratings WHERE student_pk = @student_pk)`, {
             student_pk,
         });
-        console.log(`unrated_tutors`, unrated_tutors);
         const student_ratings = yield con.Query(`SELECT tutor_pk,rating FROM tutor_ratings WHERE student_pk = @student_pk order by student_pk asc;
         `, {
             student_pk,
         });
-        console.log(`student_ratings`, student_ratings);
         const tutors = yield con.Query(`SELECT tutor_pk FROM tutor_ratings GROUP BY tutor_pk  ORDER BY tutor_pk`, {});
         const students = yield con.Query(`SELECT student_pk FROM tutor_ratings GROUP BY student_pk  ORDER BY student_pk
       `, {});
         const ratings = yield con.Query(`SELECT rating,student_pk,tutor_pk FROM tutor_ratings order by student_pk asc;
       `, {});
-        for (const ut of unrated_tutors) {
-            const rating_prediction = yield UseCollabFilter_1.default.RatingPrediction(ut.tutor_pk, tutors, students, ratings, student_ratings);
-            console.log(`rating_prediction of ${ut.tutor_pk} is :`, rating_prediction);
-        }
+        // const rating_prediction = await UseCollabFilter.RatingPrediction(
+        //   18,
+        //   tutors,
+        //   students,
+        //   ratings,
+        //   student_ratings
+        // );
+        // console.log(`rating_prediction`, rating_prediction);
+        UseCollabFilter_1.default.PearsonCorrelation([5, 1, 0, 3, 0, 0, 5, 2, 0, 4, 5, 0, 0, 0, 0], [3, 0, 1, 2, 4, 0, 5, 0, 3, 2, 0, 0, 0, 0, 0]);
+        UseCollabFilter_1.default.PearsonCorrelation([1, 0, 3, 0, 0, 5, 0, 0, 5, 0, 4, 0], [2, 4, 0, 1, 2, 0, 3, 0, 4, 3, 5, 0]);
+        // for (const ut of unrated_tutors) {
+        //   const rating_prediction = await UseCollabFilter.RatingPrediction(
+        //     ut.tutor_pk,
+        //     tutors,
+        //     students,
+        //     ratings,
+        //     student_ratings
+        //   );
+        //   console.log(
+        //     `rating_prediction of ${ut.tutor_pk} is :`,
+        //     rating_prediction
+        //   );
+        // }
         con.Commit();
         return {
             success: true,

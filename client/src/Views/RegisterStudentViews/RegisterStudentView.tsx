@@ -4,7 +4,7 @@ import React, { FC, memo, useCallback, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import * as yup from "yup";
-import app_logo from "../../Assets/Images/Logo/app_logo.png";
+import app_logo from "../../Assets/Images/Logo/school_logo.jpg";
 import FormikInputField from "../../Component/Formik/FormikInputField";
 import FormikRadio from "../../Component/Formik/FormikRadio";
 import MaskedPhoneNumber from "../../Component/Mask/MaskedPhoneNumber";
@@ -12,7 +12,6 @@ import PhotoField from "../../Component/PhotoField/PhotoField";
 import SuccessDialog from "../../Component/SuccessDialog";
 import {
   validateEmail,
-  validateMobile,
   validatePassword,
   validateUsername,
 } from "../../Helpers/helpGetRegexValidators";
@@ -67,7 +66,7 @@ const formSchema = yup.object({
       "Mobile number must be a valid philippine mobile number."
     ),
   gender: yup.string().nullable().required().max(1).label("Gender"),
-  complete_address: yup.string().required().max(255).label("Complete Address"),
+  // complete_address: yup.string().required().max(255).label("Complete Address"),
   user: yup.object({
     username: validateUsername("Username"),
     password: validatePassword("Password"),
@@ -132,7 +131,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
             <h3>{process.env.REACT_APP_CLIENT}</h3>
 
             <div className="brand-name">
-              We simply bring learnings in you. Start leaning now!
+              We simply empower the excellence within you. Start learning now!
             </div>
           </section>
 
@@ -177,6 +176,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                     <Grid item xs={12} md={6}>
                       <FormikInputField
                         label="First Name"
+                        required
                         placeholder="Enter firstname name"
                         name="firstname"
                         variant="outlined"
@@ -186,7 +186,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <FormikInputField
-                        label="Middle Name (optional)"
+                        label="Middle Name"
                         placeholder="Enter middle name"
                         name="middlename"
                         variant="outlined"
@@ -197,6 +197,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                     <Grid item xs={12} md={6}>
                       <FormikInputField
                         label="Last Name"
+                        required
                         placeholder="Enter last name"
                         name="lastname"
                         variant="outlined"
@@ -206,7 +207,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                     </Grid>
                     <Grid item xs={12} md={3}>
                       <FormikInputField
-                        label="Suffix (optional)"
+                        label="Suffix"
                         placeholder="Enter suffix"
                         name="suffix"
                         variant="outlined"
@@ -227,6 +228,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                             value={values[name] ? values[name] : ""}
                             label="Grade Level"
                             select
+                            required
                             onChange={handleChange}
                             placeholder="Enter position/designation"
                             variant="outlined"
@@ -270,6 +272,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                         variant="outlined"
                         InputLabelProps={{ shrink: true }}
                         fullWidth
+                        required
                         InputProps={{
                           inputComponent: MaskedPhoneNumber,
                         }}
@@ -281,13 +284,14 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                         placeholder="Enter email address"
                         name="email"
                         type="email"
+                        required
                         variant="outlined"
                         InputLabelProps={{ shrink: true }}
                         fullWidth
                       />
                     </Grid>
 
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                       <Grid item xs={12}>
                         <FormikInputField
                           label="Complete Address"
@@ -301,7 +305,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                           rows={3}
                         />
                       </Grid>
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12}>
                       <div className="form-title">Account Information</div>
                     </Grid>
@@ -311,6 +315,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                         placeholder="Enter username"
                         name="user.username"
                         variant="outlined"
+                        required
                         InputLabelProps={{ shrink: true }}
                         fullWidth
                       />
@@ -322,6 +327,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                         name="user.password"
                         type="password"
                         variant="outlined"
+                        required
                         InputLabelProps={{ shrink: true }}
                         fullWidth
                       />
@@ -333,6 +339,7 @@ export const RegisterSTudentView: FC<IRegisterSTudentView> = memo(() => {
                         name="user.confirm_password"
                         type="password"
                         variant="outlined"
+                        required
                         InputLabelProps={{ shrink: true }}
                         fullWidth
                       />

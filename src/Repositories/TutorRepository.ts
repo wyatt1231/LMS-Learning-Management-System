@@ -936,15 +936,13 @@ const getRecommendedTutors = async (
   try {
     await con.BeginTransaction();
 
-    const student_pk = 10;
+    const student_pk = 18;
     const unrated_tutors: Array<TutorRatingsModel> = await con.Query(
       `SELECT t.tutor_pk FROM tutors t WHERE t.tutor_pk NOT IN (SELECT tutor_pk FROM tutor_ratings WHERE student_pk = @student_pk)`,
       {
         student_pk,
       }
     );
-
-    console.log(`unrated_tutors`, unrated_tutors);
 
     const student_ratings: Array<TutorRatingsModel> = await con.Query(
       `SELECT tutor_pk,rating FROM tutor_ratings WHERE student_pk = @student_pk order by student_pk asc;
@@ -953,8 +951,6 @@ const getRecommendedTutors = async (
         student_pk,
       }
     );
-
-    console.log(`student_ratings`, student_ratings);
 
     const tutors: Array<TutorRatingsModel> = await con.Query(
       `SELECT tutor_pk FROM tutor_ratings GROUP BY tutor_pk  ORDER BY tutor_pk`,
@@ -973,20 +969,39 @@ const getRecommendedTutors = async (
       {}
     );
 
-    for (const ut of unrated_tutors) {
-      const rating_prediction = await UseCollabFilter.RatingPrediction(
-        ut.tutor_pk,
-        tutors,
-        students,
-        ratings,
-        student_ratings
-      );
+    // const rating_prediction = await UseCollabFilter.RatingPrediction(
+    //   18,
+    //   tutors,
+    //   students,
+    //   ratings,
+    //   student_ratings
+    // );
 
-      console.log(
-        `rating_prediction of ${ut.tutor_pk} is :`,
-        rating_prediction
-      );
-    }
+    // console.log(`rating_prediction`, rating_prediction);
+
+    UseCollabFilter.PearsonCorrelation(
+      [5, 1, 0, 3, 0, 0, 5, 2, 0, 4, 5, 0, 0, 0, 0],
+      [3, 0, 1, 2, 4, 0, 5, 0, 3, 2, 0, 0, 0, 0, 0]
+    );
+
+    UseCollabFilter.PearsonCorrelation(
+      [1, 0, 3, 0, 0, 5, 0, 0, 5, 0, 4, 0],
+      [2, 4, 0, 1, 2, 0, 3, 0, 4, 3, 5, 0]
+    );
+    // for (const ut of unrated_tutors) {
+    //   const rating_prediction = await UseCollabFilter.RatingPrediction(
+    //     ut.tutor_pk,
+    //     tutors,
+    //     students,
+    //     ratings,
+    //     student_ratings
+    //   );
+
+    //   console.log(
+    //     `rating_prediction of ${ut.tutor_pk} is :`,
+    //     rating_prediction
+    //   );
+    // }
 
     con.Commit();
     return {

@@ -22,12 +22,6 @@ import SocketActions from "../Services/Actions/SocketActions";
 const Routes = memo(() => {
   const dispatch = useDispatch();
   const user = useSelector((store: RootStore) => store.UserReducer.user);
-  const user_notif = useSelector(
-    (store: RootStore) => store.UserReducer.user_notif
-  );
-  const fetch_user_notif = useSelector(
-    (store: RootStore) => store.UserReducer.fetch_user_notif
-  );
 
   const socketRef = useRef<any>();
 

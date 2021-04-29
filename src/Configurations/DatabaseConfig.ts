@@ -1,11 +1,13 @@
+import { resolve } from "bluebird";
 import mysql, { OkPacket, RowDataPacket } from "mysql2";
+import Connection from "mysql2/typings/mysql/lib/Connection";
 import { DatabaseConnectionModel, InsertModel } from "../Models/DatabaseModel";
 import { PaginationModel } from "../Models/PaginationModel";
 
-let con: mysql.PoolOptions | null = null;
+export let connection_string: mysql.PoolOptions | null = null;
 
 if (process.env.NODE_ENV === "production") {
-  con = {
+  connection_string = {
     host: "109.106.254.1",
     user: "u498243179_lms",
     password: "LMS@capstone2",
@@ -13,7 +15,7 @@ if (process.env.NODE_ENV === "production") {
     port: 3306,
   };
 } else {
-  con = {
+  connection_string = {
     host: "109.106.254.1",
     user: "u498243179_lms",
     password: "LMS@capstone2",
@@ -24,12 +26,15 @@ if (process.env.NODE_ENV === "production") {
 
 export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
   return new Promise((resolve, reject) => {
+    let DatabaseConfig: null | mysql.Pool = null;
     try {
-      let DatabaseConfig = mysql.createPool(con);
+      DatabaseConfig = mysql.createPool(connection_string);
+
       DatabaseConfig.getConnection((error, connection) => {
         if (error) {
-          // connection.release();
-          // connection.destroy();
+          connection.destroy();
+          connection.release();
+          // connection.end();
           return reject(error);
         }
 
@@ -42,6 +47,9 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
 
             if (!success) {
               if (typeof message !== "undefined") {
+                connection.destroy();
+                connection.release();
+                // connection.end();
                 return reject(message);
               }
             }
@@ -55,6 +63,9 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
                 }
               });
             } catch (error) {
+              connection.destroy();
+              connection.release();
+              // connection.end();
               reject(error);
             }
           });
@@ -69,6 +80,9 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             const { success, message, query } = queryFormat(sql, filters);
 
             if (!success) {
+              connection.destroy();
+              connection.release();
+              // connection.end();
               if (typeof message !== "undefined") {
                 return reject(message);
               }
@@ -94,6 +108,7 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             } catch (error) {
               connection.destroy();
               connection.release();
+              // connection.end();
               return reject(error);
             }
           });
@@ -104,6 +119,9 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             const { success, message, query } = queryFormat(sql, binding);
             if (!success) {
               if (typeof message !== "undefined") {
+                connection.destroy();
+                connection.release();
+                // connection.end();
                 return reject(message);
               }
             }
@@ -118,6 +136,7 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             } catch (error) {
               connection.destroy();
               connection.release();
+              // connection.end();
               return reject(error);
             }
           });
@@ -127,6 +146,9 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             const { success, message, query } = queryFormat(sql, binding);
             if (!success) {
               if (typeof message !== "undefined") {
+                connection.destroy();
+                connection.release();
+                // connection.end();
                 return reject(message);
               }
             }
@@ -144,6 +166,7 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             } catch (error) {
               connection.destroy();
               connection.release();
+              // connection.end();
               reject(error);
             }
           });
@@ -153,6 +176,9 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             const { success, message, query } = queryFormat(sql, binding);
             if (!success) {
               if (typeof message !== "undefined") {
+                connection.destroy();
+                connection.release();
+                // connection.end();
                 return reject(message);
               }
             }
@@ -172,6 +198,7 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             } catch (error) {
               connection.destroy();
               connection.release();
+              // connection.end();
               return reject(error);
             }
           });
@@ -181,13 +208,12 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             try {
               connection.beginTransaction((err) => {
                 if (err) {
-                  // connection.release();
-                  // connection.destroy();
+                  return reject(error);
                 }
-                resolve();
+                return resolve();
               });
             } catch (error) {
-              reject(error);
+              return reject(error);
             }
           });
         };
@@ -197,12 +223,14 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
               connection.commit((err) => {
                 connection.release();
                 connection.destroy();
-                resolve();
+                // connection.end();
+                return resolve();
               });
             } catch (error) {
               connection.release();
               connection.destroy();
-              reject(error);
+              // connection.end();
+              return reject(error);
             }
           });
         };
@@ -212,10 +240,13 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
               connection.rollback(() => {
                 connection.release();
                 connection.destroy();
-                resolve();
+                return resolve();
               });
             } catch (error) {
-              reject(error);
+              connection.release();
+              connection.destroy();
+              // connection.end();
+              return reject(error);
             }
           });
         };
@@ -224,9 +255,13 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             try {
               connection.release();
               connection.destroy();
-              resolve();
+              // connection.end();
+              return resolve();
             } catch (error) {
-              reject(error);
+              connection.release();
+              connection.destroy();
+              // connection.end();
+              return reject(error);
             }
           });
         };
@@ -244,10 +279,14 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
         });
       });
     } catch (error) {
+      DatabaseConfig.destroy();
+      DatabaseConfig.end();
+
       reject(error);
     }
   });
 };
+
 interface QueryFormatModel {
   success: boolean;
   message?: string;

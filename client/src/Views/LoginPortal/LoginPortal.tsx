@@ -5,7 +5,7 @@ import { Form, Formik, FormikHelpers } from "formik";
 import React, { FC, memo, useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import app_logo from "../../Assets/Images/Logo/app_logo.png";
+import app_logo from "../../Assets/Images/Logo/school_logo.jpg";
 import LoadingButton from "../../Component/LoadingButton";
 import { APP_NAME } from "../../Helpers/AppConfig";
 import importImagesFromFolder from "../../Helpers/importImagesFromFolder";

@@ -41,7 +41,8 @@ export const SetCurrentUserAction = () => async (
       const user_type = response?.data?.user_type;
       if (
         window.location.pathname === "/login" ||
-        window.location.pathname === "/"
+        window.location.pathname === "/" ||
+        window.location.pathname === "/student-registration"
       ) {
         if (user_type === "admin") {
           window.location.href = "/admin/dashboard";
@@ -53,7 +54,11 @@ export const SetCurrentUserAction = () => async (
       }
     } else {
       if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+        if (window.location.pathname === "/student-registration") {
+          // window.location.href = "/student-registration";
+        } else {
+          window.location.href = "/login";
+        }
       }
     }
   } catch (error) {}

@@ -4,7 +4,6 @@ import { GenerateSearch } from "../Hooks/useSearch";
 import { PaginationModel } from "../Models/PaginationModel";
 import { ResponseModel } from "../Models/ResponseModel";
 import { RoomModel } from "../Models/RoomModel";
-
 const addRoom = async (
   payload: RoomModel,
   user_id: string
@@ -55,6 +54,7 @@ const getRoomDataTable = async (
   pagination_payload: PaginationModel
 ): Promise<ResponseModel> => {
   const con = await DatabaseConnection();
+
   try {
     await con.BeginTransaction();
 
@@ -130,7 +130,7 @@ const searchRoom = async (search: string): Promise<ResponseModel> => {
     await con.BeginTransaction();
 
     const data = await con.Query(
-      `select room_pk id, room_desc label from rooms 
+      `select room_pk id, room_desc label from (select * from rooms where is_active = 1) tmp
        ${GenerateSearch(search, "room_desc")}
       `,
       {

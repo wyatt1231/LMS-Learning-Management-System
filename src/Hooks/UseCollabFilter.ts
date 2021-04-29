@@ -11,6 +11,15 @@ const PearsonCorrelation = (
 
   let correlation = numer / denomer;
 
+  console.log(
+    `correlation`,
+    data_set_A,
+    data_set_B,
+    numer,
+    denomer,
+    numer / denomer
+  );
+
   if (!correlation || isNaN(correlation)) {
     return -1;
   } else {
@@ -179,13 +188,19 @@ const RatingPrediction = async (
       tutor: t.tutor_pk,
       students: student_tutor_ratings,
     });
-  }
 
-  // console.log(`data_set`, data_set);
+    // console.log(`data_set`, {
+    //   tutor: t.tutor_pk,
+    //   students: student_tutor_ratings,
+    // });
+  }
 
   const index_tutor_to_compare = data_set.findIndex(
     (d) => d.tutor === tutor_pk
   );
+
+  // console.log(`index_tutor_to_compare`, data_set);
+  // console.log(data_set, tutor_pk);
 
   if (index_tutor_to_compare !== -1) {
     const compare_tutor_ratings = data_set[index_tutor_to_compare].students.map(
@@ -198,37 +213,27 @@ const RatingPrediction = async (
           (v: any) => v.rating
         );
 
-        // console.log(
-        //   `find similarity :`,
-        //   compare_tutor_ratings,
-        //   other_tutor_ratings
-        // );
-
         const sim_score = PearsonCorrelation(
           other_tutor_ratings,
           compare_tutor_ratings
         );
+        console.log(
+          `sim_score`,
+          sim_score,
+          other_tutor_ratings,
+          compare_tutor_ratings
+        );
+        console.log(`--------\n`);
         tutor_sim_scores.push(sim_score);
       }
     }
 
+    console.log(`lengt rating`, student_ratings.length);
+    console.log(`lengt tutor`, data_set.length);
+
     const pcc_data_set = [];
     for (let i = 0; i < student_ratings.length; i++) {
       for (let x = 0; x < data_set.length; x++) {
-        // console.log(
-        //   `compare tutors`,
-        //   student_ratings[i].tutor_pk,
-        //   data_set[x].tutor,
-        //   student_ratings[i].tutor_pk === data_set[x].tutor
-        // );
-        // pcc_data_set.push({
-        //   sim_score: tutor_sim_scores[x],
-        //   rating: student_ratings[i].rating,
-        //   distance: EuclideanDistance(
-        //     tutor_sim_scores[x],
-        //     student_ratings[i].rating
-        //   ),
-        // });
         if (student_ratings[i].tutor_pk === data_set[x].tutor) {
           pcc_data_set.push({
             sim_score: tutor_sim_scores[x],
@@ -238,6 +243,9 @@ const RatingPrediction = async (
               student_ratings[i].rating
             ),
           });
+
+          console.log(`student_ratings[i].rating: `, student_ratings[i].rating);
+          console.log(`tutor_sim_scores: `, tutor_sim_scores[x]);
         }
       }
     }
