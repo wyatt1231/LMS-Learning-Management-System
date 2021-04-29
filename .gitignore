@@ -1,6 +1,6 @@
 node_modules
 /client/node_modules
-/src/storage
+/src/Storage
 /Storage
 storage
 package-lock.json

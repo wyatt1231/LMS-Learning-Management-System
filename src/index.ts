@@ -17,7 +17,6 @@ const main = async () => {
   app.use(BodyParser.json({ limit: "50mb" }));
   app.use(FileUpload());
 
-  app.use(express.static("./"));
   const server = http.createServer(app);
   const socketServer = new Server(server, {
     cors: {
@@ -28,10 +27,17 @@ const main = async () => {
   ControllerRegistry(app);
   SocketRegistry(socketServer);
 
+  app.use(express.static("./"));
+
   if (process.env.NODE_ENV === "production") {
     app.use(
       "/static",
       express.static(path.join(__dirname, "../client/build//static"))
+    );
+
+    app.use(
+      "/static",
+      express.static(path.join(__dirname, "../client/build//lib"))
     );
 
     app.get("*", function (req, res) {
