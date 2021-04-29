@@ -11,7 +11,8 @@ export const FileViwer: FC<IFileViwer> = memo(({ file }) => {
     if (file) {
       WebViewer(
         {
-          path: process.env.PUBLIC_URL + "/lib",
+          // path: process.env.PUBLIC_URL + "/lib",
+          path: "/lib",
           initialDoc: file,
           isReadOnly: true,
         },

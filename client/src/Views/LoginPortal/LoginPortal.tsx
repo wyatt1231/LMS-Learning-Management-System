@@ -152,7 +152,7 @@ export const LoginPortal: FC<ILoginPortal> = memo(() => {
           </section>
           <section className="footer">
             <div className="title">Developed & Maintained By</div>
-            <Avatar className="tuo_logo" src={app_logo} />
+            {/* <Avatar className="tuo_logo" src={app_logo} /> */}
             <div className="tuo-name">{process?.env.REACT_APP_PROVIDER}</div>
           </section>
         </div>

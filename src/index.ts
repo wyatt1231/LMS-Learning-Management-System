@@ -36,13 +36,19 @@ const main = async () => {
     );
 
     app.use(
-      "/static",
+      "/lib",
       express.static(path.join(__dirname, "../client/build//lib"))
     );
 
     app.get("*", function (req, res) {
       res.sendFile("index.html", {
         root: path.join(__dirname, "../client/build/"),
+      });
+    });
+
+    app.get("*", function (req, res) {
+      res.sendFile("lib", {
+        root: path.join(__dirname, "../client/lib/"),
       });
     });
   }

@@ -40,10 +40,15 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     exports.app.use(express_1.default.static("./"));
     if (process.env.NODE_ENV === "production") {
         exports.app.use("/static", express_1.default.static(path_1.default.join(__dirname, "../client/build//static")));
-        exports.app.use("/static", express_1.default.static(path_1.default.join(__dirname, "../client/build//lib")));
+        exports.app.use("/lib", express_1.default.static(path_1.default.join(__dirname, "../client/build//lib")));
         exports.app.get("*", function (req, res) {
             res.sendFile("index.html", {
                 root: path_1.default.join(__dirname, "../client/build/"),
+            });
+        });
+        exports.app.get("*", function (req, res) {
+            res.sendFile("lib", {
+                root: path_1.default.join(__dirname, "../client/lib/"),
             });
         });
     }
