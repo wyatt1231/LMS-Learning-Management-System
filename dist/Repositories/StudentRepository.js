@@ -64,8 +64,7 @@ const addStudent = (payload, user_id) => __awaiter(void 0, void 0, void 0, funct
          suffix=@suffix,           
          email=@email,            
          mob_no=@mob_no,           
-         gender=@gender,           
-         complete_address=@complete_address;      
+         gender=@gender;      
         `, student_payload);
             if (sql_create_student.insertedId > 0) {
                 con.Commit();
@@ -113,7 +112,6 @@ const updateStudent = (payload) => __awaiter(void 0, void 0, void 0, function* (
         email=@email,            
         mob_no=@mob_no,           
         gender=@gender,           
-        complete_address=@complete_address
         where user_id=@encoder_pk;     
         `, payload);
         if (sql_update_student > 0) {

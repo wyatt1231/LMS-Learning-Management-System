@@ -2,8 +2,8 @@ export const APP_NAME: any = process.env.REACT_APP_NAME;
 export const API_BASE_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:4040/"
-    : // : "https://sleepy-reaches-37009.herokuapp.com/";
-      "http://localhost:4040/";
+    : "https://sleepy-reaches-37009.herokuapp.com/";
+// "http://localhost:4040/";
 
 export const getAccessToken = (): string | null => {
   let token: string | null = null;

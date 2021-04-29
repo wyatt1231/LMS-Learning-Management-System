@@ -73,8 +73,7 @@ const addStudent = async (
          suffix=@suffix,           
          email=@email,            
          mob_no=@mob_no,           
-         gender=@gender,           
-         complete_address=@complete_address;      
+         gender=@gender;      
         `,
         student_payload
       );
@@ -127,7 +126,6 @@ const updateStudent = async (payload: StudentModel): Promise<ResponseModel> => {
         email=@email,            
         mob_no=@mob_no,           
         gender=@gender,           
-        complete_address=@complete_address
         where user_id=@encoder_pk;     
         `,
       payload
