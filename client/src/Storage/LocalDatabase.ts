@@ -1,10 +1,4 @@
-export const DbTutorPositions = [
-  "Tutor",
-  "Mentor",
-  "Professor",
-  "Teacher",
-  "Others",
-];
+export const DbTutorPositions = ["Tutor", "Mentor", "Professor", "Teacher"];
 
 export const DbCourseDurations = [
   {
