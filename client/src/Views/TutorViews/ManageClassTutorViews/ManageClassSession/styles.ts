@@ -176,7 +176,6 @@ export const StyledSelectedSession = styled.div`
       height: 100%;
       max-height: 100%;
       min-height: 100%;
-      /* grid-auto-rows: calc(100%-100px) 100px; */
 
       .sent-msg-ctnr {
         overflow-y: auto;
@@ -187,8 +186,8 @@ export const StyledSelectedSession = styled.div`
         max-height: calc(100%-100px) !important;
         height: calc(100%-100px) !important;
         min-height: calc(100%-100px) !important;
-        max-height: 700px;
-        min-height: 700px;
+        max-height: 380px;
+        min-height: 380px;
         .sent-msg-item {
           display: grid;
           padding: 0.7em;

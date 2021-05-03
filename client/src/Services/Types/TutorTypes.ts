@@ -49,6 +49,15 @@ export type TutorReducerTypes =
   | {
       type: "fetch_most_rated_tutors";
       fetch_most_rated_tutors: boolean;
+    }
+  //
+  | {
+      type: "recommended_tutors";
+      recommended_tutors: Array<TutorModel>;
+    }
+  | {
+      type: "fetch_recommended_tutors";
+      fetch_recommended_tutors: boolean;
     };
 
 export interface TutorReducerModel {
@@ -68,6 +77,9 @@ export interface TutorReducerModel {
   //
   most_rated_tutors?: Array<TutorModel>;
   fetch_most_rated_tutors?: boolean;
+  //
+  recommended_tutors?: Array<TutorModel>;
+  fetch_recommended_tutors?: boolean;
 }
 
 interface TutorDataTable {

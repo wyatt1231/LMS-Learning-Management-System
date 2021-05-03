@@ -138,6 +138,14 @@ const getMostRatedTutors = async (): Promise<IServerResponse> => {
   return response;
 };
 
+const getRecommendedTutors = async (): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "getRecommendedTutors",
+    null
+  );
+  return response;
+};
+
 export default {
   updateTutorImage,
   toggleActiveStatus,
@@ -149,4 +157,5 @@ export default {
   favoriteTutor,
   getSingTutorToStudent,
   getMostRatedTutors,
+  getRecommendedTutors,
 };

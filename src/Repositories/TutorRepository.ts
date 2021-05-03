@@ -936,12 +936,20 @@ const getRecommendedTutors = async (
   try {
     await con.BeginTransaction();
 
-    const student_pk = 18;
+    const student_res = await con.QuerySingle(
+      `select student_pk from students where user_id=@user_id limit 1;`,
+      {
+        user_id: user_pk,
+      }
+    );
+
+    const student_pk = student_res.student_pk;
     const unrated_tutors: Array<TutorRatingsModel> = await con.Query(
       `SELECT t.tutor_pk FROM tutors t WHERE t.tutor_pk NOT IN (SELECT tutor_pk FROM tutor_ratings WHERE student_pk = @student_pk)`,
       {
         student_pk,
       }
+      //
     );
 
     const student_ratings: Array<TutorRatingsModel> = await con.Query(
@@ -969,46 +977,72 @@ const getRecommendedTutors = async (
       {}
     );
 
-    // const rating_prediction = await UseCollabFilter.RatingPrediction(
-    //   18,
-    //   tutors,
-    //   students,
-    //   ratings,
-    //   student_ratings
-    // );
+    interface RatingPrediction {
+      tutor_pk: number;
+      rating: number;
+    }
 
-    // console.log(`rating_prediction`, rating_prediction);
+    const tutor_rating_prediction: Array<RatingPrediction> = [];
 
-    UseCollabFilter.PearsonCorrelation(
-      [5, 1, 0, 3, 0, 0, 5, 2, 0, 4, 5, 0, 0, 0, 0],
-      [3, 0, 1, 2, 4, 0, 5, 0, 3, 2, 0, 0, 0, 0, 0]
+    for (const ut of unrated_tutors) {
+      const rating_prediction = await UseCollabFilter.RatingPrediction(
+        ut.tutor_pk,
+        tutors,
+        students,
+        ratings,
+        student_ratings
+      );
+
+      if (rating_prediction > 0) {
+        tutor_rating_prediction.push({
+          tutor_pk: ut.tutor_pk,
+          rating: rating_prediction,
+        });
+      }
+    }
+
+    const sort_tutor_rating_pred = tutor_rating_prediction.sort((a, b) =>
+      a.rating < b.rating ? 1 : b.rating < a.rating ? -1 : 0
     );
 
-    UseCollabFilter.PearsonCorrelation(
-      [1, 0, 3, 0, 0, 5, 0, 0, 5, 0, 4, 0],
-      [2, 4, 0, 1, 2, 0, 3, 0, 4, 3, 5, 0]
-    );
-    // for (const ut of unrated_tutors) {
-    //   const rating_prediction = await UseCollabFilter.RatingPrediction(
-    //     ut.tutor_pk,
-    //     tutors,
-    //     students,
-    //     ratings,
-    //     student_ratings
-    //   );
+    const recommended_tutors: Array<TutorModel> = [];
 
-    //   console.log(
-    //     `rating_prediction of ${ut.tutor_pk} is :`,
-    //     rating_prediction
-    //   );
-    // }
+    for (const tutor of sort_tutor_rating_pred) {
+      const tutor_info: TutorModel = await con.QuerySingle(
+        `SELECT *,
+        (SELECT SUM(rating)/COUNT(rating) FROM tutor_ratings WHERE tutor_pk = @tutor_pk) as average_rating
+        FROM tutors WHERE tutor_pk =@tutor_pk;`,
+        {
+          tutor_pk: tutor.tutor_pk,
+        }
+      );
+
+      tutor_info.user_info = await con.QuerySingle(
+        `select * from vw_user_info where user_id=@user_id`,
+        {
+          user_id: tutor_info.user_id,
+        }
+      );
+      tutor_info.user_info.picture = await GetUploadedImage(
+        tutor_info.user_info.picture
+      );
+
+      tutor_info.classes = await con.Query(
+        `SELECT * FROM classes WHERE tutor_pk = @tutor_pk AND sts_pk IN ('a','a','p')`,
+        {
+          tutor_pk: tutor.tutor_pk,
+        }
+      );
+
+      recommended_tutors.push(tutor_info);
+    }
+
+    console.log(recommended_tutors);
 
     con.Commit();
     return {
       success: true,
-      data: {
-        // rating_prediction,
-      },
+      data: recommended_tutors,
     };
   } catch (error) {
     await con.Rollback();

@@ -44,8 +44,6 @@ export const ClassMaterialView: FC<ClassMaterialProps> = memo(
       (store: RootStore) => store.ClassMaterialReducer.tbl_class_materials
     );
 
-    console.log(`selectedMaterial`, selectedMaterial);
-
     const fetch_class_material = useSelector(
       (store: RootStore) => store.ClassMaterialReducer.fetch_class_material
     );

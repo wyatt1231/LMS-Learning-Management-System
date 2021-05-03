@@ -89,6 +89,19 @@ const TutorReducer = (
         fetch_most_rated_tutors: action.fetch_most_rated_tutors,
       };
     }
+    //
+    case "recommended_tutors": {
+      return {
+        ...state,
+        recommended_tutors: action.recommended_tutors,
+      };
+    }
+    case "fetch_recommended_tutors": {
+      return {
+        ...state,
+        fetch_recommended_tutors: action.fetch_recommended_tutors,
+      };
+    }
 
     default:
       return state;

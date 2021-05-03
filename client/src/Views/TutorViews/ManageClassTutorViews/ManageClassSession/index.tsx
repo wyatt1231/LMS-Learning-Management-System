@@ -35,8 +35,6 @@ export const ManageClassSelectedSessionTutorView: FC<ManageClassSelectedSessionT
       (store: RootStore) => store.ClassSessionReducer.single_class_session
     );
 
-    console.log(`single_class_session ->`, single_class_session);
-
     useEffect(() => {
       let mounted = true;
 
@@ -52,7 +50,7 @@ export const ManageClassSelectedSessionTutorView: FC<ManageClassSelectedSessionT
               title: "Class Details",
             },
             {
-              link: "/tutor/class/11/session",
+              link: `/tutor/class/${params.class_pk}/session`,
               title: "Session",
             },
             {
@@ -121,23 +119,24 @@ export const ManageClassSelectedSessionTutorView: FC<ManageClassSelectedSessionT
       <Container maxWidth="xl">
         {single_class_session ? (
           <StyledSelectedSession>
-            <Grid container spacing={4}>
-              <Grid item sm={12} md={9}>
-                <Grid container spacing={4}>
-                  <SessionDtls />
-                  <Grid item xs={12} md={3}>
-                    <SessionTasks />
-                  </Grid>
-                  <Grid item xs={12} md={9}>
-                    <div className="vid-ctnr">
-                      <SessionConf />
-                    </div>
-                  </Grid>
-                </Grid>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <SessionDtls />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <SessionTasks />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <div className="vid-ctnr">
+                  <SessionConf />
+                </div>
               </Grid>
               <Grid item sm={12} md={3}>
                 <SessionTabs />
               </Grid>
+              {/* <Grid item sm={12} md={12}>
+                <Grid container spacing={4}></Grid>
+              </Grid> */}
             </Grid>
           </StyledSelectedSession>
         ) : (

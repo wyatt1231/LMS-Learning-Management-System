@@ -1,13 +1,11 @@
-import { Button, CircularProgress, Switch } from "@material-ui/core";
+import { CircularProgress, Switch } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
-import React, { FC, memo, useCallback, useEffect, useState } from "react";
+import React, { FC, memo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import FormDialog from "../../../Component/FormDialog/FormDialog";
 import UseNumbers from "../../../Hooks/UseNumbers";
-import SharedActions from "../../../Services/Actions/SharedActions";
 import TutorActions from "../../../Services/Actions/TutorActions";
-import { getSingleTutorApi } from "../../../Services/Api/TutorApi";
 import { TutorFavModel } from "../../../Services/Models/TutorFavModel";
 import { TutorRatingsModel } from "../../../Services/Models/TutorRatingsModel";
 import { RootStore } from "../../../Services/Store";
@@ -28,28 +26,6 @@ export const RateTutorDialog: FC<IRateTutorDialog> = memo(() => {
   const handleCloseDialog = useCallback(() => {
     dispatch(TutorActions.getSingTutorToStudent(null));
   }, [dispatch]);
-
-  //   console.log(`selected_tutor_rate`, selected_tutor_rate);
-
-  //   const [reload_tutor_info, set_reload_tutor_info] = useState(0);
-
-  //   useEffect(() => {
-  //     let mounted = true;
-
-  //     const fetch_tutor = async () => {
-  //       const response = await getSingleTutorApi(selected_tutor_rate?.tutor_pk);
-
-  //       if (response.success) {
-  //         dispatch(SharedActions.selected_tutor_rate(response.data));
-  //       }
-  //     };
-
-  //     mounted && reload_tutor_info > 0 && fetch_tutor();
-
-  //     return () => {
-  //       mounted = false;
-  //     };
-  //   }, [reload_tutor_info, dispatch]);
 
   return (
     <>

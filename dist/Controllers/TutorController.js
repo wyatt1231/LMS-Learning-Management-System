@@ -80,15 +80,7 @@ const TutorController = (app) => __awaiter(void 0, void 0, void 0, function* () 
     router.post("/getMostRatedTutors", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield TutorRepository_1.default.getMostRatedTutors());
     }));
-    router.get("/pcc", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        // const sim_score = UseCollabFilter.PearsonCorrelation(
-        //   // [1, 0, 3, 0, 0, 5, 0, 0, 5, 0, 4, 0] //active
-        //   // [0, 0, 0, 2, 4, 5, 0], //active
-        //   // [4, 0, 0, 5, 1, 0, 0]
-        //   [1, 0, 3, 0, 3, 0, 0, 2, 0, 0, 4, 0],
-        //   [1, 0, 3, 0, 0, 5, 0, 0, 5, 0, 4, 0]
-        //   //
-        // );
+    router.post("/getRecommendedTutors", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield TutorRepository_1.default.getRecommendedTutors(parseInt(req.user_id)));
     }));
     app.use("/api/tutor/", router);

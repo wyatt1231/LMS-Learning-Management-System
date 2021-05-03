@@ -290,7 +290,9 @@ const getTutorFutureSessions = async (
       SELECT cs.start_date, cs.start_time,cs.end_time FROM class_sessions cs
       INNER JOIN classes c
       ON c.class_pk = cs.class_pk
-      WHERE c.tutor_pk =@tutor_pk
+      WHERE
+      c.tutor_pk = @tutor_pk
+      AND cs.sts_pk NOT IN ('d','e','f')
       AND cs.start_date >= DATE(NOW());
       `,
       {

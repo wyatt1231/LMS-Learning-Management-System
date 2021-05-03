@@ -25,8 +25,6 @@ interface ManageClassSessionTutorInterface {
 export const ClassSessionView: FC<ManageClassSessionTutorInterface> = memo(
   ({ class_pk }) => {
     const dispatch = useDispatch();
-    const params = useParams<any>();
-    const history = useHistory();
 
     const user_type = useSelector(
       (store: RootStore) => store.UserReducer.user.user_type
@@ -143,23 +141,6 @@ export const ClassSessionView: FC<ManageClassSessionTutorInterface> = memo(
                       />
                     )}
                   </TableCell>
-                  {/* {user_type !== "admin" && (
-                    <TableCell align="center">
-                      <IconButtonPopper
-                        style={{ justifySelf: `end` }}
-                        buttons={[
-                          {
-                            text: "Enter into this session",
-                            handleClick: () => {
-                              history.push(
-                                
-                              );
-                            },
-                          },
-                        ]}
-                      />
-                    </TableCell>
-                  )} */}
                 </TableRow>
               ))}
             </TableBody>
