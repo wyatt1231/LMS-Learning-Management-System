@@ -17,6 +17,7 @@ const useDateParser_1 = require("../Hooks/useDateParser");
 const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
 const UseSms_1 = __importDefault(require("../Hooks/UseSms"));
+const useSql_1 = __importDefault(require("../Hooks/useSql"));
 const addClass = (payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
@@ -429,7 +430,7 @@ const rateClass = (payload, user_type) => __awaiter(void 0, void 0, void 0, func
         };
     }
 });
-const getClassDataTable = (pagination_payload) => __awaiter(void 0, void 0, void 0, function* () {
+const getClassDataTable = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
@@ -444,19 +445,22 @@ const getClassDataTable = (pagination_payload) => __awaiter(void 0, void 0, void
       ON crs.course_pk = c.course_pk
       ) tmp
       WHERE
-      class_desc like concat('%',@search,'%')
-      OR room_desc like concat('%',@search,'%')
-      OR class_type like concat('%',@search,'%')
-      OR tutor_name like concat('%',@search,'%')
-      `, pagination_payload);
-        const hasMore = data.length > pagination_payload.page.limit;
+      (class_desc like concat('%',@search,'%')
+      OR course_desc like concat('%',@search,'%'))
+      AND room_desc LIKE CONCAT('%',@room_desc,'%')
+      AND tutor_name LIKE CONCAT('%',@tutor_name,'%')
+      AND class_type in @class_type
+      AND sts_pk in @sts_pk
+      ${useSql_1.default.DateWhereClause("start_date", ">=", payload.filters.sched_from)}
+      ${useSql_1.default.DateWhereClause("start_date", "<=", payload.filters.sched_to)}
+      `, payload);
+        const hasMore = data.length > payload.page.limit;
         if (hasMore) {
             data.splice(data.length - 1, 1);
         }
         const count = hasMore
             ? -1
-            : pagination_payload.page.begin * pagination_payload.page.limit +
-                data.length;
+            : payload.page.begin * payload.page.limit + data.length;
         for (const c of data) {
             c.pic = yield useFileUploader_1.GetUploadedImage(c.pic);
         }
@@ -465,9 +469,9 @@ const getClassDataTable = (pagination_payload) => __awaiter(void 0, void 0, void
             success: true,
             data: {
                 table: data,
-                begin: pagination_payload.page.begin,
+                begin: payload.page.begin,
                 count: count,
-                limit: pagination_payload.page.limit,
+                limit: payload.page.limit,
             },
         };
     }
@@ -496,9 +500,13 @@ const getTutorClassTable = (payload, user_pk) => __awaiter(void 0, void 0, void 
       ) tmp
       WHERE
       (class_desc like concat('%',@search,'%')
-      OR room_desc like concat('%',@search,'%')
-      OR class_type like concat('%',@search,'%')
-      OR tutor_name like concat('%',@search,'%'))
+      OR course_desc like concat('%',@search,'%'))
+      AND room_desc LIKE CONCAT('%',@room_desc,'%')
+      AND class_type in @class_type
+      AND sts_pk in @sts_pk
+      ${useSql_1.default.DateWhereClause("start_date", ">=", payload.filters.sched_from)}
+      ${useSql_1.default.DateWhereClause("start_date", "<=", payload.filters.sched_to)}
+
       AND tutor_pk = (SELECT tutor_pk FROM tutors WHERE user_id='${user_pk}' LIMIT 1)
       `, payload);
         const hasMore = data.length > payload.page.limit;
@@ -622,14 +630,24 @@ const getStudentAvailableClassTable = (payload, user_pk) => __awaiter(void 0, vo
           SELECT * FROM classes c
           WHERE class_pk NOT IN (SELECT cs.class_pk FROM class_students cs
             JOIN students s ON cs.student_pk = s.student_pk
-             WHERE s.user_id =${user_pk}  ) AND c.sts_pk = 'a' 
+             WHERE s.user_id =${user_pk}  ) AND c.sts_pk IN ('a','s')
           GROUP BY c.class_pk
         ) tmp
       WHERE
-      class_desc LIKE CONCAT('%',@search,'%')
-      OR course_desc LIKE CONCAT('%',@search,'%')
-      #OR room_desc LIKE CONCAT('%',@search,'%')
+      (class_desc LIKE CONCAT('%',@search,'%')
+      OR course_desc LIKE CONCAT('%',@search,'%')) 
+      AND tutor_name LIKE CONCAT('%',@tutor_name,'%')
+      AND sts_pk in @sts_pk 
+      ${useSql_1.default.DateWhereClause("start_date", ">=", payload.filters.sched_from)}
+      ${useSql_1.default.DateWhereClause("start_date", "<=", payload.filters.sched_to)}
       `, payload);
+        const hasMore = class_table.length > payload.page.limit;
+        if (hasMore) {
+            class_table.splice(class_table.length - 1, 1);
+        }
+        const count = hasMore
+            ? -1
+            : payload.page.begin * payload.page.limit + class_table.length;
         for (const c of class_table) {
             c.status = yield con.QuerySingle(`select * from status_master where sts_pk=@sts_pk;`, {
                 sts_pk: c.sts_pk,
@@ -645,13 +663,6 @@ const getStudentAvailableClassTable = (payload, user_pk) => __awaiter(void 0, vo
                 c.tutor_info.picture = yield useFileUploader_1.GetUploadedImage(c.tutor_info.picture);
             }
         }
-        const hasMore = class_table.length > payload.page.limit;
-        if (hasMore) {
-            class_table.splice(class_table.length - 1, 1);
-        }
-        const count = hasMore
-            ? -1
-            : payload.page.begin * payload.page.limit + class_table.length;
         con.Commit();
         return {
             success: true,
@@ -681,14 +692,24 @@ const getStudentOngoingClassTable = (payload, user_pk) => __awaiter(void 0, void
           SELECT * FROM classes  c
           WHERE class_pk  IN (SELECT cs.class_pk FROM class_students cs
             JOIN students s ON cs.student_pk = s.student_pk
-             WHERE s.user_id =${user_pk} ) AND sts_pk = 'a'
+             WHERE s.user_id =${user_pk} ) AND sts_pk in ('a','s')
           GROUP BY c.class_pk
         ) tmp
       WHERE
-      class_desc LIKE CONCAT('%',@search,'%')
-      OR course_desc LIKE CONCAT('%',@search,'%')
-      OR room_desc LIKE CONCAT('%',@search,'%')
+      (class_desc LIKE CONCAT('%',@search,'%')
+      OR course_desc LIKE CONCAT('%',@search,'%')) 
+      AND tutor_name LIKE CONCAT('%',@tutor_name,'%')
+      AND sts_pk in @sts_pk 
+      ${useSql_1.default.DateWhereClause("start_date", ">=", payload.filters.sched_from)}
+      ${useSql_1.default.DateWhereClause("start_date", "<=", payload.filters.sched_to)}
       `, payload);
+        const hasMore = class_table.length > payload.page.limit;
+        if (hasMore) {
+            class_table.splice(class_table.length - 1, 1);
+        }
+        const count = hasMore
+            ? -1
+            : payload.page.begin * payload.page.limit + class_table.length;
         for (const c of class_table) {
             c.status = yield con.QuerySingle(`select * from status_master where sts_pk=@sts_pk;`, {
                 sts_pk: c.sts_pk,
@@ -704,13 +725,6 @@ const getStudentOngoingClassTable = (payload, user_pk) => __awaiter(void 0, void
                 c.tutor_info.picture = yield useFileUploader_1.GetUploadedImage(c.tutor_info.picture);
             }
         }
-        const hasMore = class_table.length > payload.page.limit;
-        if (hasMore) {
-            class_table.splice(class_table.length - 1, 1);
-        }
-        const count = hasMore
-            ? -1
-            : payload.page.begin * payload.page.limit + class_table.length;
         con.Commit();
         return {
             success: true,
@@ -744,10 +758,19 @@ const getStudentEndedClassTable = (payload, user_pk) => __awaiter(void 0, void 0
           GROUP BY c.class_pk
         ) tmp
       WHERE
-      class_desc LIKE CONCAT('%',@search,'%')
-      OR course_desc LIKE CONCAT('%',@search,'%')
-      OR room_desc LIKE CONCAT('%',@search,'%')
+      (class_desc LIKE CONCAT('%',@search,'%')
+      OR course_desc LIKE CONCAT('%',@search,'%')) 
+      AND tutor_name LIKE CONCAT('%',@tutor_name,'%')
+      ${useSql_1.default.DateWhereClause("start_date", ">=", payload.filters.sched_from)}
+      ${useSql_1.default.DateWhereClause("start_date", "<=", payload.filters.sched_to)}
       `, payload);
+        const hasMore = class_table.length > payload.page.limit;
+        if (hasMore) {
+            class_table.splice(class_table.length - 1, 1);
+        }
+        const count = hasMore
+            ? -1
+            : payload.page.begin * payload.page.limit + class_table.length;
         for (const c of class_table) {
             c.status = yield con.QuerySingle(`select * from status_master where sts_pk=@sts_pk;`, {
                 sts_pk: c.sts_pk,
@@ -763,13 +786,6 @@ const getStudentEndedClassTable = (payload, user_pk) => __awaiter(void 0, void 0
                 c.tutor_info.picture = yield useFileUploader_1.GetUploadedImage(c.tutor_info.picture);
             }
         }
-        const hasMore = class_table.length > payload.page.limit;
-        if (hasMore) {
-            class_table.splice(class_table.length - 1, 1);
-        }
-        const count = hasMore
-            ? -1
-            : payload.page.begin * payload.page.limit + class_table.length;
         con.Commit();
         return {
             success: true,
@@ -1081,6 +1097,156 @@ const getEndedClassRatingStats = () => __awaiter(void 0, void 0, void 0, functio
         };
     }
 });
+const addClassRequest = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        payload.start_date = useDateParser_1.parseInvalidDateToDefault(payload.start_date);
+        payload.start_time = useDateParser_1.parseInvalidTimeToDefault(payload.start_time);
+        payload.end_time = useDateParser_1.parseInvalidTimeToDefault(payload.end_time);
+        const sql_insert = yield con.Insert(`
+        INSERT INTO class_request SET
+        course_pk=@course_pk,
+        course_desc=@course_desc,
+        tutor_pk=@tutor_pk,
+        tutor_name=@tutor_name,
+        start_date=DATE(@start_date),
+        start_time=@start_time,
+        end_time=@end_time,
+        encoder_pk=@encoder_pk;
+        `, payload);
+        if (sql_insert.affectedRows > 0) {
+            con.Commit();
+            return {
+                success: true,
+                message: "Your request has been sent successfully",
+            };
+        }
+        else {
+            con.Rollback();
+            return {
+                success: false,
+                message: "No affected rows when trying to send your request.",
+            };
+        }
+        // const notif_payload: NotifModel = {
+        //   body: `A course ${payload.course_desc} has been requested by a student.`,
+        //   user_pk: payload.encoder_pk,
+        //   encoder_pk: payload.encoder_pk,
+        //   link: `/admin/class-request/${sql_insert.insertedId}`,
+        //   user_type: "admin",
+        // };
+        // const notif_res = await con.Insert(
+        //   `INSERT INTO notif
+        //     SET
+        //     encoder_pk=@encoder_pk,
+        //     body=@body,
+        //     link=@link;`,
+        //   notif_payload
+        // );
+        // notif_payload.notif_pk = notif_res.insertedId;
+        // await con.Insert(
+        //   `INSERT INTO notif_users
+        //   SET
+        //   notif_pk=@notif_pk,
+        //   user_type=@user_type,
+        //   user_pk=@user_pk;`,
+        //   notif_payload
+        // );
+        // if (sql_insert.insertedId > 0) {
+        //   con.Commit();
+        //   return {
+        //     success: true,
+        //     message: "Your request has been sent successfully",
+        //     // data: 1,
+        //   };
+        // } else {
+        //   con.Rollback();
+        //   return {
+        //     success: false,
+        //     message: "There were no rows affected while inserting the new record.",
+        //   };
+        // }
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
+const acknowledgeRequest = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const sql_insert = yield con.Insert(`
+        UPDATE class_request SET
+        admin_remarks=@admin_remarks,
+        sts_pk='ak'
+        WHERE   
+        class_req_pk=@class_req_pk;
+        ;
+        `, payload);
+        if (sql_insert.affectedRows > 0) {
+            con.Commit();
+            return {
+                success: true,
+                message: "Your request has been acknowledged successfully",
+            };
+        }
+        else {
+            con.Rollback();
+            return {
+                success: false,
+                message: "No affected rows when trying to acknowledge your request.",
+            };
+        }
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
+const getClassRequests = (user_type) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield DatabaseConfig_1.DatabaseConnection();
+    try {
+        yield con.BeginTransaction();
+        const req_classes = yield con.Query(`
+      select cr.* from class_request  cr
+      left join users u on u.user_id = cr.encoder_pk
+      WHERE 
+      u.user_type = ${user_type === "student" ? "'student'" : "u.user_type"}
+      ORDER by cr.encoded_at desc
+      `, {});
+        for (const rc of req_classes) {
+            rc.status = yield con.QuerySingle(`Select * from status_master where sts_pk=@sts_pk;`, {
+                sts_pk: rc.sts_pk,
+            });
+            rc.tutor = yield con.QuerySingle(`Select * from tutors where tutor_pk=@tutor_pk;`, {
+                tutor_pk: rc.tutor_pk,
+            });
+        }
+        con.Commit();
+        return {
+            success: true,
+            data: req_classes,
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: useErrorMessage_1.ErrorMessage(error),
+        };
+    }
+});
 exports.default = {
     addClass,
     updateClass,
@@ -1104,5 +1270,8 @@ exports.default = {
     getTotalStudentClassStats,
     getEndedClassRatingStats,
     getClassRatings,
+    addClassRequest,
+    getClassRequests,
+    acknowledgeRequest,
 };
 //# sourceMappingURL=ClassRepository.js.map

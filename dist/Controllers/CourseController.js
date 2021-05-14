@@ -33,7 +33,7 @@ const CourseController = (app) => __awaiter(void 0, void 0, void 0, function* ()
         const course_pk = req.body.course_pk;
         res.json(yield CourseRepository_1.default.getCourseDuration(course_pk));
     }));
-    router.post("/searchCourse", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/searchCourse", Authorize_1.default("admin,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const search = req.body.value;
         res.json(yield CourseRepository_1.default.searchCourse(search));
     }));

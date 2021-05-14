@@ -37,7 +37,7 @@ const TutorController = (app) => __awaiter(void 0, void 0, void 0, function* () 
         const tutor_pk = req.body.tutor_pk;
         res.json(yield TutorRepository_1.default.getSingTutorToStudent(tutor_pk, parseInt(req.user_id)));
     }));
-    router.post("/searchTutor", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/searchTutor", Authorize_1.default("admin,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const search = req.body.value;
         res.json(yield TutorRepository_1.default.searchTutor(search));
     }));

@@ -1,11 +1,16 @@
-import { Chip, Grid, TablePagination } from "@material-ui/core";
+import { Button, Chip, Grid, TablePagination } from "@material-ui/core";
+import { Formik, Form } from "formik";
 import moment from "moment";
 import React, { FC, memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useHistory } from "react-router-dom";
 import DataTableSearch from "../../../Component/DataTableSearch";
 import DataTableSort from "../../../Component/DataTableSort";
+import FormikCheckbox from "../../../Component/Formik/FormikCheckbox";
+import FormikDateField from "../../../Component/Formik/FormikDateField";
+import FormikInputField from "../../../Component/Formik/FormikInputField";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
+import { InvalidDateToDefault } from "../../../Hooks/UseDateParser";
 import useFilter from "../../../Hooks/useFilter";
 import ClassActions from "../../../Services/Actions/ClassActions";
 import ITableInitialSort from "../../../Services/Interface/ITableInitialSort";
@@ -13,11 +18,16 @@ import { ClassModel } from "../../../Services/Models/ClassModel";
 import { PaginationModel } from "../../../Services/Models/PaginationModels";
 import { RootStore } from "../../../Services/Store";
 import { StyledClassContainer } from "../../../Styles/GlobalStyles";
+import no_book from "../../../Assets/Images/Icons/no_book.png";
 
 interface IOngoingClassTableStudentView {}
 
 const initialSearch = {
   search: "",
+  tutor_name: "",
+  sts_pk: ["A", "S"],
+  sched_from: null,
+  sched_to: null,
 };
 
 const initialTableSort: Array<ITableInitialSort> = [
@@ -51,8 +61,8 @@ const initialTableSort: Array<ITableInitialSort> = [
   },
 ];
 
-export const OngoingClassTableStudentView: FC<IOngoingClassTableStudentView> = memo(
-  () => {
+export const OngoingClassTableStudentView: FC<IOngoingClassTableStudentView> =
+  memo(() => {
     const dispatch = useDispatch();
     const history = useHistory();
 
@@ -185,6 +195,99 @@ export const OngoingClassTableStudentView: FC<IOngoingClassTableStudentView> = m
                   }}
                   handleSetSearchField={handleSetSearchField}
                   searchField={searchField}
+                  FilterComponent={
+                    <Formik
+                      initialValues={tableSearch}
+                      enableReinitialize
+                      onSubmit={(form_values) => {
+                        const filter_payload = {
+                          ...form_values,
+                          search: tableSearch.search,
+                        };
+
+                        handleSetTableSearch(filter_payload);
+                      }}
+                    >
+                      {() => (
+                        <Form className="form">
+                          <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                              <FormikInputField
+                                label="Tutor Name"
+                                placeholder="Search tutor's name"
+                                name="tutor_name"
+                                variant="outlined"
+                                InputLabelProps={{ shrink: true }}
+                                fullWidth
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <FormikCheckbox
+                                data={[
+                                  {
+                                    id: "A",
+                                    label: "approved",
+                                  },
+                                  {
+                                    id: "S",
+                                    label: "started",
+                                  },
+                                ]}
+                                name="sts_pk"
+                                label="Status"
+                              />
+                            </Grid>
+
+                            <Grid item xs={6}>
+                              <FormikDateField
+                                name="sched_from"
+                                clearable={true}
+                                label="Schedule From"
+                              />
+                            </Grid>
+                            <Grid item xs={6}>
+                              <FormikDateField
+                                name="sched_to"
+                                clearable={true}
+                                label="Schedule To"
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <Grid container spacing={2} justify="flex-end">
+                                <Grid item>
+                                  <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    type="button"
+                                    onClick={() => {
+                                      const filter_payload = {
+                                        ...initialSearch,
+                                        search: tableSearch.search,
+                                      };
+                                      handleSetTableSearch(filter_payload);
+                                    }}
+                                  >
+                                    Clear Filters
+                                  </Button>
+                                </Grid>
+                                <Grid item>
+                                  <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                  >
+                                    Apply Filters
+                                  </Button>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </Form>
+                      )}
+                    </Formik>
+                  }
                 />
               </Grid>
             </Grid>
@@ -204,10 +307,7 @@ export const OngoingClassTableStudentView: FC<IOngoingClassTableStudentView> = m
                   gridGap: `2em`,
                   alignItems: `start`,
                   alignContent: `start`,
-                  justifyContent: `start`,
-                  justifyItems: `start`,
-                  gridTemplateColumns: `repeat(auto-fill, minmax(270px, 1fr))`,
-                  //   gridTemplateColumns: `1fr fit-content(20%)`,
+                  gridTemplateColumns: `repeat(auto-fill, minmax(300px, 1fr))`,
                 }}
               >
                 {data_table?.map((v, i) => (
@@ -215,7 +315,11 @@ export const OngoingClassTableStudentView: FC<IOngoingClassTableStudentView> = m
                     <div className="image">
                       {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
                       <img
-                        src={`data:image/jpg;base64,${v.course_info.picture}`}
+                        src={
+                          !!v.course_info.picture
+                            ? `data:image/jpg;base64,${v.course_info.picture}`
+                            : no_book
+                        }
                         alt={`no image found`}
                       />
                     </div>
@@ -251,6 +355,9 @@ export const OngoingClassTableStudentView: FC<IOngoingClassTableStudentView> = m
                       </div>
 
                       <div className="time item">
+                        {InvalidDateToDefault(v.start_date, "-")}
+                      </div>
+                      <div className="time item">
                         {moment(v.start_time, "HH:mm:ss").format("hh:mma")}
                         {" - "}
                         {moment(v.end_time, "HH:mm:ss").format("hh:mma")}
@@ -263,8 +370,8 @@ export const OngoingClassTableStudentView: FC<IOngoingClassTableStudentView> = m
                       </div>
                       <div className="item">
                         <div className="value">
-                          {v.closed_sessions} of {v.session_count} completed
-                          sessions
+                          {!!v.closed_sessions ? v.closed_sessions : 0} of{" "}
+                          {v.session_count} completed sessions
                         </div>
                       </div>
                     </div>
@@ -276,7 +383,6 @@ export const OngoingClassTableStudentView: FC<IOngoingClassTableStudentView> = m
         </Grid>
       </>
     );
-  }
-);
+  });
 
 export default OngoingClassTableStudentView;

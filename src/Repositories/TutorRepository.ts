@@ -4,6 +4,7 @@ import { parseInvalidDateToDefault } from "../Hooks/useDateParser";
 import { ErrorMessage } from "../Hooks/useErrorMessage";
 import { GetUploadedImage, UploadImage } from "../Hooks/useFileUploader";
 import { GenerateSearch } from "../Hooks/useSearch";
+import useSql from "../Hooks/useSql";
 import { isValidPicture } from "../Hooks/useValidator";
 import { PaginationModel } from "../Models/PaginationModel";
 import { ResponseModel } from "../Models/ResponseModel";
@@ -339,7 +340,7 @@ const toggleActiveStatus = async (
 };
 
 const getTutorDataTable = async (
-  pagination_payload: PaginationModel
+  payload: PaginationModel
 ): Promise<ResponseModel> => {
   const con = await DatabaseConnection();
   try {
@@ -354,11 +355,19 @@ const getTutorDataTable = async (
       OR email like concat('%',@search,'%')
       OR mob_no like concat('%',@search,'%')
       OR position like concat('%',@search,'%'))
+      AND position in @position
+      AND is_active in @is_active
+      ${useSql.DateWhereClause(
+        "encoded_at",
+        ">=",
+        payload.filters.encoded_from
+      )}
+      ${useSql.DateWhereClause("encoded_at", "<=", payload.filters.encoded_to)}
       `,
-      pagination_payload
+      payload
     );
 
-    const hasMore: boolean = data.length > pagination_payload.page.limit;
+    const hasMore: boolean = data.length > payload.page.limit;
 
     if (hasMore) {
       data.splice(data.length - 1, 1);
@@ -366,8 +375,7 @@ const getTutorDataTable = async (
 
     const count: number = hasMore
       ? -1
-      : pagination_payload.page.begin * pagination_payload.page.limit +
-        data.length;
+      : payload.page.begin * payload.page.limit + data.length;
 
     for (const tutor of data) {
       const pic = await GetUploadedImage(tutor.picture);
@@ -379,9 +387,9 @@ const getTutorDataTable = async (
       success: true,
       data: {
         table: data,
-        begin: pagination_payload.page.begin,
+        begin: payload.page.begin,
         count: count,
-        limit: pagination_payload.page.limit,
+        limit: payload.page.limit,
       },
     };
   } catch (error) {

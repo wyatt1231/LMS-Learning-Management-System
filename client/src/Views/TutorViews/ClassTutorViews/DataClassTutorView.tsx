@@ -1,4 +1,5 @@
 import {
+  Button,
   Chip,
   Container,
   Grid,
@@ -21,11 +22,22 @@ import { PaginationModel } from "../../../Services/Models/PaginationModels";
 import { StatusMasterModel } from "../../../Services/Models/StatusMasterModel";
 import { RootStore } from "../../../Services/Store";
 import { StyledClassContainer } from "../../../Styles/GlobalStyles";
+import no_book from "../../../Assets/Images/Icons/no_book.png";
+import FormikDateField from "../../../Component/Formik/FormikDateField";
+import { Formik, Form } from "formik";
+import FormikCheckbox from "../../../Component/Formik/FormikCheckbox";
+import FormikInputField from "../../../Component/Formik/FormikInputField";
+import { InvalidDateToDefault } from "../../../Hooks/UseDateParser";
 
 interface DataClassTutorViewInterface {}
 
 const initialSearch = {
   search: "",
+  room_desc: "",
+  class_type: ["o", "f"],
+  sts_pk: ["FA", "A", "S", "E"],
+  sched_from: null,
+  sched_to: null,
 };
 
 const initialTableSort: Array<ITableInitialSort> = [
@@ -200,6 +212,128 @@ export const DataClassTutorView: FC<DataClassTutorViewInterface> = memo(() => {
                 }}
                 handleSetSearchField={handleSetSearchField}
                 searchField={searchField}
+                FilterComponent={
+                  <Formik
+                    initialValues={tableSearch}
+                    enableReinitialize
+                    onSubmit={(form_values) => {
+                      const filter_payload = {
+                        ...form_values,
+                        search: tableSearch.search,
+                      };
+
+                      handleSetTableSearch(filter_payload);
+                    }}
+                  >
+                    {() => (
+                      <Form className="form">
+                        <Grid container spacing={3}>
+                          <Grid item xs={12}>
+                            <FormikInputField
+                              label="Room"
+                              placeholder="Search the room's name"
+                              name="room_desc"
+                              variant="outlined"
+                              InputLabelProps={{ shrink: true }}
+                              fullWidth
+                            />
+                          </Grid>
+
+                          <Grid item xs={12}>
+                            <FormikCheckbox
+                              row={true}
+                              data={[
+                                {
+                                  id: "o",
+                                  label: "Online Class",
+                                },
+                                {
+                                  id: "f",
+                                  label: "Face to Face",
+                                },
+                              ]}
+                              color="primary"
+                              name="class_type"
+                              label="Class Setup"
+                            />
+                          </Grid>
+
+                          <Grid item xs={12}>
+                            <FormikCheckbox
+                              row={true}
+                              color="primary"
+                              data={[
+                                {
+                                  id: "FA",
+                                  label: "for approval",
+                                },
+                                {
+                                  id: "A",
+                                  label: "approved",
+                                },
+                                {
+                                  id: "S",
+                                  label: "started",
+                                },
+                                {
+                                  id: "E",
+                                  label: "ended",
+                                },
+                              ]}
+                              name="sts_pk"
+                              label="Status"
+                            />
+                          </Grid>
+
+                          <Grid item xs={6}>
+                            <FormikDateField
+                              name="sched_from"
+                              clearable={true}
+                              label="Schedule From"
+                            />
+                          </Grid>
+                          <Grid item xs={6}>
+                            <FormikDateField
+                              name="sched_to"
+                              clearable={true}
+                              label="Schedule To"
+                            />
+                          </Grid>
+
+                          <Grid item xs={12}>
+                            <Grid container spacing={2} justify="flex-end">
+                              <Grid item>
+                                <Button
+                                  variant="contained"
+                                  color="secondary"
+                                  type="button"
+                                  onClick={() => {
+                                    const filter_payload = {
+                                      ...initialSearch,
+                                      search: tableSearch.search,
+                                    };
+                                    handleSetTableSearch(filter_payload);
+                                  }}
+                                >
+                                  Clear Filters
+                                </Button>
+                              </Grid>
+                              <Grid item>
+                                <Button
+                                  type="submit"
+                                  variant="contained"
+                                  color="primary"
+                                >
+                                  Apply Filters
+                                </Button>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </Form>
+                    )}
+                  </Formik>
+                }
               />
             </Grid>
           </Grid>
@@ -226,8 +360,9 @@ export const DataClassTutorView: FC<DataClassTutorViewInterface> = memo(() => {
                   <div className="image">
                     {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
                     <img
-                      src={`data:image/jpg;base64,${v.pic}`}
+                      // src={`data:image/jpg;base64,${v.pic}`}
                       alt={`no image found`}
+                      src={!!v.pic ? `data:image/jpg;base64,${v.pic}` : no_book}
                     />
                   </div>
 
@@ -262,6 +397,9 @@ export const DataClassTutorView: FC<DataClassTutorViewInterface> = memo(() => {
                     </div>
 
                     <div className="time item">
+                      {InvalidDateToDefault(v.start_date, "-")}
+                    </div>
+                    <div className="time item">
                       {moment(v.start_time, "HH:mm:ss").format("hh:mma")}
                       {" - "}
                       {moment(v.end_time, "HH:mm:ss").format("hh:mma")}
@@ -274,8 +412,8 @@ export const DataClassTutorView: FC<DataClassTutorViewInterface> = memo(() => {
                     </div>
                     <div className="item">
                       <div className="value">
-                        {v.closed_sessions} of {v.session_count} completed
-                        sessions
+                        {!!v.closed_sessions ? v.closed_sessions : 0} of{" "}
+                        {v.session_count} completed sessions
                       </div>
                     </div>
                   </div>

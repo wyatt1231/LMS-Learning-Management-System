@@ -7,8 +7,10 @@ import {
 import { ErrorMessage } from "../Hooks/useErrorMessage";
 import { GetUploadedImage } from "../Hooks/useFileUploader";
 import UseSms from "../Hooks/UseSms";
+import useSql from "../Hooks/useSql";
 import { ClassModel } from "../Models/ClassModel";
 import { ClassRatingModel } from "../Models/ClassRatingModel";
+import { ClassRequestModel } from "../Models/ClassRequestModel";
 import { NotifModel } from "../Models/NotifModel";
 import { PaginationModel } from "../Models/PaginationModel";
 import { ResponseModel } from "../Models/ResponseModel";
@@ -536,16 +538,15 @@ const rateClass = async (
 };
 
 const getClassDataTable = async (
-  pagination_payload: PaginationModel
+  payload: PaginationModel
 ): Promise<ResponseModel> => {
   const con = await DatabaseConnection();
   try {
     await con.BeginTransaction();
 
-    const data: Array<
-      ClassModel & StatusMasterModel
-    > = await con.QueryPagination(
-      `SELECT * FROM 
+    const data: Array<ClassModel & StatusMasterModel> =
+      await con.QueryPagination(
+        `SELECT * FROM 
       (
       SELECT c.*, sm.sts_desc,sm.sts_color,sm.sts_bgcolor,crs.picture as 'pic',
       (SELECT count(*) FROM class_sessions WHERE sts_pk='e' AND class_pk=c.class_pk) closed_sessions
@@ -556,15 +557,19 @@ const getClassDataTable = async (
       ON crs.course_pk = c.course_pk
       ) tmp
       WHERE
-      class_desc like concat('%',@search,'%')
-      OR room_desc like concat('%',@search,'%')
-      OR class_type like concat('%',@search,'%')
-      OR tutor_name like concat('%',@search,'%')
+      (class_desc like concat('%',@search,'%')
+      OR course_desc like concat('%',@search,'%'))
+      AND room_desc LIKE CONCAT('%',@room_desc,'%')
+      AND tutor_name LIKE CONCAT('%',@tutor_name,'%')
+      AND class_type in @class_type
+      AND sts_pk in @sts_pk
+      ${useSql.DateWhereClause("start_date", ">=", payload.filters.sched_from)}
+      ${useSql.DateWhereClause("start_date", "<=", payload.filters.sched_to)}
       `,
-      pagination_payload
-    );
+        payload
+      );
 
-    const hasMore: boolean = data.length > pagination_payload.page.limit;
+    const hasMore: boolean = data.length > payload.page.limit;
 
     if (hasMore) {
       data.splice(data.length - 1, 1);
@@ -572,8 +577,7 @@ const getClassDataTable = async (
 
     const count: number = hasMore
       ? -1
-      : pagination_payload.page.begin * pagination_payload.page.limit +
-        data.length;
+      : payload.page.begin * payload.page.limit + data.length;
 
     for (const c of data) {
       c.pic = await GetUploadedImage(c.pic);
@@ -584,9 +588,9 @@ const getClassDataTable = async (
       success: true,
       data: {
         table: data,
-        begin: pagination_payload.page.begin,
+        begin: payload.page.begin,
         count: count,
-        limit: pagination_payload.page.limit,
+        limit: payload.page.limit,
       },
     };
   } catch (error) {
@@ -607,10 +611,9 @@ const getTutorClassTable = async (
   try {
     await con.BeginTransaction();
 
-    const data: Array<
-      ClassModel & StatusMasterModel
-    > = await con.QueryPagination(
-      `SELECT * FROM 
+    const data: Array<ClassModel & StatusMasterModel> =
+      await con.QueryPagination(
+        `SELECT * FROM 
       (
       SELECT c.*, sm.sts_desc,sm.sts_color,sm.sts_bgcolor,crs.picture as 'pic',
       (SELECT count(*) FROM class_sessions WHERE sts_pk='e' AND class_pk=c.class_pk) closed_sessions
@@ -622,13 +625,17 @@ const getTutorClassTable = async (
       ) tmp
       WHERE
       (class_desc like concat('%',@search,'%')
-      OR room_desc like concat('%',@search,'%')
-      OR class_type like concat('%',@search,'%')
-      OR tutor_name like concat('%',@search,'%'))
+      OR course_desc like concat('%',@search,'%'))
+      AND room_desc LIKE CONCAT('%',@room_desc,'%')
+      AND class_type in @class_type
+      AND sts_pk in @sts_pk
+      ${useSql.DateWhereClause("start_date", ">=", payload.filters.sched_from)}
+      ${useSql.DateWhereClause("start_date", "<=", payload.filters.sched_to)}
+
       AND tutor_pk = (SELECT tutor_pk FROM tutors WHERE user_id='${user_pk}' LIMIT 1)
       `,
-      payload
-    );
+        payload
+      );
 
     const hasMore: boolean = data.length > payload.page.limit;
 
@@ -795,16 +802,27 @@ const getStudentAvailableClassTable = async (
           SELECT * FROM classes c
           WHERE class_pk NOT IN (SELECT cs.class_pk FROM class_students cs
             JOIN students s ON cs.student_pk = s.student_pk
-             WHERE s.user_id =${user_pk}  ) AND c.sts_pk = 'a' 
+             WHERE s.user_id =${user_pk}  ) AND c.sts_pk IN ('a','s')
           GROUP BY c.class_pk
         ) tmp
       WHERE
-      class_desc LIKE CONCAT('%',@search,'%')
-      OR course_desc LIKE CONCAT('%',@search,'%')
-      #OR room_desc LIKE CONCAT('%',@search,'%')
+      (class_desc LIKE CONCAT('%',@search,'%')
+      OR course_desc LIKE CONCAT('%',@search,'%')) 
+      AND tutor_name LIKE CONCAT('%',@tutor_name,'%')
+      AND sts_pk in @sts_pk 
+      ${useSql.DateWhereClause("start_date", ">=", payload.filters.sched_from)}
+      ${useSql.DateWhereClause("start_date", "<=", payload.filters.sched_to)}
       `,
       payload
     );
+
+    const hasMore: boolean = class_table.length > payload.page.limit;
+    if (hasMore) {
+      class_table.splice(class_table.length - 1, 1);
+    }
+    const count: number = hasMore
+      ? -1
+      : payload.page.begin * payload.page.limit + class_table.length;
 
     for (const c of class_table) {
       c.status = await con.QuerySingle(
@@ -833,16 +851,6 @@ const getStudentAvailableClassTable = async (
         c.tutor_info.picture = await GetUploadedImage(c.tutor_info.picture);
       }
     }
-
-    const hasMore: boolean = class_table.length > payload.page.limit;
-
-    if (hasMore) {
-      class_table.splice(class_table.length - 1, 1);
-    }
-
-    const count: number = hasMore
-      ? -1
-      : payload.page.begin * payload.page.limit + class_table.length;
 
     con.Commit();
     return {
@@ -878,16 +886,29 @@ const getStudentOngoingClassTable = async (
           SELECT * FROM classes  c
           WHERE class_pk  IN (SELECT cs.class_pk FROM class_students cs
             JOIN students s ON cs.student_pk = s.student_pk
-             WHERE s.user_id =${user_pk} ) AND sts_pk = 'a'
+             WHERE s.user_id =${user_pk} ) AND sts_pk in ('a','s')
           GROUP BY c.class_pk
         ) tmp
       WHERE
-      class_desc LIKE CONCAT('%',@search,'%')
-      OR course_desc LIKE CONCAT('%',@search,'%')
-      OR room_desc LIKE CONCAT('%',@search,'%')
+      (class_desc LIKE CONCAT('%',@search,'%')
+      OR course_desc LIKE CONCAT('%',@search,'%')) 
+      AND tutor_name LIKE CONCAT('%',@tutor_name,'%')
+      AND sts_pk in @sts_pk 
+      ${useSql.DateWhereClause("start_date", ">=", payload.filters.sched_from)}
+      ${useSql.DateWhereClause("start_date", "<=", payload.filters.sched_to)}
       `,
       payload
     );
+
+    const hasMore: boolean = class_table.length > payload.page.limit;
+
+    if (hasMore) {
+      class_table.splice(class_table.length - 1, 1);
+    }
+
+    const count: number = hasMore
+      ? -1
+      : payload.page.begin * payload.page.limit + class_table.length;
 
     for (const c of class_table) {
       c.status = await con.QuerySingle(
@@ -916,16 +937,6 @@ const getStudentOngoingClassTable = async (
         c.tutor_info.picture = await GetUploadedImage(c.tutor_info.picture);
       }
     }
-
-    const hasMore: boolean = class_table.length > payload.page.limit;
-
-    if (hasMore) {
-      class_table.splice(class_table.length - 1, 1);
-    }
-
-    const count: number = hasMore
-      ? -1
-      : payload.page.begin * payload.page.limit + class_table.length;
 
     con.Commit();
     return {
@@ -965,12 +976,24 @@ const getStudentEndedClassTable = async (
           GROUP BY c.class_pk
         ) tmp
       WHERE
-      class_desc LIKE CONCAT('%',@search,'%')
-      OR course_desc LIKE CONCAT('%',@search,'%')
-      OR room_desc LIKE CONCAT('%',@search,'%')
+      (class_desc LIKE CONCAT('%',@search,'%')
+      OR course_desc LIKE CONCAT('%',@search,'%')) 
+      AND tutor_name LIKE CONCAT('%',@tutor_name,'%')
+      ${useSql.DateWhereClause("start_date", ">=", payload.filters.sched_from)}
+      ${useSql.DateWhereClause("start_date", "<=", payload.filters.sched_to)}
       `,
       payload
     );
+
+    const hasMore: boolean = class_table.length > payload.page.limit;
+
+    if (hasMore) {
+      class_table.splice(class_table.length - 1, 1);
+    }
+
+    const count: number = hasMore
+      ? -1
+      : payload.page.begin * payload.page.limit + class_table.length;
 
     for (const c of class_table) {
       c.status = await con.QuerySingle(
@@ -999,16 +1022,6 @@ const getStudentEndedClassTable = async (
         c.tutor_info.picture = await GetUploadedImage(c.tutor_info.picture);
       }
     }
-
-    const hasMore: boolean = class_table.length > payload.page.limit;
-
-    if (hasMore) {
-      class_table.splice(class_table.length - 1, 1);
-    }
-
-    const count: number = hasMore
-      ? -1
-      : payload.page.begin * payload.page.limit + class_table.length;
 
     con.Commit();
     return {
@@ -1411,6 +1424,187 @@ const getEndedClassRatingStats = async (): Promise<ResponseModel> => {
   }
 };
 
+const addClassRequest = async (
+  payload: ClassRequestModel
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    payload.start_date = parseInvalidDateToDefault(payload.start_date);
+    payload.start_time = parseInvalidTimeToDefault(payload.start_time);
+    payload.end_time = parseInvalidTimeToDefault(payload.end_time);
+
+    const sql_insert = await con.Insert(
+      `
+        INSERT INTO class_request SET
+        course_pk=@course_pk,
+        course_desc=@course_desc,
+        tutor_pk=@tutor_pk,
+        tutor_name=@tutor_name,
+        start_date=DATE(@start_date),
+        start_time=@start_time,
+        end_time=@end_time,
+        encoder_pk=@encoder_pk;
+        `,
+      payload
+    );
+
+    if (sql_insert.affectedRows > 0) {
+      con.Commit();
+      return {
+        success: true,
+        message: "Your request has been sent successfully",
+      };
+    } else {
+      con.Rollback();
+      return {
+        success: false,
+        message: "No affected rows when trying to send your request.",
+      };
+    }
+
+    // const notif_payload: NotifModel = {
+    //   body: `A course ${payload.course_desc} has been requested by a student.`,
+    //   user_pk: payload.encoder_pk,
+    //   encoder_pk: payload.encoder_pk,
+    //   link: `/admin/class-request/${sql_insert.insertedId}`,
+    //   user_type: "admin",
+    // };
+
+    // const notif_res = await con.Insert(
+    //   `INSERT INTO notif
+    //     SET
+    //     encoder_pk=@encoder_pk,
+    //     body=@body,
+    //     link=@link;`,
+    //   notif_payload
+    // );
+
+    // notif_payload.notif_pk = notif_res.insertedId;
+
+    // await con.Insert(
+    //   `INSERT INTO notif_users
+    //   SET
+    //   notif_pk=@notif_pk,
+    //   user_type=@user_type,
+    //   user_pk=@user_pk;`,
+    //   notif_payload
+    // );
+
+    // if (sql_insert.insertedId > 0) {
+    //   con.Commit();
+    //   return {
+    //     success: true,
+    //     message: "Your request has been sent successfully",
+    //     // data: 1,
+    //   };
+    // } else {
+    //   con.Rollback();
+    //   return {
+    //     success: false,
+    //     message: "There were no rows affected while inserting the new record.",
+    //   };
+    // }
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const acknowledgeRequest = async (
+  payload: ClassRequestModel
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const sql_insert = await con.Insert(
+      `
+        UPDATE class_request SET
+        admin_remarks=@admin_remarks,
+        sts_pk='ak'
+        WHERE   
+        class_req_pk=@class_req_pk;
+        ;
+        `,
+      payload
+    );
+
+    if (sql_insert.affectedRows > 0) {
+      con.Commit();
+      return {
+        success: true,
+        message: "Your request has been acknowledged successfully",
+      };
+    } else {
+      con.Rollback();
+      return {
+        success: false,
+        message: "No affected rows when trying to acknowledge your request.",
+      };
+    }
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
+const getClassRequests = async (user_type: string): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const req_classes: Array<ClassRequestModel> = await con.Query(
+      `
+      select cr.* from class_request  cr
+      left join users u on u.user_id = cr.encoder_pk
+      WHERE 
+      u.user_type = ${user_type === "student" ? "'student'" : "u.user_type"}
+      ORDER by cr.encoded_at desc
+      `,
+      {}
+    );
+
+    for (const rc of req_classes) {
+      rc.status = await con.QuerySingle(
+        `Select * from status_master where sts_pk=@sts_pk;`,
+        {
+          sts_pk: rc.sts_pk,
+        }
+      );
+
+      rc.tutor = await con.QuerySingle(
+        `Select * from tutors where tutor_pk=@tutor_pk;`,
+        {
+          tutor_pk: rc.tutor_pk,
+        }
+      );
+    }
+
+    con.Commit();
+    return {
+      success: true,
+      data: req_classes,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
 export default {
   addClass,
   updateClass,
@@ -1434,4 +1628,7 @@ export default {
   getTotalStudentClassStats,
   getEndedClassRatingStats,
   getClassRatings,
+  addClassRequest,
+  getClassRequests,
+  acknowledgeRequest,
 };

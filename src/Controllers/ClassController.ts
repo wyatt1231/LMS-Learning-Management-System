@@ -2,6 +2,7 @@ import { Express, Request, Response, Router } from "express";
 import Authorize from "../Middlewares/Authorize";
 import { ClassModel } from "../Models/ClassModel";
 import { ClassRatingModel } from "../Models/ClassRatingModel";
+import { ClassRequestModel } from "../Models/ClassRequestModel";
 import { ClassStudentModel } from "../Models/ClassStudentModel";
 import { PaginationModel } from "../Models/PaginationModel";
 import { UserClaims } from "../Models/UserModel";
@@ -80,6 +81,33 @@ const ClassController = async (app: Express): Promise<void> => {
     async (req: Request & UserClaims, res: Response) => {
       const payload: ClassModel = req.body;
       res.json(await ClassRepository.addClass(payload, req.user_id));
+    }
+  );
+  router.post(
+    "/addClassRequest",
+    Authorize("admin,student"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: ClassRequestModel = req.body;
+      payload.encoder_pk = parseInt(req.user_id);
+      res.json(await ClassRepository.addClassRequest(payload));
+    }
+  );
+
+  router.post(
+    "/acknowledgeRequest",
+    Authorize("admin,student"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: ClassRequestModel = req.body;
+      payload.encoder_pk = parseInt(req.user_id);
+      res.json(await ClassRepository.acknowledgeRequest(payload));
+    }
+  );
+
+  router.post(
+    "/getClassRequests",
+    Authorize("admin,student"),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(await ClassRepository.getClassRequests(req.user_type));
     }
   );
 

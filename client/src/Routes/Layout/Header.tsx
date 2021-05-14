@@ -19,9 +19,13 @@ import Notification from "../../Component/Notification/Notification";
 import PageLinks from "../../Component/PageLinks";
 import UserProfile from "../../Component/UserProfile/UserProfile";
 import { APP_NAME } from "../../Helpers/AppConfig";
-import { toggleActivitySidebar } from "../../Services/Actions/PageActions";
+import {
+  toggleActivitySidebar,
+  toggleClassReqSidebar,
+} from "../../Services/Actions/PageActions";
 import { RootStore } from "../../Services/Store";
 import { IPageNavLinks } from "./Layout";
+import ListAltRoundedIcon from "@material-ui/icons/ListAltRounded";
 interface IHeader {
   PageNavLinks: Array<IPageNavLinks>;
   isOpenMobileHeader: boolean;
@@ -108,8 +112,18 @@ const Header: React.FC<IHeader> = memo(
 
             <Notification />
 
-            {user?.user_type === "admin" && (
+            {(user?.user_type === "admin" || user?.user_type === "student") && (
               <>
+                <IconButton
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    dispatch(toggleClassReqSidebar(true));
+                  }}
+                  className="icon-header"
+                >
+                  <ListAltRoundedIcon />
+                </IconButton>
                 <IconButton
                   color="inherit"
                   size="small"

@@ -46,7 +46,7 @@ export const DataClassStudentView: FC<IDataClassStudentView> = memo(() => {
               link: `/student/class/records/ongoing-class`,
             },
             {
-              label: "Available Class",
+              label: "All Classes",
               link: `/student/class/records/available-class`,
             },
             {

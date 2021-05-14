@@ -1,16 +1,15 @@
 import {
-  TableContainer,
+  Chip,
   Table,
+  TableBody,
+  TableCell,
+  TableContainer,
   TableHead,
   TableRow,
-  TableCell,
-  TableBody,
-  Chip,
   Tooltip,
 } from "@material-ui/core";
-import React, { memo, FC, useEffect } from "react";
+import React, { FC, memo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import AverageRating from "../../../Component/AverageRating";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import LinearGraph from "../../../Component/LinearGraph";
 import ClassActions from "../../../Services/Actions/ClassActions";

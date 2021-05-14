@@ -1,5 +1,6 @@
 import { ClassModel } from "../Models/ClassModel";
 import { ClassRatingModel } from "../Models/ClassRatingModel";
+import { ClassRequestModel } from "../Models/ClassRequestModel";
 import { StatsModel } from "../Models/StatsModel";
 import { StatusMasterModel } from "../Models/StatusMasterModel";
 
@@ -147,6 +148,15 @@ export type ClassReducerTypes =
   | {
       type: "fetch_class_ratings";
       fetch_class_ratings: boolean;
+    }
+  //
+  | {
+      type: "class_req";
+      class_req: Array<ClassRequestModel>;
+    }
+  | {
+      type: "fetch_class_req";
+      fetch_class_req: boolean;
     };
 
 export interface ClassReducerModel {
@@ -193,4 +203,7 @@ export interface ClassReducerModel {
   //
   class_ratings?: Array<ClassRatingModel>;
   fetch_class_ratings?: boolean;
+  //
+  class_req?: Array<ClassRequestModel>;
+  fetch_class_req?: boolean;
 }

@@ -234,6 +234,19 @@ const ClassReducer = (
       };
     }
 
+    //
+    case "class_req": {
+      return {
+        ...state,
+        class_req: action.class_req,
+      };
+    }
+    case "fetch_class_req": {
+      return {
+        ...state,
+        fetch_class_req: action.fetch_class_req,
+      };
+    }
     default:
       return state;
   }

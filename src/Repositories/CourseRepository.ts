@@ -2,6 +2,7 @@ import { DatabaseConnection } from "../Configurations/DatabaseConfig";
 import { ErrorMessage } from "../Hooks/useErrorMessage";
 import { GetUploadedImage, UploadImage } from "../Hooks/useFileUploader";
 import { GenerateSearch } from "../Hooks/useSearch";
+import useSql from "../Hooks/useSql";
 import { isValidPicture } from "../Hooks/useValidator";
 import { CourseModel } from "../Models/CourseModel";
 import { PaginationModel } from "../Models/PaginationModel";
@@ -68,7 +69,7 @@ const addCourse = async (
 };
 
 const getCourseDataTable = async (
-  pagination_payload: PaginationModel
+  payload: PaginationModel
 ): Promise<ResponseModel> => {
   const con = await DatabaseConnection();
   try {
@@ -78,11 +79,19 @@ const getCourseDataTable = async (
       `SELECT * FROM courses
       WHERE
       course_desc like concat('%',@search,'%')
+      AND est_duration in @est_duration
+      ${useSql.DateWhereClause(
+        "encoded_at",
+        ">=",
+        payload.filters.encoded_from
+      )}
+      ${useSql.DateWhereClause("encoded_at", "<=", payload.filters.encoded_to)}
+
       `,
-      pagination_payload
+      payload
     );
 
-    const hasMore: boolean = data.length > pagination_payload.page.limit;
+    const hasMore: boolean = data.length > payload.page.limit;
 
     if (hasMore) {
       data.splice(data.length - 1, 1);
@@ -90,8 +99,7 @@ const getCourseDataTable = async (
 
     const count: number = hasMore
       ? -1
-      : pagination_payload.page.begin * pagination_payload.page.limit +
-        data.length;
+      : payload.page.begin * payload.page.limit + data.length;
 
     for (const course of data) {
       course.picture = await GetUploadedImage(course.picture);
@@ -102,9 +110,9 @@ const getCourseDataTable = async (
       success: true,
       data: {
         table: data,
-        begin: pagination_payload.page.begin,
+        begin: payload.page.begin,
         count: count,
-        limit: pagination_payload.page.limit,
+        limit: payload.page.limit,
       },
     };
   } catch (error) {

@@ -46,7 +46,7 @@ const CourseController = async (app: Express): Promise<void> => {
 
   router.post(
     "/searchCourse",
-    Authorize("admin"),
+    Authorize("admin,student"),
     async (req: Request & UserClaims, res: Response) => {
       const search: string = req.body.value;
       res.json(await CourseRepository.searchCourse(search));

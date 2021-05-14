@@ -10,6 +10,7 @@ import { UserModel } from "../Models/UserModel";
 
 import mysql from "mysql2";
 import { GenerateSearch } from "../Hooks/useSearch";
+import useSql from "../Hooks/useSql";
 const addStudent = async (
   payload: StudentModel,
   user_id: string
@@ -471,30 +472,36 @@ const changeStudentStatus = async (
 // };
 
 const getStudentDataTable = async (
-  pagination_payload: PaginationModel
+  payload: PaginationModel
 ): Promise<ResponseModel> => {
   const con = await DatabaseConnection();
   try {
     await con.BeginTransaction();
 
-    const data: Array<
-      StudentModel & StatusMasterModel
-    > = await con.QueryPagination(
-      `
+    console.log(`payload`, payload);
+
+    const data: Array<StudentModel & StatusMasterModel> =
+      await con.QueryPagination(
+        `
       SELECT * FROM 
       (SELECT s.*,CONCAT(s.firstname,' ',s.lastname) fullname, sm.sts_desc,sm.sts_bgcolor,sm.sts_color FROM students s 
       JOIN status_master sm ON s.sts_pk = sm.sts_pk) tmp
       WHERE
-      firstname like concat('%',@search,'%')
-      OR lastname like concat('%',@search,'%')
-      OR email like concat('%',@search,'%')
-      OR mob_no like concat('%',@search,'%')
-      OR grade like concat('%',@search,'%')
+      (firstname like concat('%',@search,'%')
+      OR lastname like concat('%',@search,'%'))
+      AND grade in @grade
+      AND sts_pk in @sts_pk
+      ${useSql.DateWhereClause(
+        "encoded_at",
+        ">=",
+        payload.filters.encoded_from
+      )}
+      ${useSql.DateWhereClause("encoded_at", "<=", payload.filters.encoded_to)}
       `,
-      pagination_payload
-    );
+        payload
+      );
 
-    const hasMore: boolean = data.length > pagination_payload.page.limit;
+    const hasMore: boolean = data.length > payload.page.limit;
 
     if (hasMore) {
       data.splice(data.length - 1, 1);
@@ -502,8 +509,7 @@ const getStudentDataTable = async (
 
     const count: number = hasMore
       ? -1
-      : pagination_payload.page.begin * pagination_payload.page.limit +
-        data.length;
+      : payload.page.begin * payload.page.limit + data.length;
 
     for (const row of data) {
       row.picture = await GetUploadedImage(row.picture);
@@ -514,9 +520,9 @@ const getStudentDataTable = async (
       success: true,
       data: {
         table: data,
-        begin: pagination_payload.page.begin,
+        begin: payload.page.begin,
         count: count,
-        limit: pagination_payload.page.limit,
+        limit: payload.page.limit,
       },
     };
   } catch (error) {

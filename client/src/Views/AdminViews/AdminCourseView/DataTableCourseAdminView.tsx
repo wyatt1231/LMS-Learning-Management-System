@@ -12,12 +12,15 @@ import {
   TableRow,
   Tooltip,
 } from "@material-ui/core";
+import { Formik, Form } from "formik";
 import React, { FC, memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import DataTableSearch from "../../../Component/DataTableSearch";
 import DataTableSort from "../../../Component/DataTableSort";
+import FormikCheckbox from "../../../Component/Formik/FormikCheckbox";
+import FormikDateField from "../../../Component/Formik/FormikDateField";
 import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopper";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import { InvalidDateToDefault } from "../../../Hooks/UseDateParser";
@@ -34,6 +37,7 @@ import ITableInitialSort from "../../../Services/Interface/ITableInitialSort";
 import { CourseModel } from "../../../Services/Models/CourseModel";
 import { PaginationModel } from "../../../Services/Models/PaginationModels";
 import { RootStore } from "../../../Services/Store";
+import { DbCourseDurations } from "../../../Storage/LocalDatabase";
 import EditCourseDialog from "./EditCourseDialog";
 import EditCourseImageDialog from "./EditCourseImageDialog";
 
@@ -41,6 +45,10 @@ interface DataTableCourseAdminViewInterface {}
 
 const initialSearch = {
   search: "",
+  est_duration: DbCourseDurations.map((d) => d.id),
+  is_active: ["1", "0"],
+  encoded_from: null,
+  encoded_to: null,
 };
 
 const initialTableSort: Array<ITableInitialSort> = [
@@ -107,8 +115,8 @@ const tableColumns: Array<ITableColumns> = [
   },
 ];
 
-export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = memo(
-  () => {
+export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> =
+  memo(() => {
     const dispatch = useDispatch();
 
     const table_loading = useSelector(
@@ -118,9 +126,8 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
       (store: RootStore) => store.CourseReducer.course_data_table?.table
     );
 
-    const [selected_course, set_selected_course] = useState<null | CourseModel>(
-      null
-    );
+    const [selected_course, set_selected_course] =
+      useState<null | CourseModel>(null);
 
     const [open_edit_course, set_open_edit_course] = useState(false);
 
@@ -306,6 +313,100 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
                   }}
                   handleSetSearchField={handleSetSearchField}
                   searchField={searchField}
+                  FilterComponent={
+                    <Formik
+                      initialValues={tableSearch}
+                      enableReinitialize
+                      onSubmit={(form_values) => {
+                        const filter_payload = {
+                          ...form_values,
+                          search: tableSearch.search,
+                        };
+
+                        handleSetTableSearch(filter_payload);
+                      }}
+                    >
+                      {() => (
+                        <Form className="form">
+                          <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                              <FormikCheckbox
+                                row={true}
+                                data={DbCourseDurations}
+                                color="primary"
+                                name="est_duration"
+                                label="Duration"
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <FormikCheckbox
+                                row={true}
+                                color="primary"
+                                data={[
+                                  {
+                                    id: "1",
+                                    label: "Yes",
+                                  },
+                                  {
+                                    id: "0",
+                                    label: "No",
+                                  },
+                                ]}
+                                name="is_active"
+                                label="Active"
+                              />
+                            </Grid>
+
+                            <Grid item xs={6}>
+                              <FormikDateField
+                                name="encoded_from"
+                                clearable={true}
+                                label="Encoded From"
+                              />
+                            </Grid>
+                            <Grid item xs={6}>
+                              <FormikDateField
+                                name="encoded_to"
+                                clearable={true}
+                                label="Encoded To"
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <Grid container spacing={2} justify="flex-end">
+                                <Grid item>
+                                  <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    type="button"
+                                    onClick={() => {
+                                      const filter_payload = {
+                                        ...initialSearch,
+                                        search: tableSearch.search,
+                                      };
+                                      handleSetTableSearch(filter_payload);
+                                    }}
+                                  >
+                                    Clear Filters
+                                  </Button>
+                                </Grid>
+                                <Grid item>
+                                  <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                  >
+                                    Apply Filters
+                                  </Button>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </Form>
+                      )}
+                    </Formik>
+                  }
                 />
               </Grid>
             </Grid>
@@ -450,7 +551,6 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> = m
         )}
       </Container>
     );
-  }
-);
+  });
 
 export default DataTableCourseAdminView;

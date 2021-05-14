@@ -63,7 +63,7 @@ const TutorController = async (app: Express): Promise<void> => {
 
   router.post(
     "/searchTutor",
-    Authorize("admin"),
+    Authorize("admin,student"),
     async (req: Request & UserClaims, res: Response) => {
       const search: string = req.body.value;
       res.json(await TutorRepository.searchTutor(search));

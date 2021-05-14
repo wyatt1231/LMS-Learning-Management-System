@@ -16,24 +16,31 @@ if (process.env.NODE_ENV === "production") {
     };
 }
 else {
+    // connection_string = {
+    //   host: "109.106.254.1",
+    //   user: "u498243179_lms",
+    //   password: "LMS@capstone2",
+    //   database: "u498243179_lms",
+    //   port: 3306,
+    // };
     exports.connection_string = {
-        host: "109.106.254.1",
-        user: "u498243179_lms",
-        password: "LMS@capstone2",
-        database: "u498243179_lms",
-        port: 3306,
+        host: "127.0.0.1",
+        user: "root",
+        password: "root sa",
+        database: "lms",
+        port: 3309,
     };
 }
+const DatabaseConfig = mysql2_1.default.createPool(exports.connection_string);
 const DatabaseConnection = () => {
     return new Promise((resolve, reject) => {
-        let DatabaseConfig = null;
         try {
-            DatabaseConfig = mysql2_1.default.createPool(exports.connection_string);
             DatabaseConfig.getConnection((error, connection) => {
                 if (error) {
-                    connection.destroy();
-                    connection.release();
+                    // connection.destroy();
+                    // connection.release();
                     // connection.end();
+                    console.log(error);
                     return reject(error);
                 }
                 const Query = (sql, binding) => {
@@ -43,7 +50,6 @@ const DatabaseConnection = () => {
                             if (typeof message !== "undefined") {
                                 connection.destroy();
                                 connection.release();
-                                // connection.end();
                                 return reject(message);
                             }
                         }
@@ -82,7 +88,7 @@ const DatabaseConnection = () => {
             ORDER BY ${sort.column} ${sort.direction}` +
                             (page
                                 ? `
-          LIMIT ${mysql2_1.default.escape(page.begin)}, ${mysql2_1.default.escape(page.limit)} `
+          LIMIT ${mysql2_1.default.escape(page.begin)}, ${mysql2_1.default.escape(page.limit + 1)} `
                                 : "");
                         try {
                             connection.query(full_query, (err, result) => {
@@ -116,6 +122,9 @@ const DatabaseConnection = () => {
                         try {
                             connection.query(query, (err, result) => {
                                 if (err) {
+                                    connection.destroy();
+                                    connection.release();
+                                    // connection.end();
                                     return reject(err);
                                 }
                                 else {
@@ -145,6 +154,9 @@ const DatabaseConnection = () => {
                         try {
                             connection.query(query, (err, result) => {
                                 if (err) {
+                                    connection.destroy();
+                                    connection.release();
+                                    // connection.end();
                                     return reject(err);
                                 }
                                 else {
@@ -177,6 +189,9 @@ const DatabaseConnection = () => {
                         try {
                             connection.query(query, (err, result) => {
                                 if (err) {
+                                    connection.destroy();
+                                    connection.release();
+                                    // connection.end();
                                     reject(err);
                                 }
                                 else {
@@ -202,12 +217,18 @@ const DatabaseConnection = () => {
                         try {
                             connection.beginTransaction((err) => {
                                 if (err) {
+                                    connection.destroy();
+                                    connection.release();
+                                    // connection.end();
                                     return reject(error);
                                 }
                                 return resolve();
                             });
                         }
                         catch (error) {
+                            connection.destroy();
+                            connection.release();
+                            // connection.end();
                             return reject(error);
                         }
                     });
@@ -234,8 +255,9 @@ const DatabaseConnection = () => {
                     return new Promise((resolve, reject) => {
                         try {
                             connection.rollback(() => {
-                                connection.release();
                                 connection.destroy();
+                                connection.release();
+                                // connection.end();
                                 return resolve();
                             });
                         }

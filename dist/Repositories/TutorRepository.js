@@ -18,6 +18,7 @@ const useDateParser_1 = require("../Hooks/useDateParser");
 const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
 const useSearch_1 = require("../Hooks/useSearch");
+const useSql_1 = __importDefault(require("../Hooks/useSql"));
 const useValidator_1 = require("../Hooks/useValidator");
 const addTutor = (params, user_id) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
@@ -278,7 +279,7 @@ const toggleActiveStatus = (tutor_pk, user_pk) => __awaiter(void 0, void 0, void
         };
     }
 });
-const getTutorDataTable = (pagination_payload) => __awaiter(void 0, void 0, void 0, function* () {
+const getTutorDataTable = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
@@ -290,15 +291,18 @@ const getTutorDataTable = (pagination_payload) => __awaiter(void 0, void 0, void
       OR email like concat('%',@search,'%')
       OR mob_no like concat('%',@search,'%')
       OR position like concat('%',@search,'%'))
-      `, pagination_payload);
-        const hasMore = data.length > pagination_payload.page.limit;
+      AND position in @position
+      AND is_active in @is_active
+      ${useSql_1.default.DateWhereClause("encoded_at", ">=", payload.filters.encoded_from)}
+      ${useSql_1.default.DateWhereClause("encoded_at", "<=", payload.filters.encoded_to)}
+      `, payload);
+        const hasMore = data.length > payload.page.limit;
         if (hasMore) {
             data.splice(data.length - 1, 1);
         }
         const count = hasMore
             ? -1
-            : pagination_payload.page.begin * pagination_payload.page.limit +
-                data.length;
+            : payload.page.begin * payload.page.limit + data.length;
         for (const tutor of data) {
             const pic = yield useFileUploader_1.GetUploadedImage(tutor.picture);
             tutor.picture = pic;
@@ -308,9 +312,9 @@ const getTutorDataTable = (pagination_payload) => __awaiter(void 0, void 0, void
             success: true,
             data: {
                 table: data,
-                begin: pagination_payload.page.begin,
+                begin: payload.page.begin,
                 count: count,
-                limit: pagination_payload.page.limit,
+                limit: payload.page.limit,
             },
         };
     }

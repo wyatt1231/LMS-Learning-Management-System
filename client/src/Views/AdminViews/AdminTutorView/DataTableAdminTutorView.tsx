@@ -1,6 +1,6 @@
 import {
-  Avatar,
   Button,
+  Chip,
   Container,
   Grid,
   Table,
@@ -11,12 +11,15 @@ import {
   TablePagination,
   TableRow,
 } from "@material-ui/core";
+import { Formik, Form } from "formik";
 import React, { FC, memo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import DataTableSearch from "../../../Component/DataTableSearch";
 import DataTableSort from "../../../Component/DataTableSort";
+import FormikCheckbox from "../../../Component/Formik/FormikCheckbox";
+import FormikDateField from "../../../Component/Formik/FormikDateField";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import { InvalidDateToDefault } from "../../../Hooks/UseDateParser";
 import useFilter from "../../../Hooks/useFilter";
@@ -27,11 +30,16 @@ import ITableInitialSort from "../../../Services/Interface/ITableInitialSort";
 import { PaginationModel } from "../../../Services/Models/PaginationModels";
 import { TutorModel } from "../../../Services/Models/TutorModels";
 import { RootStore } from "../../../Services/Store";
+import { DbTutorPositions } from "../../../Storage/LocalDatabase";
 
 interface DataTableAdminTutorViewInterface {}
 
 const initialSearch = {
   search: "",
+  position: DbTutorPositions,
+  is_active: ["y", "n"],
+  encoded_from: null,
+  encoded_to: null,
 };
 
 const initialTableSort: Array<ITableInitialSort> = [
@@ -93,8 +101,8 @@ const tableColumns: Array<ITableColumns> = [
   },
 ];
 
-export const DataTableAdminTutorView: FC<DataTableAdminTutorViewInterface> = memo(
-  () => {
+export const DataTableAdminTutorView: FC<DataTableAdminTutorViewInterface> =
+  memo(() => {
     const dispatch = useDispatch();
 
     const table_loading = useSelector(
@@ -241,6 +249,105 @@ export const DataTableAdminTutorView: FC<DataTableAdminTutorViewInterface> = mem
                   }}
                   handleSetSearchField={handleSetSearchField}
                   searchField={searchField}
+                  FilterComponent={
+                    <Formik
+                      initialValues={tableSearch}
+                      enableReinitialize
+                      onSubmit={(form_values) => {
+                        const filter_payload = {
+                          ...form_values,
+                          search: tableSearch.search,
+                        };
+
+                        handleSetTableSearch(filter_payload);
+                      }}
+                    >
+                      {() => (
+                        <Form className="form">
+                          <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                              <FormikCheckbox
+                                row={true}
+                                data={DbTutorPositions.map((tp) => {
+                                  return {
+                                    id: tp,
+                                    label: tp,
+                                  };
+                                })}
+                                color="primary"
+                                name="position"
+                                label="Position"
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <FormikCheckbox
+                                row={true}
+                                color="primary"
+                                data={[
+                                  {
+                                    id: "y",
+                                    label: "Yes",
+                                  },
+                                  {
+                                    id: "n",
+                                    label: "No",
+                                  },
+                                ]}
+                                name="is_active"
+                                label="Active"
+                              />
+                            </Grid>
+
+                            <Grid item xs={6}>
+                              <FormikDateField
+                                name="encoded_from"
+                                clearable={true}
+                                label="Encoded From"
+                              />
+                            </Grid>
+                            <Grid item xs={6}>
+                              <FormikDateField
+                                name="encoded_to"
+                                clearable={true}
+                                label="Encoded To"
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <Grid container spacing={2} justify="flex-end">
+                                <Grid item>
+                                  <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    type="button"
+                                    onClick={() => {
+                                      const filter_payload = {
+                                        ...initialSearch,
+                                        search: tableSearch.search,
+                                      };
+                                      handleSetTableSearch(filter_payload);
+                                    }}
+                                  >
+                                    Clear Filters
+                                  </Button>
+                                </Grid>
+                                <Grid item>
+                                  <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                  >
+                                    Apply Filters
+                                  </Button>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </Form>
+                      )}
+                    </Formik>
+                  }
                 />
               </Grid>
             </Grid>
@@ -309,9 +416,15 @@ export const DataTableAdminTutorView: FC<DataTableAdminTutorViewInterface> = mem
                         <TableCell>{row.mob_no}</TableCell>
                         <TableCell>
                           <div className="grid-justify-start">
-                            <span className="badge badge-blue">
-                              {row.is_active === "y" ? "Yes" : "No"}
-                            </span>
+                            <Chip
+                              label={row.is_active === "y" ? "Yes" : "No"}
+                              style={{
+                                backgroundColor:
+                                  row.is_active === "y" ? "#0d47a1" : "#d50000",
+                                color:
+                                  row.is_active === "n" ? "#e3f2fd" : "#ffebee",
+                              }}
+                            />
                           </div>
                         </TableCell>
                         <TableCell>
@@ -329,7 +442,6 @@ export const DataTableAdminTutorView: FC<DataTableAdminTutorViewInterface> = mem
         </Grid>
       </Container>
     );
-  }
-);
+  });
 
 export default DataTableAdminTutorView;

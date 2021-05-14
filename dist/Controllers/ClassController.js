@@ -44,6 +44,19 @@ const ClassController = (app) => __awaiter(void 0, void 0, void 0, function* () 
         const payload = req.body;
         res.json(yield ClassRepository_1.default.addClass(payload, req.user_id));
     }));
+    router.post("/addClassRequest", Authorize_1.default("admin,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.encoder_pk = parseInt(req.user_id);
+        res.json(yield ClassRepository_1.default.addClassRequest(payload));
+    }));
+    router.post("/acknowledgeRequest", Authorize_1.default("admin,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        payload.encoder_pk = parseInt(req.user_id);
+        res.json(yield ClassRepository_1.default.acknowledgeRequest(payload));
+    }));
+    router.post("/getClassRequests", Authorize_1.default("admin,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        res.json(yield ClassRepository_1.default.getClassRequests(req.user_type));
+    }));
     router.post("/updateClass", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield ClassRepository_1.default.updateClass(payload, req.user_id));

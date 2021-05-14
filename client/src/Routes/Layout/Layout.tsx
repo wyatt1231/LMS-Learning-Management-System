@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useState } from "react";
 import { useSelector } from "react-redux";
+import ClassRequest from "../../Component/ClassRequest";
 import { RootStore } from "../../Services/Store";
 import ManageTaskView from "../../Views/SharedViews/Tasks/ManageTaskView";
 import Body from "./Body";
@@ -136,6 +137,8 @@ const Layout = memo(({ children }) => {
       <Body isOpenMobileHeader={isOpenMobileHeader}>{children}</Body>
 
       {/* REGISTER SHARED VIEWS */}
+
+      <ClassRequest />
       <ManageTaskView />
     </>
   );
