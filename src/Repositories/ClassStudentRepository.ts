@@ -32,6 +32,7 @@ const getTblClassStudents = async (
           `,
         { student_pk: student.student_pk }
       );
+
       student.student_details.picture = await GetUploadedImage(
         student.student_details.picture
       );
@@ -115,6 +116,8 @@ const joinStudentToClass = async (
     payload.encoder_pk = parseInt(user_pk);
     payload.sts_pk = "fa";
 
+    console.log(`payload`, payload);
+
     const sql_enroll_student = await con.Insert(
       `
         INSERT INTO class_students 
@@ -168,6 +171,7 @@ const joinStudentToClass = async (
           user_pk: tutor_info.user_id,
           link: `/tutor/class/${class_info.class_pk}/student`,
           user_type: "tutor",
+          encoder_pk: payload.encoder_pk,
         };
 
         const notif_res = await con.Insert(
@@ -177,6 +181,8 @@ const joinStudentToClass = async (
             link=@link;`,
           notif_payload
         );
+
+        console.log(`notif_payload`, notif_payload);
 
         notif_payload.notif_pk = notif_res.insertedId;
 

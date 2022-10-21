@@ -747,16 +747,19 @@ const getRecommendedTutors = (user_pk) => __awaiter(void 0, void 0, void 0, func
         const student_res = yield con.QuerySingle(`select student_pk from students where user_id=@user_id limit 1;`, {
             user_id: user_pk,
         });
+        //students primary key ->
         const student_pk = student_res.student_pk;
         const unrated_tutors = yield con.Query(`SELECT t.tutor_pk FROM tutors t WHERE t.tutor_pk NOT IN (SELECT tutor_pk FROM tutor_ratings WHERE student_pk = @student_pk)`, {
             student_pk,
         }
         //
         );
+        //dataset sa wala pa na rate na tutors
         const student_ratings = yield con.Query(`SELECT tutor_pk,rating FROM tutor_ratings WHERE student_pk = @student_pk order by student_pk asc;
         `, {
             student_pk,
         });
+        //dataset of ratings and tutor na na rate na ni student
         const tutors = yield con.Query(`SELECT tutor_pk FROM tutor_ratings GROUP BY tutor_pk  ORDER BY tutor_pk`, {});
         const students = yield con.Query(`SELECT student_pk FROM tutor_ratings GROUP BY student_pk  ORDER BY student_pk
       `, {});
@@ -784,8 +787,12 @@ const getRecommendedTutors = (user_pk) => __awaiter(void 0, void 0, void 0, func
                 user_id: tutor_info.user_id,
             });
             tutor_info.user_info.picture = yield useFileUploader_1.GetUploadedImage(tutor_info.user_info.picture);
-            tutor_info.classes = yield con.Query(`SELECT * FROM classes WHERE tutor_pk = @tutor_pk AND sts_pk IN ('a','a','p')`, {
+            tutor_info.classes = yield con.Query(`
+        SELECT c.* FROM classes c
+        WHERE c.tutor_pk = @tutor_pk AND c.class_pk NOT IN (SELECT class_pk FROM class_students WHERE student_pk = @student_pk)
+        `, {
                 tutor_pk: tutor.tutor_pk,
+                student_pk: student_pk
             });
             recommended_tutors.push(tutor_info);
         }

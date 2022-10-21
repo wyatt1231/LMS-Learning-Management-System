@@ -94,6 +94,7 @@ const joinStudentToClass = (payload, user_pk) => __awaiter(void 0, void 0, void 
         yield con.BeginTransaction();
         payload.encoder_pk = parseInt(user_pk);
         payload.sts_pk = "fa";
+        console.log(`payload`, payload);
         const sql_enroll_student = yield con.Insert(`
         INSERT INTO class_students 
         SET
@@ -126,11 +127,13 @@ const joinStudentToClass = (payload, user_pk) => __awaiter(void 0, void 0, void 
                     user_pk: tutor_info.user_id,
                     link: `/tutor/class/${class_info.class_pk}/student`,
                     user_type: "tutor",
+                    encoder_pk: payload.encoder_pk,
                 };
                 const notif_res = yield con.Insert(`INSERT INTO notif 
             SET
             body=@body,
             link=@link;`, notif_payload);
+                console.log(`notif_payload`, notif_payload);
                 notif_payload.notif_pk = notif_res.insertedId;
                 yield con.Insert(` INSERT INTO notif_users 
           SET 

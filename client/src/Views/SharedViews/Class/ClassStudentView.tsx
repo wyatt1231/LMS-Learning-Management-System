@@ -1,5 +1,6 @@
 import {
   Button,
+  Chip,
   Grid,
   Table,
   TableBody,
@@ -14,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import FormDialog from "../../../Component/FormDialog/FormDialog";
 import FormikAutocomplete from "../../../Component/Formik/FormikAutocomplete";
+import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopper";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import { parseDateTimeOrDefault } from "../../../Hooks/UseDateParser";
 import ClassStudentActions from "../../../Services/Actions/ClassStudentActions";
@@ -34,6 +36,8 @@ export const ClassStudentView: FC<ClassStudentProps> = memo(({ class_pk }) => {
   const fetch_tbl_class_students = useSelector(
     (store: RootStore) => store.ClassStudentReducer.fetch_tbl_class_students
   );
+
+  console.log(`tbl_class_students`, tbl_class_students);
 
   const [openEnrollStudentModel, setOpenEnrollStudentModel] = useState(false);
 
@@ -80,7 +84,9 @@ export const ClassStudentView: FC<ClassStudentProps> = memo(({ class_pk }) => {
             <TableRow>
               <TableCell>Basic Info</TableCell>
               <TableCell>Gender</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell>Enrolled At</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -119,7 +125,30 @@ export const ClassStudentView: FC<ClassStudentProps> = memo(({ class_pk }) => {
                   {student.student_details.gender === "m" ? "Male" : "Female"}
                 </TableCell>
                 <TableCell>
+                  <Chip
+                    label={student?.status_details?.sts_desc}
+                    style={{
+                      color: student?.status_details?.sts_color,
+                      backgroundColor: student?.status_details?.sts_bgcolor,
+                    }}
+                  />
+                </TableCell>
+
+                <TableCell>
                   {parseDateTimeOrDefault(student.encoded_at, "-")}
+                </TableCell>
+                <TableCell align="center">
+                  <div className="actions">
+                    <IconButtonPopper
+                      style={{ justifySelf: `end` }}
+                      buttons={[
+                        {
+                          text: "Accept Class",
+                          handleClick: () => {},
+                        },
+                      ]}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -183,12 +212,6 @@ export const ClassStudentView: FC<ClassStudentProps> = memo(({ class_pk }) => {
                     }}
                   />
                 </Grid>
-
-                {/* <Grid item xs={12} container justify="flex-end">
-                  <Grid item>
-                    
-                  </Grid>
-                </Grid> */}
               </Grid>
             </Form>
           </Formik>

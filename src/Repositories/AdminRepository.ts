@@ -278,6 +278,8 @@ const getLoggedAdmin = async (user_id: string): Promise<ResponseModel> => {
   try {
     await con.BeginTransaction();
 
+    console.log(`user`, user_id);
+
     const data: AdminModel = await con.QuerySingle(
       `select * from administrators where user_id = @user_id`,
       {
@@ -285,7 +287,11 @@ const getLoggedAdmin = async (user_id: string): Promise<ResponseModel> => {
       }
     );
 
-    data.picture = await GetUploadedImage(data.picture);
+    console.log(`data`, data);
+
+    if (!!data.picture) {
+      data.picture = await GetUploadedImage(data.picture);
+    }
 
     con.Commit();
     return {

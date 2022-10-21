@@ -235,10 +235,14 @@ const getLoggedAdmin = (user_id) => __awaiter(void 0, void 0, void 0, function* 
     const con = yield DatabaseConfig_1.DatabaseConnection();
     try {
         yield con.BeginTransaction();
+        console.log(`user`, user_id);
         const data = yield con.QuerySingle(`select * from administrators where user_id = @user_id`, {
             user_id,
         });
-        data.picture = yield useFileUploader_1.GetUploadedImage(data.picture);
+        console.log(`data`, data);
+        if (!!data.picture) {
+            data.picture = yield useFileUploader_1.GetUploadedImage(data.picture);
+        }
         con.Commit();
         return {
             success: true,

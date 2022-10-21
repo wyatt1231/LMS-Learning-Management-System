@@ -105,6 +105,8 @@ const RatingPrediction = (tutor_pk, tutors, students, ratings, student_ratings) 
     var _a;
     const data_set = [];
     const tutor_sim_scores = [];
+    //mark sunner - nhordz = .87
+    //mark sunner - bazar = .3
     for (const t of tutors) {
         const student_tutor_ratings = [];
         for (const s of students) {
@@ -127,7 +129,9 @@ const RatingPrediction = (tutor_pk, tutors, students, ratings, student_ratings) 
         for (let i = 0; i < data_set.length; i++) {
             if (i !== index_tutor_to_compare) {
                 const other_tutor_ratings = data_set[i].students.map((v) => v.rating);
+                //marksunner - nhordz
                 const sim_score = PearsonCorrelation(other_tutor_ratings, compare_tutor_ratings);
+                console.log(`sim score`, sim_score);
                 tutor_sim_scores.push(sim_score);
             }
         }

@@ -19,16 +19,17 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const http_1 = __importDefault(require("http"));
+const path_1 = __importDefault(require("path"));
 const socket_io_1 = require("socket.io");
 const ControllerRegistry_1 = require("./Registry/ControllerRegistry");
 const SocketRegistry_1 = __importDefault(require("./Registry/SocketRegistry"));
-const path_1 = __importDefault(require("path"));
 exports.app = express_1.default();
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     dotenv_1.default.config();
     exports.app.use(cors_1.default());
     exports.app.use(body_parser_1.default.json({ limit: "50mb" }));
     exports.app.use(express_fileupload_1.default());
+    exports.app.use(express_1.default.static("./"));
     const server = http_1.default.createServer(exports.app);
     const socketServer = new socket_io_1.Server(server, {
         cors: {
@@ -37,22 +38,33 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     });
     ControllerRegistry_1.ControllerRegistry(exports.app);
     SocketRegistry_1.default(socketServer);
-    exports.app.use(express_1.default.static("./"));
-    if (process.env.NODE_ENV === "production") {
-        exports.app.use("/static", express_1.default.static(path_1.default.join(__dirname, "../client/build//static")));
-        exports.app.use("/lib", express_1.default.static(path_1.default.join(__dirname, "../client/build//lib")));
-        exports.app.get("*", function (req, res) {
-            res.sendFile("index.html", {
-                root: path_1.default.join(__dirname, "../client/build/"),
-            });
+    exports.app.use("/static", express_1.default.static(path_1.default.join(__dirname, "../client/build/static")));
+    exports.app.get("*", function (req, res) {
+        res.sendFile("index.html", {
+            root: path_1.default.join(__dirname, "../client/build/"),
         });
-        exports.app.get("*", function (req, res) {
-            res.sendFile("lib", {
-                root: path_1.default.join(__dirname, "../client/lib/"),
-            });
-        });
-    }
-    const PORT = process.env.PORT || 4040;
+    });
+    // if (process.env.NODE_ENV === "production") {
+    // app.use(
+    //   "/static",
+    //   express.static(path.join(__dirname, "../client/build//static"))
+    // );
+    // app.use("/lib", express.static(path.join(__dirname, "../client/build//lib")));
+    // app.get("*", function (req, res) {
+    //   res.sendFile("index.html", {
+    //     root: path.join(__dirname, "../client/build/"),
+    //   });
+    // });
+    // app.get("*", function (req, res) {
+    //   res.sendFile("lib", {
+    //     root: path.join(__dirname, "../client/lib/"),
+    //   });
+    // });
+    // }
+    // const PORT = process.env.PORT || 4040;
+    // server.listen(PORT, () => console.log(`listening to ports ${PORT}`));
+    // const PORT = process.env.PORT || 6000;
+    const PORT = 80;
     server.listen(PORT, () => console.log(`listening to ports ${PORT}`));
 });
 main();

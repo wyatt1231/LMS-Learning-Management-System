@@ -34,9 +34,10 @@ export const AdminProfileView: FC<IAdminProfileView> = memo(() => {
     (store: RootStore) => store.AdminReducer.logged_admin
   );
 
-  const [open_change_image_dialog, set_open_change_image_dialog] = useState(
-    false
-  );
+  console.log(`logged_admin`, logged_admin);
+
+  const [open_change_image_dialog, set_open_change_image_dialog] =
+    useState(false);
 
   const handleOpenChangeImageDialog = useCallback(() => {
     set_open_change_image_dialog(true);

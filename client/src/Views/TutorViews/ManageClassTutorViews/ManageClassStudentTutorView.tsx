@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import FormDialog from "../../../Component/FormDialog/FormDialog";
 import FormikAutocomplete from "../../../Component/Formik/FormikAutocomplete";
+import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopper";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import { parseDateTimeOrDefault } from "../../../Hooks/UseDateParser";
 import ClassStudentActions from "../../../Services/Actions/ClassStudentActions";
@@ -25,8 +26,8 @@ interface ManageClassStudentTutorInterface {
   class_pk: number;
 }
 
-export const ManageClassStudentTutorView: FC<ManageClassStudentTutorInterface> = memo(
-  ({ class_pk }) => {
+export const ManageClassStudentTutorView: FC<ManageClassStudentTutorInterface> =
+  memo(({ class_pk }) => {
     const dispatch = useDispatch();
 
     const tbl_class_students = useSelector(
@@ -82,6 +83,7 @@ export const ManageClassStudentTutorView: FC<ManageClassStudentTutorInterface> =
                 <TableCell>Basic Info</TableCell>
                 <TableCell>Gender</TableCell>
                 <TableCell>Enrolled At</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -114,6 +116,19 @@ export const ManageClassStudentTutorView: FC<ManageClassStudentTutorInterface> =
                   </TableCell>
                   <TableCell>
                     {parseDateTimeOrDefault(student.encoded_at, "-")}
+                  </TableCell>
+                  <TableCell align="center">
+                    <div className="actions">
+                      <IconButtonPopper
+                        style={{ justifySelf: `end` }}
+                        buttons={[
+                          {
+                            text: "View Material",
+                            handleClick: () => {},
+                          },
+                        ]}
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -192,7 +207,6 @@ export const ManageClassStudentTutorView: FC<ManageClassStudentTutorInterface> =
         />
       </div>
     );
-  }
-);
+  });
 
 export default ManageClassStudentTutorView;

@@ -950,6 +950,7 @@ const getRecommendedTutors = async (
         user_id: user_pk,
       }
     );
+    //students primary key ->
 
     const student_pk = student_res.student_pk;
     const unrated_tutors: Array<TutorRatingsModel> = await con.Query(
@@ -960,6 +961,8 @@ const getRecommendedTutors = async (
       //
     );
 
+    //dataset sa wala pa na rate na tutors
+
     const student_ratings: Array<TutorRatingsModel> = await con.Query(
       `SELECT tutor_pk,rating FROM tutor_ratings WHERE student_pk = @student_pk order by student_pk asc;
         `,
@@ -967,6 +970,7 @@ const getRecommendedTutors = async (
         student_pk,
       }
     );
+    //dataset of ratings and tutor na na rate na ni student
 
     const tutors: Array<TutorRatingsModel> = await con.Query(
       `SELECT tutor_pk FROM tutor_ratings GROUP BY tutor_pk  ORDER BY tutor_pk`,
@@ -1036,9 +1040,13 @@ const getRecommendedTutors = async (
       );
 
       tutor_info.classes = await con.Query(
-        `SELECT * FROM classes WHERE tutor_pk = @tutor_pk AND sts_pk IN ('a','a','p')`,
+        `
+        SELECT c.* FROM classes c
+        WHERE c.tutor_pk = @tutor_pk AND c.class_pk NOT IN (SELECT class_pk FROM class_students WHERE student_pk = @student_pk)
+        `,
         {
           tutor_pk: tutor.tutor_pk,
+          student_pk: student_pk
         }
       );
 

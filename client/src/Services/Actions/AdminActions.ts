@@ -12,118 +12,115 @@ import { PaginationModel } from "../Models/PaginationModels";
 import { AdminReducerTypes } from "../Types/AdminTypes";
 import { PageReducerTypes } from "../Types/PageTypes";
 
-export const setAdminDataTableAction = (payload: PaginationModel) => async (
-  dispatch: Dispatch<AdminReducerTypes>
-) => {
-  try {
-    dispatch({
-      type: "fetching_admin_data_table",
-      fetching_admin_data_table: true,
-    });
-    const response: IServerResponse = await getAdminDataTableApi(payload);
-    dispatch({
-      type: "fetching_admin_data_table",
-      fetching_admin_data_table: false,
-    });
-    if (response.success) {
+export const setAdminDataTableAction =
+  (payload: PaginationModel) =>
+  async (dispatch: Dispatch<AdminReducerTypes>) => {
+    try {
       dispatch({
-        type: "set_admin_data_table",
-        admin_data_table: response.data,
+        type: "fetching_admin_data_table",
+        fetching_admin_data_table: true,
       });
-    } else {
-    }
-  } catch (error) {
-    console.error(`action error`, error);
-  }
-};
-
-export const setSelectedAdminAction = (admin_pk: string) => async (
-  dispatch: Dispatch<AdminReducerTypes>
-) => {
-  try {
-    dispatch({
-      type: "fetching_selected_admin",
-      fetching_selected_admin: true,
-    });
-    const response: IServerResponse = await getSingleAdminApi(admin_pk);
-    console.log(`response`, response);
-    dispatch({
-      type: "fetching_selected_admin",
-      fetching_selected_admin: false,
-    });
-    if (response.success) {
+      const response: IServerResponse = await getAdminDataTableApi(payload);
       dispatch({
-        type: "set_selected_admin",
-        selected_admin: response.data,
+        type: "fetching_admin_data_table",
+        fetching_admin_data_table: false,
       });
-    } else {
-    }
-  } catch (error) {
-    console.error(`action error`, error);
-  }
-};
-
-export const addAdminAction = (
-  payload: AdminModel,
-  onSuccess: (msg: string) => any
-) => async (dispatch: Dispatch<AdminReducerTypes | PageReducerTypes>) => {
-  try {
-    dispatch({
-      type: "SET_PAGE_LOADING",
-      page_loading: {
-        loading_message: "Loading, thank you for your patience!",
-        show: true,
-      },
-    });
-    const response: IServerResponse = await addAdminApi(payload);
-    dispatch({
-      type: "SET_PAGE_LOADING",
-      page_loading: {
-        show: false,
-      },
-    });
-    if (response.success) {
-      if (typeof onSuccess === "function") {
-        onSuccess(response.message.toString());
+      if (response.success) {
+        dispatch({
+          type: "set_admin_data_table",
+          admin_data_table: response.data,
+        });
+      } else {
       }
-    } else {
-      helperErrorMessage(dispatch, response);
+    } catch (error) {
+      console.error(`action error`, error);
     }
-  } catch (error) {
-    console.error(`action error`, error);
-  }
-};
+  };
 
-export const updateAdminAction = (
-  payload: AdminModel,
-  onSuccess: (msg: string) => any
-) => async (dispatch: Dispatch<AdminReducerTypes | PageReducerTypes>) => {
-  try {
-    dispatch({
-      type: "SET_PAGE_LOADING",
-      page_loading: {
-        loading_message: "Loading, thank you for your patience!",
-        show: true,
-      },
-    });
-    const response: IServerResponse = await updateAdminApi(payload);
-    dispatch({
-      type: "SET_PAGE_LOADING",
-      page_loading: {
-        show: false,
-      },
-    });
-    if (response.success) {
-      if (typeof onSuccess === "function") {
-        onSuccess(response.message.toString());
+export const setSelectedAdminAction =
+  (admin_pk: string) => async (dispatch: Dispatch<AdminReducerTypes>) => {
+    try {
+      dispatch({
+        type: "fetching_selected_admin",
+        fetching_selected_admin: true,
+      });
+      const response: IServerResponse = await getSingleAdminApi(admin_pk);
+      console.log(`response`, response);
+      dispatch({
+        type: "fetching_selected_admin",
+        fetching_selected_admin: false,
+      });
+      if (response.success) {
+        dispatch({
+          type: "set_selected_admin",
+          selected_admin: response.data,
+        });
+      } else {
       }
-    } else {
-      helperErrorMessage(dispatch, response);
+    } catch (error) {
+      console.error(`action error`, error);
     }
-  } catch (error) {
-    console.error(`action error`, error);
-  }
-};
+  };
+
+export const addAdminAction =
+  (payload: AdminModel, onSuccess: (msg: string) => any) =>
+  async (dispatch: Dispatch<AdminReducerTypes | PageReducerTypes>) => {
+    try {
+      dispatch({
+        type: "SET_PAGE_LOADING",
+        page_loading: {
+          loading_message: "Loading, thank you for your patience!",
+          show: true,
+        },
+      });
+      const response: IServerResponse = await addAdminApi(payload);
+      dispatch({
+        type: "SET_PAGE_LOADING",
+        page_loading: {
+          show: false,
+        },
+      });
+      if (response.success) {
+        if (typeof onSuccess === "function") {
+          onSuccess(response.message.toString());
+        }
+      } else {
+        helperErrorMessage(dispatch, response);
+      }
+    } catch (error) {
+      console.error(`action error`, error);
+    }
+  };
+
+export const updateAdminAction =
+  (payload: AdminModel, onSuccess: (msg: string) => any) =>
+  async (dispatch: Dispatch<AdminReducerTypes | PageReducerTypes>) => {
+    try {
+      dispatch({
+        type: "SET_PAGE_LOADING",
+        page_loading: {
+          loading_message: "Loading, thank you for your patience!",
+          show: true,
+        },
+      });
+      const response: IServerResponse = await updateAdminApi(payload);
+      dispatch({
+        type: "SET_PAGE_LOADING",
+        page_loading: {
+          show: false,
+        },
+      });
+      if (response.success) {
+        if (typeof onSuccess === "function") {
+          onSuccess(response.message.toString());
+        }
+      } else {
+        helperErrorMessage(dispatch, response);
+      }
+    } catch (error) {
+      console.error(`action error`, error);
+    }
+  };
 
 const getLoggedAdmin = () => async (dispatch: Dispatch<AdminReducerTypes>) => {
   try {
@@ -132,6 +129,8 @@ const getLoggedAdmin = () => async (dispatch: Dispatch<AdminReducerTypes>) => {
       fetching_logged_admin: true,
     });
     const response: IServerResponse = await AdminApi.getLoggedAdmin();
+
+    console.log(`res`, response);
 
     if (response.success) {
       dispatch({
@@ -149,85 +148,85 @@ const getLoggedAdmin = () => async (dispatch: Dispatch<AdminReducerTypes>) => {
   }
 };
 
-export const updateAdminInfo = (
-  payload: AdminModel,
-  onSuccess: (msg: string) => any
-) => async (dispatch: Dispatch<AdminReducerTypes | PageReducerTypes>) => {
-  try {
-    dispatch({
-      type: "SET_PAGE_LOADING",
-      page_loading: {
-        loading_message: "Loading, thank you for your patience!",
-        show: true,
-      },
-    });
-    const response: IServerResponse = await AdminApi.updateAdminInfo(payload);
-    dispatch({
-      type: "SET_PAGE_LOADING",
-      page_loading: {
-        show: false,
-      },
-    });
-    if (response.success) {
+export const updateAdminInfo =
+  (payload: AdminModel, onSuccess: (msg: string) => any) =>
+  async (dispatch: Dispatch<AdminReducerTypes | PageReducerTypes>) => {
+    try {
       dispatch({
-        type: "SET_PAGE_SNACKBAR",
-        page_snackbar: {
-          message: response.message.toString(),
-          options: {
-            variant: "success",
-          },
+        type: "SET_PAGE_LOADING",
+        page_loading: {
+          loading_message: "Loading, thank you for your patience!",
+          show: true,
         },
       });
-      if (typeof onSuccess === "function") {
-        onSuccess(response.message.toString());
+      const response: IServerResponse = await AdminApi.updateAdminInfo(payload);
+      dispatch({
+        type: "SET_PAGE_LOADING",
+        page_loading: {
+          show: false,
+        },
+      });
+      if (response.success) {
+        dispatch({
+          type: "SET_PAGE_SNACKBAR",
+          page_snackbar: {
+            message: response.message.toString(),
+            options: {
+              variant: "success",
+            },
+          },
+        });
+        if (typeof onSuccess === "function") {
+          onSuccess(response.message.toString());
+        }
+      } else {
+        helperErrorMessage(dispatch, response);
       }
-    } else {
-      helperErrorMessage(dispatch, response);
+    } catch (error) {
+      console.error(`action error`, error);
     }
-  } catch (error) {
-    console.error(`action error`, error);
-  }
-};
+  };
 
-export const updateAdminImage = (
-  payload: AdminModel,
-  onSuccess: (msg: string) => any
-) => async (dispatch: Dispatch<AdminReducerTypes | PageReducerTypes>) => {
-  try {
-    dispatch({
-      type: "SET_PAGE_LOADING",
-      page_loading: {
-        loading_message: "Loading, thank you for your patience!",
-        show: true,
-      },
-    });
-    const response: IServerResponse = await AdminApi.updateAdminImage(payload);
-    dispatch({
-      type: "SET_PAGE_LOADING",
-      page_loading: {
-        show: false,
-      },
-    });
-    if (response.success) {
+export const updateAdminImage =
+  (payload: AdminModel, onSuccess: (msg: string) => any) =>
+  async (dispatch: Dispatch<AdminReducerTypes | PageReducerTypes>) => {
+    try {
       dispatch({
-        type: "SET_PAGE_SNACKBAR",
-        page_snackbar: {
-          message: response.message.toString(),
-          options: {
-            variant: "success",
-          },
+        type: "SET_PAGE_LOADING",
+        page_loading: {
+          loading_message: "Loading, thank you for your patience!",
+          show: true,
         },
       });
-      if (typeof onSuccess === "function") {
-        onSuccess(response.message.toString());
+      const response: IServerResponse = await AdminApi.updateAdminImage(
+        payload
+      );
+      dispatch({
+        type: "SET_PAGE_LOADING",
+        page_loading: {
+          show: false,
+        },
+      });
+      if (response.success) {
+        dispatch({
+          type: "SET_PAGE_SNACKBAR",
+          page_snackbar: {
+            message: response.message.toString(),
+            options: {
+              variant: "success",
+            },
+          },
+        });
+        if (typeof onSuccess === "function") {
+          onSuccess(response.message.toString());
+        }
+      } else {
+        helperErrorMessage(dispatch, response);
       }
-    } else {
-      helperErrorMessage(dispatch, response);
+    } catch (error) {
+      console.error(`action error`, error);
     }
-  } catch (error) {
-    console.error(`action error`, error);
-  }
-};
+  };
 
 export default {
   getLoggedAdmin,

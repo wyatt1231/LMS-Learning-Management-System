@@ -142,6 +142,9 @@ const RatingPrediction = async (
   const data_set = [];
   const tutor_sim_scores = [];
 
+  //mark sunner - nhordz = .87
+  //mark sunner - bazar = .3
+
   for (const t of tutors) {
     const student_tutor_ratings = [];
 
@@ -179,10 +182,14 @@ const RatingPrediction = async (
           (v: any) => v.rating
         );
 
+        //marksunner - nhordz
+
         const sim_score = PearsonCorrelation(
           other_tutor_ratings,
           compare_tutor_ratings
         );
+
+        console.log(`sim score`, sim_score);
 
         tutor_sim_scores.push(sim_score);
       }
