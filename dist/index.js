@@ -23,12 +23,12 @@ const socket_io_1 = require("socket.io");
 const ControllerRegistry_1 = require("./Registry/ControllerRegistry");
 const SocketRegistry_1 = __importDefault(require("./Registry/SocketRegistry"));
 const path_1 = __importDefault(require("path"));
-exports.app = express_1.default();
+exports.app = (0, express_1.default)();
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     dotenv_1.default.config();
-    exports.app.use(cors_1.default());
+    exports.app.use((0, cors_1.default)());
     exports.app.use(body_parser_1.default.json({ limit: "50mb" }));
-    exports.app.use(express_fileupload_1.default());
+    exports.app.use((0, express_fileupload_1.default)());
     exports.app.use(express_1.default.static("./"));
     const server = http_1.default.createServer(exports.app);
     const socketServer = new socket_io_1.Server(server, {
@@ -36,8 +36,8 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             origin: "*",
         },
     });
-    ControllerRegistry_1.ControllerRegistry(exports.app);
-    SocketRegistry_1.default(socketServer);
+    (0, ControllerRegistry_1.ControllerRegistry)(exports.app);
+    (0, SocketRegistry_1.default)(socketServer);
     if (process.env.NODE_ENV === "production") {
         exports.app.use("/static", express_1.default.static(path_1.default.join(__dirname, "../client/build//static")));
         exports.app.get("*", function (req, res) {

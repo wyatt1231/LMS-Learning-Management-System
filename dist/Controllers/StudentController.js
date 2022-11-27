@@ -16,8 +16,8 @@ const express_1 = require("express");
 const Authorize_1 = __importDefault(require("../Middlewares/Authorize"));
 const StudentRepository_1 = __importDefault(require("../Repositories/StudentRepository"));
 const StudentController = (app) => __awaiter(void 0, void 0, void 0, function* () {
-    const router = express_1.Router();
-    router.post("/getStudentDataTable", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const router = (0, express_1.Router)();
+    router.post("/getStudentDataTable", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield StudentRepository_1.default.getStudentDataTable(payload));
     }));
@@ -25,37 +25,37 @@ const StudentController = (app) => __awaiter(void 0, void 0, void 0, function* (
         const payload = req.body;
         res.json(yield StudentRepository_1.default.addStudent(payload, req.user_id));
     }));
-    router.post("/updateStudent", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/updateStudent", (0, Authorize_1.default)("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         payload.encoder_pk = req.user_id;
         res.json(yield StudentRepository_1.default.updateStudent(payload));
     }));
-    router.post("/updateStudentImage", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/updateStudentImage", (0, Authorize_1.default)("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         payload.encoder_pk = req.user_id;
         res.json(yield StudentRepository_1.default.updateStudentImage(payload));
     }));
-    router.post("/getSingleStudent", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getSingleStudent", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const student_pk = req.body.student_pk;
         res.json(yield StudentRepository_1.default.getSingleStudent(student_pk));
     }));
-    router.post("/getTotalStudents", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getTotalStudents", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield StudentRepository_1.default.getTotalStudents());
     }));
-    router.post("/searchStudentNotInClass", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/searchStudentNotInClass", (0, Authorize_1.default)("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const search = req.body.value;
         const class_pk = req.body.class_pk;
         res.json(yield StudentRepository_1.default.searchStudentNotInClass(search, class_pk));
     }));
-    router.post("/approveStudent", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/approveStudent", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const student_pk = req.body.student_pk;
         res.json(yield StudentRepository_1.default.changeStudentStatus(student_pk, req.user_id, "a", "Approved"));
     }));
-    router.post("/blockStudent", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/blockStudent", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const student_pk = req.body.student_pk;
         res.json(yield StudentRepository_1.default.changeStudentStatus(student_pk, req.user_id, "x", "Blocked"));
     }));
-    router.post("/getLoggedStudentInfo", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getLoggedStudentInfo", (0, Authorize_1.default)("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield StudentRepository_1.default.getLoggedStudentInfo(parseInt(req.user_id)));
     }));
     app.use("/api/student/", router);

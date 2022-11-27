@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -35,31 +39,31 @@ const express_1 = require("express");
 const Authorize_1 = __importDefault(require("../Middlewares/Authorize"));
 const UserRepository_1 = __importStar(require("../Repositories/UserRepository")), user_repo = UserRepository_1;
 const UserController = (app) => __awaiter(void 0, void 0, void 0, function* () {
-    const router = express_1.Router();
+    const router = (0, express_1.Router)();
     router.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json("The app is running" + __dirname);
     }));
     router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield user_repo.loginUser(req.body));
     }));
-    router.post("/currentUser", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/currentUser", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield user_repo.currentUser(req.user_id));
     }));
-    router.post("/changeAdminPassword", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/changeAdminPassword", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         payload.user_id = req.user_id;
         res.json(yield UserRepository_1.default.changeAdminPassword(payload));
     }));
-    router.post("/getUserLogs", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getUserLogs", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield UserRepository_1.default.getUserLogs(parseInt(req.user_id)));
     }));
-    router.post("/getAllLogs", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getAllLogs", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield UserRepository_1.default.getAllLogs());
     }));
-    router.post("/getUserNotif", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getUserNotif", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield UserRepository_1.default.getUserNotif(parseInt(req.user_id)));
     }));
-    router.post("/checkUserNotif", Authorize_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/checkUserNotif", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield UserRepository_1.default.checkUserNotif(req.body.notif_user_pk));
     }));
     app.use("/api/users/", router);

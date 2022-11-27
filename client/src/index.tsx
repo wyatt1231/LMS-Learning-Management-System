@@ -7,3 +7,5 @@ import App from "./App";
 import "typeface-montserrat";
 
 ReactDOM.render(<App />, document.getElementById("root"));
+
+// "@tinymce/tinymce-react": "^3.8.1",

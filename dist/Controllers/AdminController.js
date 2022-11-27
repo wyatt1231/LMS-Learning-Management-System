@@ -16,37 +16,37 @@ const express_1 = require("express");
 const Authorize_1 = __importDefault(require("../Middlewares/Authorize"));
 const AdminRepository_1 = __importDefault(require("../Repositories/AdminRepository"));
 const AdminController = (app) => __awaiter(void 0, void 0, void 0, function* () {
-    const router = express_1.Router();
-    router.post("/getAdminDataTable", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const router = (0, express_1.Router)();
+    router.post("/getAdminDataTable", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield AdminRepository_1.default.getAdminDataTable(payload));
     }));
-    router.post("/addAdmin", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/addAdmin", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield AdminRepository_1.default.addAdmin(payload, req.user_id));
     }));
-    router.post("/updateAdmin", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/updateAdmin", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield AdminRepository_1.default.updateAdmin(payload, req.user_id));
     }));
-    router.post("/getSingleAdmin", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getSingleAdmin", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const admin_pk = req.body.admin_pk;
         res.json(yield AdminRepository_1.default.getSingleAdmin(admin_pk));
     }));
-    router.post("/getLoggedAdmin", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getLoggedAdmin", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield AdminRepository_1.default.getLoggedAdmin(req.user_id));
     }));
-    router.post("/updateAdminInfo", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/updateAdminInfo", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         payload.user_id = parseInt(req.user_id);
         res.json(yield AdminRepository_1.default.updateAdminInfo(payload));
     }));
-    router.post("/updateAdminImage", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/updateAdminImage", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         payload.user_id = req.user_id;
         res.json(yield AdminRepository_1.default.updateAdminImage(payload));
     }));
-    router.post("/getTotalAdmin", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getTotalAdmin", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield AdminRepository_1.default.getTotalAdmin());
     }));
     app.use("/api/admin/", router);

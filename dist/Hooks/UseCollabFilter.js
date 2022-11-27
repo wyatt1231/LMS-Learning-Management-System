@@ -167,7 +167,7 @@ const RatingPrediction = (tutor_pk, tutors, students, ratings, student_ratings) 
             }
         }
         console.log(`pcc_data_set`, pcc_data_set);
-        return exports.GeneralWeightedAverage(pcc_data_set);
+        return (0, exports.GeneralWeightedAverage)(pcc_data_set);
     }
     else {
         return 0;

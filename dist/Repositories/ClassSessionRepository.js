@@ -13,7 +13,7 @@ const DatabaseConfig_1 = require("../Configurations/DatabaseConfig");
 const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
 const getTblClassSessions = (class_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
@@ -33,12 +33,12 @@ const getTblClassSessions = (class_pk) => __awaiter(void 0, void 0, void 0, func
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getSingleClassSession = (session_pk, user_pk, user_type) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         if (user_type === "student") {
@@ -92,14 +92,14 @@ const getSingleClassSession = (session_pk, user_pk, user_type) => __awaiter(void
     `, {
             course_pk: data.class_info.course_pk,
         });
-        data.class_info.course_info.picture = yield useFileUploader_1.GetUploadedImage(data.class_info.course_info.picture);
+        data.class_info.course_info.picture = yield (0, useFileUploader_1.GetUploadedImage)(data.class_info.course_info.picture);
         if (data.tutor_pk) {
             data.class_info.tutor_info = yield con.QuerySingle(`
         select * from tutors where tutor_pk = @tutor_pk;
       `, {
                 tutor_pk: data.tutor_pk,
             });
-            data.class_info.tutor_info.picture = yield useFileUploader_1.GetUploadedImage(data.class_info.tutor_info.picture);
+            data.class_info.tutor_info.picture = yield (0, useFileUploader_1.GetUploadedImage)(data.class_info.tutor_info.picture);
         }
         con.Commit();
         return {
@@ -112,12 +112,12 @@ const getSingleClassSession = (session_pk, user_pk, user_type) => __awaiter(void
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getTutorClassSessionCalendar = (payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`SELECT * FROM 
@@ -143,12 +143,12 @@ const getTutorClassSessionCalendar = (payload, user_id) => __awaiter(void 0, voi
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getStatsSessionCalendar = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const { for_approval } = yield con.QuerySingle(`
@@ -199,12 +199,12 @@ const getStatsSessionCalendar = (user_pk) => __awaiter(void 0, void 0, void 0, f
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getTutorFutureSessions = (tutor_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
@@ -227,13 +227,13 @@ const getTutorFutureSessions = (tutor_pk) => __awaiter(void 0, void 0, void 0, f
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 //update queries
 const startClassSession = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const sts_pk = yield con.QuerySingle(`SELECT sts_pk from class_sessions where session_pk=@session_pk;`, payload);
@@ -279,12 +279,12 @@ const startClassSession = (payload) => __awaiter(void 0, void 0, void 0, functio
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const endClassSession = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const session_sts_pk = yield con.QuerySingle(`SELECT sts_pk from class_sessions where session_pk=@session_pk;`, {
@@ -332,12 +332,12 @@ const endClassSession = (payload) => __awaiter(void 0, void 0, void 0, function*
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const unattendedClassSession = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const session_sts_pk = yield con.QuerySingle(`SELECT sts_pk from class_sessions where session_pk=@session_pk;`, {
@@ -384,7 +384,7 @@ const unattendedClassSession = (payload) => __awaiter(void 0, void 0, void 0, fu
         yield con.Rollback();
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
@@ -392,7 +392,7 @@ const unattendedClassSession = (payload) => __awaiter(void 0, void 0, void 0, fu
 //hideMessage
 //getAllMessage
 const getAllMessage = (session_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const chat_room_msgs = yield con.Query(`SELECT m.*, u.fullname, u.picture FROM class_ses_msg m
@@ -400,7 +400,7 @@ const getAllMessage = (session_pk) => __awaiter(void 0, void 0, void 0, function
        WHERE m.session_pk=@session_pk
        `, { session_pk: session_pk });
         for (const msg of chat_room_msgs) {
-            msg.picture = yield useFileUploader_1.GetUploadedImage(msg.picture);
+            msg.picture = yield (0, useFileUploader_1.GetUploadedImage)(msg.picture);
         }
         con.Commit();
         return {
@@ -413,12 +413,12 @@ const getAllMessage = (session_pk) => __awaiter(void 0, void 0, void 0, function
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const saveMessage = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const sql_save_msg = yield con.Modify(`INSERT INTO class_ses_msg SET
@@ -447,12 +447,12 @@ const saveMessage = (payload) => __awaiter(void 0, void 0, void 0, function* () 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const hideMessage = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const sql_hide_msg = yield con.Modify(`UPDATE class_ses_msg SET
@@ -479,12 +479,12 @@ const hideMessage = (payload) => __awaiter(void 0, void 0, void 0, function* () 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getTutorSessionCal = (tutor_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
@@ -514,12 +514,12 @@ const getTutorSessionCal = (tutor_pk) => __awaiter(void 0, void 0, void 0, funct
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getStudentSessionCal = (student_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
@@ -550,12 +550,12 @@ const getStudentSessionCal = (student_pk) => __awaiter(void 0, void 0, void 0, f
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getLoggedInTutorSessionCalendar = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
@@ -587,12 +587,12 @@ const getLoggedInTutorSessionCalendar = (user_pk) => __awaiter(void 0, void 0, v
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getLoggedStudentCalendar = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
@@ -625,7 +625,7 @@ const getLoggedStudentCalendar = (user_pk) => __awaiter(void 0, void 0, void 0, 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });

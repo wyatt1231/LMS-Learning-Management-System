@@ -20,7 +20,7 @@ const useFileUploader_1 = require("../Hooks/useFileUploader");
 const useSearch_1 = require("../Hooks/useSearch");
 const useValidator_1 = require("../Hooks/useValidator");
 const addTutor = (params, user_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const user_param = {
@@ -41,7 +41,7 @@ const addTutor = (params, user_id) => __awaiter(void 0, void 0, void 0, function
             if (typeof params.picture !== "undefined" &&
                 params.picture !== "" &&
                 params.picture !== null) {
-                const upload_result = yield useFileUploader_1.UploadImage({
+                const upload_result = yield (0, useFileUploader_1.UploadImage)({
                     base_url: "./src/Storage/Files/Images/",
                     extension: "jpg",
                     file_name: sql_insert_user.insertedId,
@@ -54,7 +54,7 @@ const addTutor = (params, user_id) => __awaiter(void 0, void 0, void 0, function
                     return upload_result;
                 }
             }
-            const tutor_payload = Object.assign(Object.assign({}, params), { username: params.email, user_id: sql_insert_user.insertedId, encoder_pk: user_id, birth_date: useDateParser_1.parseInvalidDateToDefault(params.birth_date) });
+            const tutor_payload = Object.assign(Object.assign({}, params), { username: params.email, user_id: sql_insert_user.insertedId, encoder_pk: user_id, birth_date: (0, useDateParser_1.parseInvalidDateToDefault)(params.birth_date) });
             const sql_insert_tutor = yield con.Insert(`
         INSERT INTO tutors
         SET
@@ -102,12 +102,12 @@ const addTutor = (params, user_id) => __awaiter(void 0, void 0, void 0, function
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateTutor = (tutor_payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         tutor_payload.encoder_pk = user_id;
@@ -159,16 +159,16 @@ const updateTutor = (tutor_payload, user_id) => __awaiter(void 0, void 0, void 0
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateTutorImage = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
-        if (useValidator_1.isValidPicture(payload.picture)) {
-            const upload_result = yield useFileUploader_1.UploadImage({
+        if ((0, useValidator_1.isValidPicture)(payload.picture)) {
+            const upload_result = yield (0, useFileUploader_1.UploadImage)({
                 base_url: "./src/Storage/Files/Images/",
                 extension: "jpg",
                 file_name: payload.user_id,
@@ -219,12 +219,12 @@ const updateTutorImage = (payload) => __awaiter(void 0, void 0, void 0, function
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const toggleActiveStatus = (tutor_pk, user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const tutor_active_status = yield con.QuerySingle(`
@@ -274,12 +274,12 @@ const toggleActiveStatus = (tutor_pk, user_pk) => __awaiter(void 0, void 0, void
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getTutorDataTable = (pagination_payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QueryPagination(`SELECT * FROM tutors
@@ -300,7 +300,7 @@ const getTutorDataTable = (pagination_payload) => __awaiter(void 0, void 0, void
             : pagination_payload.page.begin * pagination_payload.page.limit +
                 data.length;
         for (const tutor of data) {
-            const pic = yield useFileUploader_1.GetUploadedImage(tutor.picture);
+            const pic = yield (0, useFileUploader_1.GetUploadedImage)(tutor.picture);
             tutor.picture = pic;
         }
         con.Commit();
@@ -319,12 +319,12 @@ const getTutorDataTable = (pagination_payload) => __awaiter(void 0, void 0, void
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getSingleTutor = (tutor_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QuerySingle(`select *,
@@ -332,7 +332,7 @@ const getSingleTutor = (tutor_pk) => __awaiter(void 0, void 0, void 0, function*
       from tutors where tutor_pk = @tutor_pk`, {
             tutor_pk,
         });
-        data.picture = yield useFileUploader_1.GetUploadedImage(data.picture);
+        data.picture = yield (0, useFileUploader_1.GetUploadedImage)(data.picture);
         con.Commit();
         return {
             success: true,
@@ -344,18 +344,18 @@ const getSingleTutor = (tutor_pk) => __awaiter(void 0, void 0, void 0, function*
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getSingTutorToStudent = (tutor_pk, user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QuerySingle(`select * from tutors where tutor_pk = @tutor_pk`, {
             tutor_pk,
         });
-        data.picture = yield useFileUploader_1.GetUploadedImage(data.picture);
+        data.picture = yield (0, useFileUploader_1.GetUploadedImage)(data.picture);
         const favorited = yield con.QuerySingle(`
     select is_fav from tutor_fav where student_pk = (select student_pk from students where user_id=@user_pk limit 1) and tutor_pk=@tutor_pk
     `, {
@@ -391,21 +391,21 @@ const getSingTutorToStudent = (tutor_pk, user_pk) => __awaiter(void 0, void 0, v
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const searchTutor = (search) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`SELECT * FROM (select tutor_pk id, concat(firstname,' ',lastname) label,picture from tutors where is_dummy='n') tmp 
-       ${useSearch_1.GenerateSearch(search, "label")} limit 50
+       ${(0, useSearch_1.GenerateSearch)(search, "label")} limit 50
       `, {
             search,
         });
         for (const tutor of data) {
-            tutor.picture = yield useFileUploader_1.GetUploadedImage(tutor.picture);
+            tutor.picture = yield (0, useFileUploader_1.GetUploadedImage)(tutor.picture);
         }
         con.Commit();
         return {
@@ -418,19 +418,19 @@ const searchTutor = (search) => __awaiter(void 0, void 0, void 0, function* () {
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getDummyTutors = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
       SELECT tutor_pk,'${user_pk}' student_pk,picture,concat(firstname,' ',lastname) name,bio, 0 as rating FROM tutors WHERE is_dummy = 'y'
       `, null);
         for (const tutor of data) {
-            tutor.picture = yield useFileUploader_1.GetUploadedImage(tutor.picture);
+            tutor.picture = yield (0, useFileUploader_1.GetUploadedImage)(tutor.picture);
         }
         con.Commit();
         return {
@@ -443,12 +443,12 @@ const getDummyTutors = (user_pk) => __awaiter(void 0, void 0, void 0, function* 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const insertDummyTutorRatings = (payload, user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const sql_update_student = yield con.Modify(`
@@ -489,12 +489,12 @@ const insertDummyTutorRatings = (payload, user_pk) => __awaiter(void 0, void 0, 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getTotalTutors = () => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const res_sql_count = yield con.QuerySingle(`select count(*) as total from tutors  WHERE is_active='y' and is_dummy='n';`, {});
@@ -509,13 +509,13 @@ const getTotalTutors = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 //logged-in tutors
 const getLoggedInTutor = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QuerySingle(`select t.*,
@@ -524,7 +524,7 @@ const getLoggedInTutor = (user_pk) => __awaiter(void 0, void 0, void 0, function
       from tutors t where user_id = @user_pk`, {
             user_pk,
         });
-        data.picture = yield useFileUploader_1.GetUploadedImage(data.picture);
+        data.picture = yield (0, useFileUploader_1.GetUploadedImage)(data.picture);
         con.Commit();
         return {
             success: true,
@@ -536,12 +536,12 @@ const getLoggedInTutor = (user_pk) => __awaiter(void 0, void 0, void 0, function
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateLoggedInTutorBio = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const res_update_tutor_bio = yield con.Modify(`
@@ -580,12 +580,12 @@ const updateLoggedInTutorBio = (payload) => __awaiter(void 0, void 0, void 0, fu
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const rateTutor = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const res_count_rating = yield con.QuerySingle(`
@@ -640,12 +640,12 @@ const rateTutor = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const favoriteTutor = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const res_existing_fav = yield con.QuerySingle(`
@@ -700,12 +700,12 @@ const favoriteTutor = (payload) => __awaiter(void 0, void 0, void 0, function* (
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getMostRatedTutors = () => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const tutor_table = yield con.Query(`
@@ -719,7 +719,7 @@ const getMostRatedTutors = () => __awaiter(void 0, void 0, void 0, function* () 
         ORDER BY average_rating DESC LIMIT 15
       `, null);
         for (const tutor of tutor_table) {
-            tutor.picture = yield useFileUploader_1.GetUploadedImage(tutor.picture);
+            tutor.picture = yield (0, useFileUploader_1.GetUploadedImage)(tutor.picture);
         }
         con.Commit();
         return {
@@ -732,12 +732,12 @@ const getMostRatedTutors = () => __awaiter(void 0, void 0, void 0, function* () 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getRecommendedTutors = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const student_pk = 18;
@@ -789,7 +789,7 @@ const getRecommendedTutors = (user_pk) => __awaiter(void 0, void 0, void 0, func
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
