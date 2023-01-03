@@ -117,7 +117,9 @@ export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
     };
 
     mounted && settingPageLinks();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
   return (
     <>

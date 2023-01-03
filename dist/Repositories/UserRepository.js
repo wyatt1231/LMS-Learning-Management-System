@@ -15,7 +15,7 @@ const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
 const useJwt_1 = require("../Hooks/useJwt");
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const user = yield con.QuerySingle(`SELECT user_id,user_type,allow_login FROM users u WHERE u.password = AES_ENCRYPT(@password,@username)`, payload);
@@ -26,7 +26,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
                     message: "You are not allowed to login with this account yet. This maybe because your account is not yet approved by the administrator.",
                 };
             }
-            const token = yield useJwt_1.CreateToken(user);
+            const token = yield (0, useJwt_1.CreateToken)(user);
             if (token) {
                 yield con.Commit();
                 return {
@@ -59,13 +59,13 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 exports.loginUser = loginUser;
 const currentUser = (user_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const updated_status = yield con.Modify(`UPDATE users SET sts_pk='x' WHERE user_id = @user_id`, {
@@ -79,15 +79,15 @@ const currentUser = (user_id) => __awaiter(void 0, void 0, void 0, function* () 
             });
             if (user_data.user_type === "admin") {
                 const sql_get_pic = yield con.QuerySingle(`SELECT picture FROM administrators WHERE user_id=${user_id} LIMIT 1`, null);
-                user_data.picture = yield useFileUploader_1.GetUploadedImage(sql_get_pic === null || sql_get_pic === void 0 ? void 0 : sql_get_pic.picture);
+                user_data.picture = yield (0, useFileUploader_1.GetUploadedImage)(sql_get_pic === null || sql_get_pic === void 0 ? void 0 : sql_get_pic.picture);
             }
             else if (user_data.user_type === "tutor") {
                 const sql_get_pic = yield con.QuerySingle(`SELECT picture FROM tutors WHERE user_id=${user_id} LIMIT 1`, null);
-                user_data.picture = yield useFileUploader_1.GetUploadedImage(sql_get_pic === null || sql_get_pic === void 0 ? void 0 : sql_get_pic.picture);
+                user_data.picture = yield (0, useFileUploader_1.GetUploadedImage)(sql_get_pic === null || sql_get_pic === void 0 ? void 0 : sql_get_pic.picture);
             }
             else if (user_data.user_type === "student") {
                 const sql_get_pic = yield con.QuerySingle(`SELECT picture,rated_tutor FROM students WHERE user_id=${user_id} LIMIT 1`, null);
-                user_data.picture = yield useFileUploader_1.GetUploadedImage(sql_get_pic === null || sql_get_pic === void 0 ? void 0 : sql_get_pic.picture);
+                user_data.picture = yield (0, useFileUploader_1.GetUploadedImage)(sql_get_pic === null || sql_get_pic === void 0 ? void 0 : sql_get_pic.picture);
                 user_data.rated_tutor = sql_get_pic.rated_tutor;
             }
             yield con.Commit();
@@ -109,13 +109,13 @@ const currentUser = (user_id) => __awaiter(void 0, void 0, void 0, function* () 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 exports.currentUser = currentUser;
 const getUserNotif = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`SELECT n.*,nu.user_pk,nu.user_type,nu.notif_user_pk,nu.checked FROM notif n 
@@ -133,12 +133,12 @@ const getUserNotif = (user_pk) => __awaiter(void 0, void 0, void 0, function* ()
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const changeAdminPassword = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const total_found_user = yield con.QuerySingle(`
@@ -188,12 +188,12 @@ const changeAdminPassword = (payload) => __awaiter(void 0, void 0, void 0, funct
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getUserLogs = (user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const res_tbl_audit_log = yield con.Query(`
@@ -217,12 +217,12 @@ const getUserLogs = (user_pk) => __awaiter(void 0, void 0, void 0, function* () 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getAllLogs = () => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const res_tbl_audit_log = yield con.Query(`
@@ -233,7 +233,7 @@ const getAllLogs = () => __awaiter(void 0, void 0, void 0, function* () {
                 user_id: log.user_pk,
             });
             if (log.user) {
-                log.user.picture = yield useFileUploader_1.GetUploadedImage(log.user.picture);
+                log.user.picture = yield (0, useFileUploader_1.GetUploadedImage)(log.user.picture);
             }
             else {
                 log.user = {
@@ -253,12 +253,12 @@ const getAllLogs = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error(`error ..`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const checkUserNotif = (notif_user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const update_res = yield con.Modify(`update notif_users set checked='y' where notif_user_pk=@notif_user_pk;`, {
@@ -275,7 +275,7 @@ const checkUserNotif = (notif_user_pk) => __awaiter(void 0, void 0, void 0, func
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });

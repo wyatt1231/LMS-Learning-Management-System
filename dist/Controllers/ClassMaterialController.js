@@ -16,17 +16,17 @@ const express_1 = require("express");
 const Authorize_1 = __importDefault(require("../Middlewares/Authorize"));
 const ClassMaterialRepository_1 = __importDefault(require("../Repositories/ClassMaterialRepository"));
 const ClassMaterialController = (app) => __awaiter(void 0, void 0, void 0, function* () {
-    const router = express_1.Router();
-    router.post("/getTblClassMaterial", Authorize_1.default("admin,tutor,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const router = (0, express_1.Router)();
+    router.post("/getTblClassMaterial", (0, Authorize_1.default)("admin,tutor,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const class_pk = req.body.class_pk;
         res.json(yield ClassMaterialRepository_1.default.getTblClassMaterial(class_pk));
     }));
-    router.post("/addClassMaterial", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/addClassMaterial", (0, Authorize_1.default)("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         const file = req.files.file;
         res.json(yield ClassMaterialRepository_1.default.addClassMaterial(payload, parseInt(req.user_id), file));
     }));
-    router.post("/deleteClassMaterial", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/deleteClassMaterial", (0, Authorize_1.default)("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const mat_pk = req.body.mat_pk;
         res.json(yield ClassMaterialRepository_1.default.deleteClassMaterial(mat_pk));
     }));

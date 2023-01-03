@@ -15,7 +15,7 @@ const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
 const useValidator_1 = require("../Hooks/useValidator");
 const addAdmin = (payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const user_param = {
@@ -33,8 +33,8 @@ const addAdmin = (payload, user_id) => __awaiter(void 0, void 0, void 0, functio
       encoder_pk=@encoder_pk;
       `, user_param);
         if (sql_insert_user.insertedId > 0) {
-            if (useValidator_1.isValidPicture(payload.picture)) {
-                const upload_result = yield useFileUploader_1.UploadImage({
+            if ((0, useValidator_1.isValidPicture)(payload.picture)) {
+                const upload_result = yield (0, useFileUploader_1.UploadImage)({
                     base_url: "./src/Storage/Files/Images/",
                     extension: "jpg",
                     file_name: sql_insert_user.insertedId,
@@ -47,7 +47,7 @@ const addAdmin = (payload, user_id) => __awaiter(void 0, void 0, void 0, functio
                     return upload_result;
                 }
             }
-            const admin_payload = Object.assign(Object.assign({}, payload), { user_id: sql_insert_user.insertedId, encoder_pk: user_id, birth_date: useDateParser_1.parseInvalidDateToDefault(payload.birth_date) });
+            const admin_payload = Object.assign(Object.assign({}, payload), { user_id: sql_insert_user.insertedId, encoder_pk: user_id, birth_date: (0, useDateParser_1.parseInvalidDateToDefault)(payload.birth_date) });
             const sql_create_admin = yield con.Insert(`INSERT INTO administrators SET
         user_id=@user_id,
         position=@position,
@@ -90,16 +90,16 @@ const addAdmin = (payload, user_id) => __awaiter(void 0, void 0, void 0, functio
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateAdmin = (payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
-        if (useValidator_1.isValidPicture(payload.picture)) {
-            const upload_result = yield useFileUploader_1.UploadImage({
+        if ((0, useValidator_1.isValidPicture)(payload.picture)) {
+            const upload_result = yield (0, useFileUploader_1.UploadImage)({
                 base_url: "./src/Storage/Files/Images/",
                 extension: "jpg",
                 file_name: payload.user_id,
@@ -160,12 +160,12 @@ const updateAdmin = (payload, user_id) => __awaiter(void 0, void 0, void 0, func
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getAdminDataTable = (pagination_payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QueryPagination(`
@@ -186,7 +186,7 @@ const getAdminDataTable = (pagination_payload) => __awaiter(void 0, void 0, void
             : pagination_payload.page.begin * pagination_payload.page.limit +
                 data.length;
         for (const admin of data) {
-            const pic = yield useFileUploader_1.GetUploadedImage(admin.picture);
+            const pic = yield (0, useFileUploader_1.GetUploadedImage)(admin.picture);
             admin.picture = pic;
         }
         con.Commit();
@@ -205,12 +205,12 @@ const getAdminDataTable = (pagination_payload) => __awaiter(void 0, void 0, void
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getSingleAdmin = (admin_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QuerySingle(`select * from administrators where admin_pk = @admin_pk`, {
@@ -227,12 +227,12 @@ const getSingleAdmin = (admin_pk) => __awaiter(void 0, void 0, void 0, function*
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getLoggedAdmin = (user_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         console.log(`user`, user_id);
@@ -241,7 +241,7 @@ const getLoggedAdmin = (user_id) => __awaiter(void 0, void 0, void 0, function* 
         });
         console.log(`data`, data);
         if (!!data.picture) {
-            data.picture = yield useFileUploader_1.GetUploadedImage(data.picture);
+            data.picture = yield (0, useFileUploader_1.GetUploadedImage)(data.picture);
         }
         con.Commit();
         return {
@@ -254,15 +254,15 @@ const getLoggedAdmin = (user_id) => __awaiter(void 0, void 0, void 0, function* 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateAdminInfo = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
-        payload.birth_date = useDateParser_1.parseInvalidDateToDefault(payload.birth_date);
+        payload.birth_date = (0, useDateParser_1.parseInvalidDateToDefault)(payload.birth_date);
         const admin_updated_rows = yield con.Modify(`UPDATE administrators SET
         position=@position,
         firstname=@firstname,
@@ -309,16 +309,16 @@ const updateAdminInfo = (payload) => __awaiter(void 0, void 0, void 0, function*
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateAdminImage = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
-        if (useValidator_1.isValidPicture(payload.picture)) {
-            const upload_result = yield useFileUploader_1.UploadImage({
+        if ((0, useValidator_1.isValidPicture)(payload.picture)) {
+            const upload_result = yield (0, useFileUploader_1.UploadImage)({
                 base_url: "./src/Storage/Files/Images/",
                 extension: "jpg",
                 file_name: payload.user_id,
@@ -369,12 +369,12 @@ const updateAdminImage = (payload) => __awaiter(void 0, void 0, void 0, function
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getTotalAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const res_sql_count = yield con.QuerySingle(`select count(*) as total from administrators WHERE is_active='y';`, {});
@@ -389,7 +389,7 @@ const getTotalAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });

@@ -161,8 +161,8 @@ export const OngoingClassTableStudentView: FC<IOngoingClassTableStudentView> =
                   count={tableCount}
                   rowsPerPage={tableLimit}
                   page={tablePage}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>

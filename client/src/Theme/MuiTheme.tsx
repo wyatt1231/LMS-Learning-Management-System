@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Color } from "@material-ui/core";
 import {
   createMuiTheme,

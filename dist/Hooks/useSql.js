@@ -8,7 +8,7 @@ const useDateParser_1 = require("./useDateParser");
 const DateWhereClause = (column_name, sign, value) => {
     if (!!column_name && !!value && !!sign) {
         let where = "";
-        const date = useDateParser_1.parseInvalidDateToDefault(value);
+        const date = (0, useDateParser_1.parseInvalidDateToDefault)(value);
         where =
             where +
                 ` AND DATE(${column_name}) ${sign} ${!!date ? mysql2_1.default.escape(date) : column_name} `;

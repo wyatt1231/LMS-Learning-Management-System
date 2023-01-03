@@ -16,24 +16,24 @@ const express_1 = require("express");
 const Authorize_1 = __importDefault(require("../Middlewares/Authorize"));
 const ClassStudentRepository_1 = __importDefault(require("../Repositories/ClassStudentRepository"));
 const ClassStudentController = (app) => __awaiter(void 0, void 0, void 0, function* () {
-    const router = express_1.Router();
-    router.post("/getTblClassStudents", Authorize_1.default("admin,tutor,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const router = (0, express_1.Router)();
+    router.post("/getTblClassStudents", (0, Authorize_1.default)("admin,tutor,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const class_pk = req.body.class_pk;
         res.json(yield ClassStudentRepository_1.default.getTblClassStudents(class_pk));
     }));
-    router.post("/enrollClassStudent", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/enrollClassStudent", (0, Authorize_1.default)("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield ClassStudentRepository_1.default.enrollClassStudent(payload, req.user_id));
     }));
-    router.post("/joinStudentToClass", Authorize_1.default("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/joinStudentToClass", (0, Authorize_1.default)("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield ClassStudentRepository_1.default.joinStudentToClass(payload, req.user_id));
     }));
-    router.post("/blockClassStudent", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/blockClassStudent", (0, Authorize_1.default)("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const class_stud_pk = req.body.class_stud_pk;
         res.json(yield ClassStudentRepository_1.default.blockClassStudent(class_stud_pk));
     }));
-    router.post("/reEnrollClassStudent", Authorize_1.default("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/reEnrollClassStudent", (0, Authorize_1.default)("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const class_stud_pk = req.body.class_stud_pk;
         res.json(yield ClassStudentRepository_1.default.reEnrollClassStudent(class_stud_pk));
     }));

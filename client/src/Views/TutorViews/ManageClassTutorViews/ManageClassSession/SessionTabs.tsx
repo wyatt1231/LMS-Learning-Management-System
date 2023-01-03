@@ -98,7 +98,9 @@ export const SessionTabs: FC<ISessionTabs> = memo(() => {
     };
 
     mounted && reloadMessages();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [params.session_pk, reload_messages]);
 
   useEffect(() => {

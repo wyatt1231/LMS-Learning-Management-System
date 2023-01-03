@@ -90,7 +90,7 @@ const generateNavLinks = (user: any): Array<IPageNavLinks> => {
       },
       {
         to: "/student/class/records/ongoing-class",
-        text: "Class Records",
+        text: "Classes",
         hasSubLinks: false,
       },
     ];

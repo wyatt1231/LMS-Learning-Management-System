@@ -14,7 +14,7 @@ const useDateParser_1 = require("../Hooks/useDateParser");
 const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
 const getAllClassTask = (class_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const tasks = yield con.Query(`
@@ -38,12 +38,12 @@ const getAllClassTask = (class_pk) => __awaiter(void 0, void 0, void 0, function
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getSingleClassTask = (class_task_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QuerySingle(`
@@ -65,15 +65,15 @@ const getSingleClassTask = (class_task_pk) => __awaiter(void 0, void 0, void 0, 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const addClassTask = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
-        payload.due_date = useDateParser_1.parseInvalidDateTimeToDefault(payload.due_date);
+        payload.due_date = (0, useDateParser_1.parseInvalidDateTimeToDefault)(payload.due_date);
         const sql_add_task = yield con.Insert(`INSERT INTO class_tasks SET
         class_pk=@class_pk,
         task_title=@task_title,
@@ -115,15 +115,15 @@ const addClassTask = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateClassTask = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
-        payload.due_date = useDateParser_1.parseInvalidDateTimeToDefault(payload.due_date);
+        payload.due_date = (0, useDateParser_1.parseInvalidDateTimeToDefault)(payload.due_date);
         console.log(`payload`, payload);
         const sql_update_task = yield con.Modify(`UPDATE  class_tasks SET
             task_title=@task_title,
@@ -150,12 +150,12 @@ const updateClassTask = (payload) => __awaiter(void 0, void 0, void 0, function*
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const toggleSubmitClassTask = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const sql_update_task = yield con.Modify(`UPDATE  class_tasks SET
@@ -181,12 +181,12 @@ const toggleSubmitClassTask = (payload) => __awaiter(void 0, void 0, void 0, fun
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const changeStatusClassTask = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const sql_update_task = yield con.Modify(`UPDATE  class_tasks SET
@@ -212,13 +212,13 @@ const changeStatusClassTask = (payload) => __awaiter(void 0, void 0, void 0, fun
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 //Class questions
 const getAllClassTaskQues = (class_task_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
@@ -237,12 +237,12 @@ const getAllClassTaskQues = (class_task_pk) => __awaiter(void 0, void 0, void 0,
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getSingleClassTaskQues = (task_ques_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
@@ -261,12 +261,12 @@ const getSingleClassTaskQues = (task_ques_pk) => __awaiter(void 0, void 0, void 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateClassTaskQues = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const sql_update_task = yield con.Modify(`UPDATE  class_task_ques SET
@@ -295,13 +295,13 @@ const updateClassTaskQues = (payload) => __awaiter(void 0, void 0, void 0, funct
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 //class task submissions
 const getAllClassTaskSub = (class_task_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
@@ -323,12 +323,12 @@ const getAllClassTaskSub = (class_task_pk) => __awaiter(void 0, void 0, void 0, 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getAllStudentsSubmit = (class_task_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const task_sub = yield con.Query(`
@@ -342,7 +342,7 @@ const getAllStudentsSubmit = (class_task_pk) => __awaiter(void 0, void 0, void 0
             const student = yield con.QuerySingle(`SELECT * FROM students WHERE student_pk=@student_pk limit 1`, {
                 student_pk: sub.student_pk,
             });
-            student.picture = yield useFileUploader_1.GetUploadedImage(student.picture);
+            student.picture = yield (0, useFileUploader_1.GetUploadedImage)(student.picture);
             sub.student = student;
             sub.questions = yield con.Query(
             // `SELECT * FROM class_task_ques WHERE class_task_pk = @class_task_pk`,
@@ -362,12 +362,12 @@ const getAllStudentsSubmit = (class_task_pk) => __awaiter(void 0, void 0, void 0
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateTaskSub = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         for (const sub of payload) {
@@ -393,12 +393,12 @@ const updateTaskSub = (payload) => __awaiter(void 0, void 0, void 0, function* (
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const addClassTaskSub = (payload, student_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         for (const sub of payload) {
@@ -443,7 +443,7 @@ const addClassTaskSub = (payload, student_pk) => __awaiter(void 0, void 0, void 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });

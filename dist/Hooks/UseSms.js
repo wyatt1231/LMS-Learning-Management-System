@@ -16,7 +16,7 @@ const axios_1 = __importDefault(require("axios"));
 const qs_1 = __importDefault(require("qs"));
 const SendSms = (to, message) => __awaiter(void 0, void 0, void 0, function* () {
     if (/^(09|\+639)\d{9}$/.test(to)) {
-        const sms_response = yield axios_1.default({
+        const sms_response = yield (0, axios_1.default)({
             method: "post",
             url: `https://api-mapper.clicksend.com/http/v2/send.php`,
             data: qs_1.default.stringify({

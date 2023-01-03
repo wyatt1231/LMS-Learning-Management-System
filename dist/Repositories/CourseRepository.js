@@ -19,12 +19,12 @@ const useSearch_1 = require("../Hooks/useSearch");
 const useSql_1 = __importDefault(require("../Hooks/useSql"));
 const useValidator_1 = require("../Hooks/useValidator");
 const addCourse = (payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         payload.encoder_pk = parseInt(user_id);
-        if (useValidator_1.isValidPicture(payload.picture)) {
-            const upload_result = yield useFileUploader_1.UploadImage({
+        if ((0, useValidator_1.isValidPicture)(payload.picture)) {
+            const upload_result = yield (0, useFileUploader_1.UploadImage)({
                 base_url: "./src/Storage/Files/Images/",
                 extension: "jpg",
                 file_name: "course",
@@ -65,12 +65,12 @@ const addCourse = (payload, user_id) => __awaiter(void 0, void 0, void 0, functi
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getCourseDataTable = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QueryPagination(`SELECT * FROM courses
@@ -89,7 +89,7 @@ const getCourseDataTable = (payload) => __awaiter(void 0, void 0, void 0, functi
             ? -1
             : payload.page.begin * payload.page.limit + data.length;
         for (const course of data) {
-            course.picture = yield useFileUploader_1.GetUploadedImage(course.picture);
+            course.picture = yield (0, useFileUploader_1.GetUploadedImage)(course.picture);
         }
         con.Commit();
         return {
@@ -107,12 +107,12 @@ const getCourseDataTable = (payload) => __awaiter(void 0, void 0, void 0, functi
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getSingleCourse = (course_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QuerySingle(`select * from courses where course_pk = @course_pk`, {
@@ -129,12 +129,12 @@ const getSingleCourse = (course_pk) => __awaiter(void 0, void 0, void 0, functio
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getCourseDuration = (course_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QuerySingle(`select est_duration from courses where course_pk = @course_pk limit 1`, {
@@ -151,16 +151,16 @@ const getCourseDuration = (course_pk) => __awaiter(void 0, void 0, void 0, funct
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const searchCourse = (search) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`select course_pk id, course_desc label from courses
-       ${useSearch_1.GenerateSearch(search, "course_desc")}
+       ${(0, useSearch_1.GenerateSearch)(search, "course_desc")}
       `, {
             search,
         });
@@ -175,12 +175,12 @@ const searchCourse = (search) => __awaiter(void 0, void 0, void 0, function* () 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const getTotalCourses = () => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const res_sql_count = yield con.QuerySingle(`select count(*) as total from courses WHERE is_active=1;`, {});
@@ -195,12 +195,12 @@ const getTotalCourses = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateCourse = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const sql_update_course = yield con.Modify(`
@@ -232,12 +232,12 @@ const updateCourse = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const toggleCourseStatus = (course_pk, user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const current_course_status = yield con.QuerySingle(`
@@ -284,16 +284,16 @@ const toggleCourseStatus = (course_pk, user_pk) => __awaiter(void 0, void 0, voi
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const updateCourseImage = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
-        if (useValidator_1.isValidPicture(payload.picture)) {
-            const upload_result = yield useFileUploader_1.UploadImage({
+        if ((0, useValidator_1.isValidPicture)(payload.picture)) {
+            const upload_result = yield (0, useFileUploader_1.UploadImage)({
                 base_url: "./src/Storage/Files/Images/",
                 extension: "jpg",
                 file_name: payload.encoder_pk,
@@ -344,7 +344,7 @@ const updateCourseImage = (payload) => __awaiter(void 0, void 0, void 0, functio
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });

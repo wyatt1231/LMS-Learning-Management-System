@@ -164,7 +164,9 @@ export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> =
       };
 
       mounted && initializingState();
-      return () => (mounted = false);
+      return () => {
+        mounted = false;
+      };
     }, [dispatch]);
 
     return (
@@ -205,8 +207,8 @@ export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> =
                   count={tableCount}
                   rowsPerPage={tableLimit}
                   page={tablePage}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>

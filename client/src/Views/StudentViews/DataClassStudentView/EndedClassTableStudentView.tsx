@@ -156,8 +156,8 @@ export const EndedClassTableStudentView: FC<IEndedClassTableStudentView> = memo(
                   count={tableCount}
                   rowsPerPage={tableLimit}
                   page={tablePage}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>

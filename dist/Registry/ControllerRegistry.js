@@ -25,17 +25,17 @@ const StudentController_1 = __importDefault(require("../Controllers/StudentContr
 const TutorController_1 = __importDefault(require("../Controllers/TutorController"));
 const UserController_1 = __importDefault(require("../Controllers/UserController"));
 const ControllerRegistry = (app) => __awaiter(void 0, void 0, void 0, function* () {
-    yield UserController_1.default(app);
-    yield AdminController_1.default(app);
-    yield TutorController_1.default(app);
-    yield CourseController_1.default(app);
-    yield RoomController_1.default(app);
-    yield ClassController_1.default(app);
-    yield StudentController_1.default(app);
-    yield ClassSessionController_1.default(app);
-    yield ClassStudentController_1.default(app);
-    yield ClassMaterialController_1.default(app);
-    yield ClassSessionTaskRepository_1.default(app);
+    yield (0, UserController_1.default)(app);
+    yield (0, AdminController_1.default)(app);
+    yield (0, TutorController_1.default)(app);
+    yield (0, CourseController_1.default)(app);
+    yield (0, RoomController_1.default)(app);
+    yield (0, ClassController_1.default)(app);
+    yield (0, StudentController_1.default)(app);
+    yield (0, ClassSessionController_1.default)(app);
+    yield (0, ClassStudentController_1.default)(app);
+    yield (0, ClassMaterialController_1.default)(app);
+    yield (0, ClassSessionTaskRepository_1.default)(app);
 });
 exports.ControllerRegistry = ControllerRegistry;
 exports.default = exports.ControllerRegistry;

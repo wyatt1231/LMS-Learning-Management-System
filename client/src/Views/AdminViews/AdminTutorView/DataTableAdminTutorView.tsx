@@ -164,7 +164,9 @@ export const DataTableAdminTutorView: FC<DataTableAdminTutorViewInterface> =
       };
 
       mounted && initializingState();
-      return () => (mounted = false);
+      return () => {
+        mounted = false;
+      };
     }, [dispatch]);
 
     return (
@@ -215,8 +217,8 @@ export const DataTableAdminTutorView: FC<DataTableAdminTutorViewInterface> =
                   count={tableCount}
                   rowsPerPage={tableLimit}
                   page={tablePage}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>

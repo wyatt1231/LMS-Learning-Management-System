@@ -135,7 +135,9 @@ export const DataTableClassAdminView: FC<DataTableClassAdminInterface> = memo(
       };
 
       mounted && initializingState();
-      return () => (mounted = false);
+      return () => {
+        mounted = false;
+      };
     }, [dispatch]);
 
     return (
@@ -188,8 +190,8 @@ export const DataTableClassAdminView: FC<DataTableClassAdminInterface> = memo(
                   count={tableCount}
                   rowsPerPage={tableLimit}
                   page={tablePage}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>

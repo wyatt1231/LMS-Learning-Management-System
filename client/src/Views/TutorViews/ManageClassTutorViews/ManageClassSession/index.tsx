@@ -21,8 +21,8 @@ import { StyledSelectedSession } from "./styles";
 
 interface ManageClassSelectedSessionTutorInterface {}
 
-export const ManageClassSelectedSessionTutorView: FC<ManageClassSelectedSessionTutorInterface> = memo(
-  () => {
+export const ManageClassSelectedSessionTutorView: FC<ManageClassSelectedSessionTutorInterface> =
+  memo(() => {
     const dispatch = useDispatch();
     const params = useParams<any>();
     const theme = useTheme();
@@ -62,7 +62,9 @@ export const ManageClassSelectedSessionTutorView: FC<ManageClassSelectedSessionT
       };
 
       mounted && initializingState();
-      return () => (mounted = false);
+      return () => {
+        mounted = false;
+      };
     }, [dispatch, params.id]);
 
     useEffect(() => {
@@ -144,7 +146,6 @@ export const ManageClassSelectedSessionTutorView: FC<ManageClassSelectedSessionT
         )}
       </Container>
     );
-  }
-);
+  });
 
 export default ManageClassSelectedSessionTutorView;

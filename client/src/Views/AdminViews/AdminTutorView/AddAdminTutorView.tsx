@@ -113,7 +113,9 @@ export const AddAdminTutorView: FC<IAddAdminTutorView> = memo(() => {
     };
 
     mounted && settingPageLinks();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
 
   return (

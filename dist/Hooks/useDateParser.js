@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseInvalidDateTimeToDefault = exports.parseInvalidTimeToDefault = exports.parseInvalidDateToDefault = void 0;
 const moment_1 = __importDefault(require("moment"));
 const parseInvalidDateToDefault = (date, defaultString) => {
-    const d = moment_1.default(date);
+    const d = (0, moment_1.default)(date);
     if (d.isValid()) {
         return d.format("YYYY-MM-DD");
     }
@@ -22,7 +22,7 @@ const parseInvalidDateToDefault = (date, defaultString) => {
 };
 exports.parseInvalidDateToDefault = parseInvalidDateToDefault;
 const parseInvalidTimeToDefault = (date, defaultString) => {
-    const d = moment_1.default(date, "hh:mm A");
+    const d = (0, moment_1.default)(date, "hh:mm A");
     if (d.isValid()) {
         return d.format("HH:mm:ss");
     }
@@ -38,7 +38,7 @@ const parseInvalidTimeToDefault = (date, defaultString) => {
 };
 exports.parseInvalidTimeToDefault = parseInvalidTimeToDefault;
 const parseInvalidDateTimeToDefault = (date, defaultString) => {
-    const d = moment_1.default(date);
+    const d = (0, moment_1.default)(date);
     if (d.isValid()) {
         return d.format("YYYY-MM-DD HH:mm:ss");
     }

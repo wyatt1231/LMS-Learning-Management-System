@@ -64,7 +64,7 @@ const main = async () => {
   // const PORT = process.env.PORT || 4040;
   // server.listen(PORT, () => console.log(`listening to ports ${PORT}`));
   // const PORT = process.env.PORT || 6000;
-  const PORT = 80;
+  const PORT = 4040;
 
   server.listen(PORT, () => console.log(`listening to ports ${PORT}`));
 };

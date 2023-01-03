@@ -16,42 +16,42 @@ const express_1 = require("express");
 const Authorize_1 = __importDefault(require("../Middlewares/Authorize"));
 const CourseRepository_1 = __importDefault(require("../Repositories/CourseRepository"));
 const CourseController = (app) => __awaiter(void 0, void 0, void 0, function* () {
-    const router = express_1.Router();
-    router.post("/getCourseDataTable", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const router = (0, express_1.Router)();
+    router.post("/getCourseDataTable", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield CourseRepository_1.default.getCourseDataTable(payload));
     }));
-    router.post("/addCourse", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/addCourse", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield CourseRepository_1.default.addCourse(payload, req.user_id));
     }));
-    router.post("/getSingleCourse", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getSingleCourse", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const course_pk = req.body.course_pk;
         res.json(yield CourseRepository_1.default.getSingleCourse(course_pk));
     }));
-    router.post("/getCourseDuration", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getCourseDuration", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const course_pk = req.body.course_pk;
         res.json(yield CourseRepository_1.default.getCourseDuration(course_pk));
     }));
-    router.post("/searchCourse", Authorize_1.default("admin,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/searchCourse", (0, Authorize_1.default)("admin,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const search = req.body.value;
         res.json(yield CourseRepository_1.default.searchCourse(search));
     }));
-    router.post("/updateCourse", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/updateCourse", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         payload.encoder_pk = req.user_id;
         res.json(yield CourseRepository_1.default.updateCourse(payload));
     }));
-    router.post("/toggleCourseStatus", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/toggleCourseStatus", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const pk = req.body.course_pk;
         res.json(yield CourseRepository_1.default.toggleCourseStatus(pk, parseInt(req.user_id)));
     }));
-    router.post("/updateCourseImage", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/updateCourseImage", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         payload.encoder_pk = req.user_id;
         res.json(yield CourseRepository_1.default.updateCourseImage(payload));
     }));
-    router.post("/getTotalCourses", Authorize_1.default("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/getTotalCourses", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(yield CourseRepository_1.default.getTotalCourses());
     }));
     app.use("/api/course/", router);

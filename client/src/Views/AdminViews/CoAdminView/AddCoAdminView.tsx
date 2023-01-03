@@ -129,7 +129,9 @@ export const AddCoAdminView: FC<AddCoAdminViewInterface> = memo(() => {
     };
 
     mounted && settingPageLinks();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
 
   return (

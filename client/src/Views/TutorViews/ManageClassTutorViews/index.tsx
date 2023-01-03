@@ -44,7 +44,9 @@ export const ManageClassTutorView: FC<ManageClassTutorViewInterface> = memo(
       };
 
       mounted && fetching_data();
-      return () => (mounted = false);
+      return () => {
+        mounted = false;
+      };
     }, [dispatch, params.class_pk]);
 
     useEffect(() => {
@@ -66,7 +68,9 @@ export const ManageClassTutorView: FC<ManageClassTutorViewInterface> = memo(
       };
 
       mounted && initializingState();
-      return () => (mounted = false);
+      return () => {
+        mounted = false;
+      };
     }, [dispatch]);
 
     return (

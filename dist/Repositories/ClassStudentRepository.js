@@ -19,7 +19,7 @@ const UseSms_1 = __importDefault(require("../Hooks/UseSms"));
 //Tutor actions
 //select queries
 const getTblClassStudents = (class_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const class_students = yield con.Query(`select * from class_students where class_pk = @class_pk`, {
@@ -29,7 +29,7 @@ const getTblClassStudents = (class_pk) => __awaiter(void 0, void 0, void 0, func
             student.student_details = yield con.QuerySingle(`
             SELECT * from students where student_pk=@student_pk;
           `, { student_pk: student.student_pk });
-            student.student_details.picture = yield useFileUploader_1.GetUploadedImage(student.student_details.picture);
+            student.student_details.picture = yield (0, useFileUploader_1.GetUploadedImage)(student.student_details.picture);
             student.status_details = yield con.QuerySingle(`
             SELECT * from status_master where sts_pk=@sts_pk;
           `, { sts_pk: student.sts_pk });
@@ -45,13 +45,13 @@ const getTblClassStudents = (class_pk) => __awaiter(void 0, void 0, void 0, func
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 //insert queries
 const enrollClassStudent = (payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         payload.encoder_pk = parseInt(user_id);
@@ -84,12 +84,12 @@ const enrollClassStudent = (payload, user_id) => __awaiter(void 0, void 0, void 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const joinStudentToClass = (payload, user_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         payload.encoder_pk = parseInt(user_pk);
@@ -167,13 +167,13 @@ const joinStudentToClass = (payload, user_pk) => __awaiter(void 0, void 0, void 
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 //udpate queries
 const blockClassStudent = (class_stud_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const sql_get_sts = yield con.QuerySingle(`
@@ -209,12 +209,12 @@ const blockClassStudent = (class_stud_pk) => __awaiter(void 0, void 0, void 0, f
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });
 const reEnrollClassStudent = (class_stud_pk) => __awaiter(void 0, void 0, void 0, function* () {
-    const con = yield DatabaseConfig_1.DatabaseConnection();
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const sql_get_sts = yield con.QuerySingle(`
@@ -250,7 +250,7 @@ const reEnrollClassStudent = (class_stud_pk) => __awaiter(void 0, void 0, void 0
         console.error(`error`, error);
         return {
             success: false,
-            message: useErrorMessage_1.ErrorMessage(error),
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
         };
     }
 });

@@ -126,8 +126,9 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> =
       (store: RootStore) => store.CourseReducer.course_data_table?.table
     );
 
-    const [selected_course, set_selected_course] =
-      useState<null | CourseModel>(null);
+    const [selected_course, set_selected_course] = useState<null | CourseModel>(
+      null
+    );
 
     const [open_edit_course, set_open_edit_course] = useState(false);
 
@@ -229,7 +230,9 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> =
       };
 
       mounted && initializingState();
-      return () => (mounted = false);
+      return () => {
+        mounted = false;
+      };
     }, [dispatch]);
 
     return (
@@ -279,8 +282,8 @@ export const DataTableCourseAdminView: FC<DataTableCourseAdminViewInterface> =
                   count={tableCount}
                   rowsPerPage={tableLimit}
                   page={tablePage}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>

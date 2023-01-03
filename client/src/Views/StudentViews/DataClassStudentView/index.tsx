@@ -27,7 +27,9 @@ export const DataClassStudentView: FC<IDataClassStudentView> = memo(() => {
     };
 
     mounted && initializingState();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
 
   return (

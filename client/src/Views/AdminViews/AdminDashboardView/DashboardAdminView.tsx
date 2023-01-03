@@ -121,7 +121,9 @@ export const DashboardAdminView: FC<IDashboardAdminView> = memo(() => {
     };
 
     mounted && fetch_data();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
 
   useEffect(() => {
@@ -146,7 +148,9 @@ export const DashboardAdminView: FC<IDashboardAdminView> = memo(() => {
     };
 
     mounted && initializingState();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
   return (
     <Container maxWidth="xl">

@@ -186,8 +186,8 @@ export const AvailableClassTableStudentView: FC<IAvailableClassTableStudentView>
                   rowsPerPage={tableLimit}
                   labelRowsPerPage="Per Page"
                   page={tablePage}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>
