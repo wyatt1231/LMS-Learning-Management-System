@@ -15,10 +15,11 @@ interface IFormikDateField {
   disableFuture?: boolean;
   disablePast?: boolean;
   variant?: "outlined" | "standard" | "filled";
+  clearable?: boolean;
 }
 
 const FormikDateField: React.FC<IFormikDateField> = React.memo(
-  ({ name, label, disableFuture, disablePast, variant }) => {
+  ({ name, label, disableFuture, disablePast, variant, clearable }) => {
     const [field, meta, handlers] = useField(name);
     const errorText = meta.error && meta.touched ? meta.error : "";
 
@@ -32,13 +33,14 @@ const FormikDateField: React.FC<IFormikDateField> = React.memo(
           <KeyboardDatePicker
             {...field}
             onChange={handleChange}
-            disableToolbar
+            // disableToolbar
             label={label}
             variant="inline"
             animateYearScrolling={true}
             disableFuture={disableFuture}
             disablePast={disablePast}
             format="MM/dd/yyyy"
+            clearable={clearable}
             fullWidth={true}
             inputVariant={variant ? variant : "outlined"}
             InputLabelProps={{

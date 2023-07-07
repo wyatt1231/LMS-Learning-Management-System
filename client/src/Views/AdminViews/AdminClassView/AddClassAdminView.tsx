@@ -522,7 +522,6 @@ export const AddClassAdminView: FC<AddClassAdminViewInterface> = memo(() => {
                         start_date: value,
                       })
                     );
-
                     setFieldValue("class_sessions", session);
                   }}
                 >

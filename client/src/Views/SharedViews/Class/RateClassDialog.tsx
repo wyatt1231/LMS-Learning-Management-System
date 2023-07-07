@@ -18,8 +18,6 @@ const formSchema = yup.object({
 
 export const RateClassDialog: FC<IRateClassDialog> = memo(
   ({ class_pk, open, handleClose }) => {
-    const dispatch = useDispatch();
-
     const handleFormSubmit = useCallback(
       async (form_values: ClassRatingModel) => {
         const payload: ClassRatingModel = {
@@ -27,7 +25,6 @@ export const RateClassDialog: FC<IRateClassDialog> = memo(
           class_pk: class_pk,
         };
 
-        console.log(`payload`, payload);
         // dispatch(
         //   setGeneralPrompt({
         //     open: true,

@@ -1,4 +1,6 @@
+import { ClassModel } from "./ClassModel";
 import { StatusMasterModel } from "./StatusMasterModel";
+import { UserModel } from "./UserModel";
 
 export interface TutorModel {
   tutor_pk?: string;
@@ -23,4 +25,6 @@ export interface TutorModel {
   rating?: number;
   average_rating?: number;
   fav_count?: number;
+  user_info?: UserModel;
+  classes?: Array<ClassModel>;
 }

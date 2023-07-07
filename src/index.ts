@@ -4,10 +4,10 @@ import dotenv from "dotenv";
 import express from "express";
 import FileUpload from "express-fileupload";
 import http from "http";
+import path from "path";
 import { Server } from "socket.io";
 import { ControllerRegistry } from "./Registry/ControllerRegistry";
 import SocketRegistry from "./Registry/SocketRegistry";
-import path from "path";
 export const app = express();
 
 const main = async () => {
@@ -18,6 +18,7 @@ const main = async () => {
   app.use(FileUpload());
 
   app.use(express.static("./"));
+
   const server = http.createServer(app);
   const socketServer = new Server(server, {
     cors: {
@@ -28,20 +29,44 @@ const main = async () => {
   ControllerRegistry(app);
   SocketRegistry(socketServer);
 
-  if (process.env.NODE_ENV === "production") {
-    app.use(
-      "/static",
-      express.static(path.join(__dirname, "../client/build//static"))
-    );
+  app.use(
+    "/static",
+    express.static(path.join(__dirname, "../client/build/static"))
+  );
 
-    app.get("*", function (req, res) {
-      res.sendFile("index.html", {
-        root: path.join(__dirname, "../client/build/"),
-      });
+  app.get("*", function (req, res) {
+    res.sendFile("index.html", {
+      root: path.join(__dirname, "../client/build/"),
     });
-  }
+  });
 
-  const PORT = process.env.PORT || 4040;
+  // if (process.env.NODE_ENV === "production") {
+  // app.use(
+  //   "/static",
+  //   express.static(path.join(__dirname, "../client/build//static"))
+  // );
+
+  // app.use("/lib", express.static(path.join(__dirname, "../client/build//lib")));
+
+  // app.get("*", function (req, res) {
+  //   res.sendFile("index.html", {
+  //     root: path.join(__dirname, "../client/build/"),
+  //   });
+  // });
+
+  // app.get("*", function (req, res) {
+  //   res.sendFile("lib", {
+  //     root: path.join(__dirname, "../client/lib/"),
+  //   });
+  // });
+  // }
+
+  // const PORT = process.env.PORT || 4040;
+  // server.listen(PORT, () => console.log(`listening to ports ${PORT}`));
+  // const PORT = process.env.PORT || 6000;
+  // const PORT = 4040;
+  const PORT = process.env.PORT || 8080; //8080
+
   server.listen(PORT, () => console.log(`listening to ports ${PORT}`));
 };
 

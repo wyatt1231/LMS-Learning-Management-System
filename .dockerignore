@@ -1,0 +1,13 @@
+src
+.vscode
+node_modules
+client/node_modules
+client/package-lock.json
+client/public
+client/.env
+client/src
+client/.gitignore
+client/package.json
+client/package-lock.json
+client/tsconfig.json
+client/static.json

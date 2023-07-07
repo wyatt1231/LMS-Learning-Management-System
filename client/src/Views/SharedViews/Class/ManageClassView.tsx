@@ -1,4 +1,10 @@
-import { Chip, CircularProgress, Grid, useTheme } from "@material-ui/core";
+import {
+  Avatar,
+  Chip,
+  CircularProgress,
+  Grid,
+  useTheme,
+} from "@material-ui/core";
 import { Rating, Skeleton } from "@material-ui/lab";
 import React, { FC, memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,6 +41,7 @@ import ClassTaskView from "./ClassTaskView";
 import EditClassAdminDialog from "./EditClassAdminDialog";
 import EditClassStatusDialog from "./EditClassStatusDialog";
 import RateClassDialog from "./RateClassDialog";
+import no_book from "../../../Assets/Images/Icons/no_book.png";
 interface IManageClassView {}
 
 export const ManageClassView: FC<IManageClassView> = memo(() => {
@@ -281,15 +288,27 @@ export const ManageClassView: FC<IManageClassView> = memo(() => {
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <div className="class-profile">
-                        <CustomAvatar
-                          style={{
-                            height: 200,
-                            width: `90%`,
-                          }}
-                          variant="square"
-                          src={selected_class?.pic}
-                          errorMessage="No image found!"
-                        />
+                        {!!selected_class?.pic ? (
+                          <CustomAvatar
+                            style={{
+                              height: 200,
+                              width: `90%`,
+                            }}
+                            variant="square"
+                            src={selected_class?.pic}
+                            errorMessage="No image found!"
+                          />
+                        ) : (
+                          <Avatar
+                            style={{
+                              height: 200,
+                              width: `90%`,
+                            }}
+                            variant="square"
+                            src={no_book}
+                            alt=""
+                          />
+                        )}
 
                         <div className="title">
                           {selected_class?.class_desc}

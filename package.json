@@ -25,6 +25,7 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "fs": "0.0.1-security",
+    "fs.promises": "^0.1.2",
     "image-thumbnail": "^1.0.13",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",

@@ -94,6 +94,7 @@ const joinStudentToClass = (payload, user_pk) => __awaiter(void 0, void 0, void 
         yield con.BeginTransaction();
         payload.encoder_pk = parseInt(user_pk);
         payload.sts_pk = "fa";
+        console.log(`payload`, payload);
         const sql_enroll_student = yield con.Insert(`
         INSERT INTO class_students 
         SET
@@ -126,11 +127,13 @@ const joinStudentToClass = (payload, user_pk) => __awaiter(void 0, void 0, void 
                     user_pk: tutor_info.user_id,
                     link: `/tutor/class/${class_info.class_pk}/student`,
                     user_type: "tutor",
+                    encoder_pk: payload.encoder_pk,
                 };
                 const notif_res = yield con.Insert(`INSERT INTO notif 
             SET
             body=@body,
             link=@link;`, notif_payload);
+                console.log(`notif_payload`, notif_payload);
                 notif_payload.notif_pk = notif_res.insertedId;
                 yield con.Insert(` INSERT INTO notif_users 
           SET 
@@ -169,6 +172,47 @@ const joinStudentToClass = (payload, user_pk) => __awaiter(void 0, void 0, void 
     }
 });
 //udpate queries
+const acceptClassStudent = (class_stud_pk) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
+    try {
+        yield con.BeginTransaction();
+        const sql_get_sts = yield con.QuerySingle(`
+        SELECT sts_pk from class_students where class_stud_pk=@class_stud_pk limit 1;
+        `, { class_stud_pk: class_stud_pk });
+        if (sql_get_sts.sts_pk != "fa") {
+            con.Rollback();
+            return {
+                success: false,
+                message: "The student is not for approval",
+            };
+        }
+        const sql_enroll_student = yield con.Insert(`
+        UPDATE class_students set sts_pk='a' where class_stud_pk=@class_stud_pk 
+        `, { class_stud_pk: class_stud_pk });
+        if (sql_enroll_student.affectedRows > 0) {
+            con.Commit();
+            return {
+                success: true,
+                message: "The student's enrollment request has been approved!",
+            };
+        }
+        else {
+            con.Rollback();
+            return {
+                success: false,
+                message: "Something went wrong during the process, please try again or report this to the administrator!",
+            };
+        }
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
+        };
+    }
+});
 const blockClassStudent = (class_stud_pk) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
@@ -257,5 +301,6 @@ exports.default = {
     blockClassStudent,
     reEnrollClassStudent,
     joinStudentToClass,
+    acceptClassStudent,
 };
 //# sourceMappingURL=ClassStudentRepository.js.map

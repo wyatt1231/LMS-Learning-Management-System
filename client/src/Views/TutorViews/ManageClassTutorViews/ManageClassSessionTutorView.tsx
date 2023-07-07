@@ -23,8 +23,8 @@ interface ManageClassSessionTutorInterface {
   class_pk: number;
 }
 
-export const ManageClassSessionTutorView: FC<ManageClassSessionTutorInterface> = memo(
-  ({ class_pk }) => {
+export const ManageClassSessionTutorView: FC<ManageClassSessionTutorInterface> =
+  memo(({ class_pk }) => {
     const dispatch = useDispatch();
     const params = useParams<any>();
     const history = useHistory();
@@ -65,8 +65,9 @@ export const ManageClassSessionTutorView: FC<ManageClassSessionTutorInterface> =
               <TableRow>
                 <TableCell width="20%">Sched Date</TableCell>
                 <TableCell width="15%">Status</TableCell>
-                <TableCell width="25%">Began At</TableCell>
-                <TableCell width="25%">Ended At</TableCell>
+                <TableCell width="20%">Began At</TableCell>
+                <TableCell width="20%">Ended At</TableCell>
+                <TableCell width="10%">Rating</TableCell>
                 <TableCell align="center" width="5%">
                   Actions
                 </TableCell>
@@ -162,7 +163,6 @@ export const ManageClassSessionTutorView: FC<ManageClassSessionTutorInterface> =
         </TableContainer>
       </div>
     );
-  }
-);
+  });
 
 export default ManageClassSessionTutorView;

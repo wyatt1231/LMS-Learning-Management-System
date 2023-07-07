@@ -18,6 +18,7 @@ const useFileUploader_1 = require("../Hooks/useFileUploader");
 const useValidator_1 = require("../Hooks/useValidator");
 const mysql2_1 = __importDefault(require("mysql2"));
 const useSearch_1 = require("../Hooks/useSearch");
+const useSql_1 = __importDefault(require("../Hooks/useSql"));
 const addStudent = (payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
@@ -64,8 +65,7 @@ const addStudent = (payload, user_id) => __awaiter(void 0, void 0, void 0, funct
          suffix=@suffix,           
          email=@email,            
          mob_no=@mob_no,           
-         gender=@gender,           
-         complete_address=@complete_address;      
+         gender=@gender;      
         `, student_payload);
             if (sql_create_student.insertedId > 0) {
                 con.Commit();
@@ -113,7 +113,6 @@ const updateStudent = (payload) => __awaiter(void 0, void 0, void 0, function* (
         email=@email,            
         mob_no=@mob_no,           
         gender=@gender,           
-        complete_address=@complete_address
         where user_id=@encoder_pk;     
         `, payload);
         if (sql_update_student > 0) {
@@ -396,29 +395,34 @@ const changeStudentStatus = (student_pk, user_id, sts_pk, sts_desc) => __awaiter
 //     };
 //   }
 // };
+<<<<<<< HEAD
 const getStudentDataTable = (pagination_payload) => __awaiter(void 0, void 0, void 0, function* () {
+=======
+const getStudentDataTable = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+>>>>>>> laptop
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
+        console.log(`payload`, payload);
         const data = yield con.QueryPagination(`
       SELECT * FROM 
       (SELECT s.*,CONCAT(s.firstname,' ',s.lastname) fullname, sm.sts_desc,sm.sts_bgcolor,sm.sts_color FROM students s 
       JOIN status_master sm ON s.sts_pk = sm.sts_pk) tmp
       WHERE
-      firstname like concat('%',@search,'%')
-      OR lastname like concat('%',@search,'%')
-      OR email like concat('%',@search,'%')
-      OR mob_no like concat('%',@search,'%')
-      OR grade like concat('%',@search,'%')
-      `, pagination_payload);
-        const hasMore = data.length > pagination_payload.page.limit;
+      (firstname like concat('%',@search,'%')
+      OR lastname like concat('%',@search,'%'))
+      AND grade in @grade
+      AND sts_pk in @sts_pk
+      ${useSql_1.default.DateWhereClause("encoded_at", ">=", payload.filters.encoded_from)}
+      ${useSql_1.default.DateWhereClause("encoded_at", "<=", payload.filters.encoded_to)}
+      `, payload);
+        const hasMore = data.length > payload.page.limit;
         if (hasMore) {
             data.splice(data.length - 1, 1);
         }
         const count = hasMore
             ? -1
-            : pagination_payload.page.begin * pagination_payload.page.limit +
-                data.length;
+            : payload.page.begin * payload.page.limit + data.length;
         for (const row of data) {
             row.picture = yield (0, useFileUploader_1.GetUploadedImage)(row.picture);
         }
@@ -427,9 +431,9 @@ const getStudentDataTable = (pagination_payload) => __awaiter(void 0, void 0, vo
             success: true,
             data: {
                 table: data,
-                begin: pagination_payload.page.begin,
+                begin: payload.page.begin,
                 count: count,
-                limit: pagination_payload.page.limit,
+                limit: payload.page.limit,
             },
         };
     }

@@ -102,7 +102,9 @@ export const AddCourseAdminView: FC<AddCourseAdminViewInterface> = memo(() => {
     };
 
     mounted && settingPageLinks();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
 
   return (

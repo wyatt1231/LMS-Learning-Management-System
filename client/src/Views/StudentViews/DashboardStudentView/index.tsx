@@ -13,19 +13,24 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
+import FiberManualRecordRoundedIcon from "@material-ui/icons/FiberManualRecordRounded";
 import LocalLibraryRoundedIcon from "@material-ui/icons/LocalLibraryRounded";
 import { Rating } from "@material-ui/lab";
 import "chartjs-plugin-labels";
 import React, { FC, memo, useCallback, useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
 import "../../../Component/Calendar/calendar.css";
+import CircularLoadingProgress from "../../../Component/CircularLoadingProgress";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
+import ParseFormToJson from "../../../Helpers/ParseFormToJson";
 import ClassActions from "../../../Services/Actions/ClassActions";
 import ClassSessionActions from "../../../Services/Actions/ClassSessionActions";
 import { setPageLinks } from "../../../Services/Actions/PageActions";
 import StudentActions from "../../../Services/Actions/StudentActions";
+import TutorActions from "../../../Services/Actions/TutorActions";
 import { RootStore } from "../../../Services/Store";
 import { StyledDashboardItem } from "../../../Styles/GlobalStyles";
 import ChangePasswordDialog from "../../SharedViews/ChangePasswordDialog";
@@ -36,6 +41,7 @@ interface IDashboardTutorView {}
 export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
   const dispatch = useDispatch();
   const theme = useTheme();
+  const history = useHistory();
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
 
   const [open_change_pass, set_open_change_pass] = useState(false);
@@ -95,6 +101,15 @@ export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
       store.ClassSessionReducer.fetch_logged_student_calendar
   );
 
+  const recommended_tutors = useSelector(
+    (store: RootStore) => store.TutorReducer.recommended_tutors
+  );
+  const fetch_recommended_tutors = useSelector(
+    (store: RootStore) => store.TutorReducer.fetch_recommended_tutors
+  );
+
+  console.log(`recommended_tutors`, recommended_tutors);
+
   useEffect(() => {
     dispatch(StudentActions.getLoggedStudentInfo());
   }, [dispatch]);
@@ -105,6 +120,10 @@ export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
 
   useEffect(() => {
     dispatch(ClassSessionActions.getLoggedStudentCalendar());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(TutorActions.getRecommendedTutors());
   }, [dispatch]);
 
   useEffect(() => {
@@ -122,7 +141,9 @@ export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
     };
 
     mounted && settingPageLinks();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
   return (
     <>
@@ -324,284 +345,84 @@ export const DashboardTutorView: FC<IDashboardTutorView> = memo(() => {
 
           <Grid item xs={12} md={4}>
             <div className="recommendation-cntr">
-              <div className="container-title">Classes you may like</div>
+              <div className="container-title">Tutors you may like</div>
 
               <div className="body">
-                <div className="rec-class-item">
-                  <div className="class">
-                    <CustomAvatar
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      src=""
-                      errorMessage="C"
-                    />
-                    <div className="title">Math 501</div>
-                  </div>
+                {fetch_recommended_tutors ? (
+                  <CircularLoadingProgress />
+                ) : (
+                  recommended_tutors?.map((r, i) => (
+                    <div key={i} className="rec-class-item">
+                      <div className="tutor">
+                        <div className="tutor_img">
+                          <CustomAvatar
+                            heightSpacing={5}
+                            widthSpacing={5}
+                            src={r.user_info?.picture}
+                            errorMessage={r.user_info?.fullname?.charAt(0)}
+                          />
+                        </div>
+                        <div
+                          className="tutor_name"
+                          onClick={() => {
+                            dispatch(
+                              TutorActions.getSingTutorToStudent(
+                                parseInt(r.tutor_pk)
+                              )
+                            );
+                          }}
+                        >
+                          {r.user_info?.fullname}
+                        </div>
+                        <div className="tutor_rating">
+                          <Tooltip
+                            title={`${
+                              !!r?.average_rating
+                                ? parseFloat(r?.average_rating + "")
+                                : 0
+                            } stars`}
+                          >
+                            <Rating
+                              size="small"
+                              readOnly
+                              name="rating"
+                              value={
+                                !!r?.average_rating
+                                  ? parseFloat(r?.average_rating + "")
+                                  : 0
+                              }
+                              precision={0.1}
+                            />
+                          </Tooltip>
+                        </div>
+                      </div>
 
-                  <div className="class-sub">
-                    <Chip className="status" label="Approved" />
-
-                    <div className="rating">
-                      <Tooltip title="4 stars">
-                        <Rating
-                          size="small"
-                          readOnly
-                          name="rating"
-                          value={4}
-                          precision={0.1}
-                        />
-                      </Tooltip>
+                      <div className="classes">
+                        {r.classes.map((c, ci) => (
+                          <div
+                            className="class-item"
+                            key={i + ci}
+                            onClick={() => {
+                              history.push(
+                                `/student/class/${c.class_pk}/session`
+                              );
+                            }}
+                          >
+                            <FiberManualRecordRoundedIcon
+                              style={{
+                                fontSize: `.8em`,
+                              }}
+                              fontSize="small"
+                            />
+                            <span>
+                              {c.class_desc} - {c.course_desc}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="tutor">
-                    <CustomAvatar
-                      src=""
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      errorMessage="JD"
-                    />
-                    <div className="name">John Doe</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Date</div>
-                    <div className="value">July 28, 1998</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Time Interval</div>
-                    <div className="value">09:00 am - 11:00 am</div>
-                  </div>
-                </div>
-
-                <div className="rec-class-item">
-                  <div className="class">
-                    <CustomAvatar
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      src=""
-                      errorMessage="C"
-                    />
-                    <div className="title">Math 501</div>
-                  </div>
-
-                  <div className="class-sub">
-                    <Chip className="status" label="Approved" />
-
-                    <div className="rating">
-                      <Tooltip title="4 stars">
-                        <Rating
-                          size="small"
-                          readOnly
-                          name="rating"
-                          value={4}
-                          precision={0.1}
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-
-                  <div className="tutor">
-                    <CustomAvatar
-                      src=""
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      errorMessage="JD"
-                    />
-                    <div className="name">John Doe</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Date</div>
-                    <div className="value">July 28, 1998</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Time Interval</div>
-                    <div className="value">09:00 am - 11:00 am</div>
-                  </div>
-                </div>
-
-                <div className="rec-class-item">
-                  <div className="class">
-                    <CustomAvatar
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      src=""
-                      errorMessage="C"
-                    />
-                    <div className="title">Math 501</div>
-                  </div>
-
-                  <div className="class-sub">
-                    <Chip className="status" label="Approved" />
-
-                    <div className="rating">
-                      <Tooltip title="4 stars">
-                        <Rating
-                          size="small"
-                          readOnly
-                          name="rating"
-                          value={4}
-                          precision={0.1}
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-
-                  <div className="tutor">
-                    <CustomAvatar
-                      src=""
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      errorMessage="JD"
-                    />
-                    <div className="name">John Doe</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Date</div>
-                    <div className="value">July 28, 1998</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Time Interval</div>
-                    <div className="value">09:00 am - 11:00 am</div>
-                  </div>
-                </div>
-
-                <div className="rec-class-item">
-                  <div className="class">
-                    <CustomAvatar
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      src=""
-                      errorMessage="C"
-                    />
-                    <div className="title">Math 501</div>
-                  </div>
-
-                  <div className="class-sub">
-                    <Chip className="status" label="Approved" />
-
-                    <div className="rating">
-                      <Tooltip title="4 stars">
-                        <Rating
-                          size="small"
-                          readOnly
-                          name="rating"
-                          value={4}
-                          precision={0.1}
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-
-                  <div className="tutor">
-                    <CustomAvatar
-                      src=""
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      errorMessage="JD"
-                    />
-                    <div className="name">John Doe</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Date</div>
-                    <div className="value">July 28, 1998</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Time Interval</div>
-                    <div className="value">09:00 am - 11:00 am</div>
-                  </div>
-                </div>
-
-                <div className="rec-class-item">
-                  <div className="class">
-                    <CustomAvatar
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      src=""
-                      errorMessage="C"
-                    />
-                    <div className="title">Math 501</div>
-                  </div>
-
-                  <div className="class-sub">
-                    <Chip className="status" label="Approved" />
-
-                    <div className="rating">
-                      <Tooltip title="4 stars">
-                        <Rating
-                          size="small"
-                          readOnly
-                          name="rating"
-                          value={4}
-                          precision={0.1}
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-
-                  <div className="tutor">
-                    <CustomAvatar
-                      src=""
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      errorMessage="JD"
-                    />
-                    <div className="name">John Doe</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Date</div>
-                    <div className="value">July 28, 1998</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Time Interval</div>
-                    <div className="value">09:00 am - 11:00 am</div>
-                  </div>
-                </div>
-
-                <div className="rec-class-item">
-                  <div className="class">
-                    <CustomAvatar
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      src=""
-                      errorMessage="C"
-                    />
-                    <div className="title">Math 501</div>
-                  </div>
-
-                  <div className="class-sub">
-                    <Chip className="status" label="Approved" />
-
-                    <div className="rating">
-                      <Tooltip title="4 stars">
-                        <Rating
-                          size="small"
-                          readOnly
-                          name="rating"
-                          value={4}
-                          precision={0.1}
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-
-                  <div className="tutor">
-                    <CustomAvatar
-                      src=""
-                      heightSpacing={4}
-                      widthSpacing={4}
-                      errorMessage="JD"
-                    />
-                    <div className="name">John Doe</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Date</div>
-                    <div className="value">July 28, 1998</div>
-                  </div>
-                  <div className="info-group">
-                    <div className="label">Time Interval</div>
-                    <div className="value">09:00 am - 11:00 am</div>
-                  </div>
-                </div>
+                  ))
+                )}
               </div>
             </div>
           </Grid>

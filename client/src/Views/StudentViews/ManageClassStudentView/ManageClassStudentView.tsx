@@ -36,7 +36,9 @@ export const ManageClassStudentView: FC<ManageClassStudentViewInterface> = memo(
       };
 
       mounted && fetching_data();
-      return () => (mounted = false);
+      return () => {
+        mounted = false;
+      };
     }, [dispatch, class_pk]);
 
     useEffect(() => {
@@ -58,7 +60,9 @@ export const ManageClassStudentView: FC<ManageClassStudentViewInterface> = memo(
       };
 
       mounted && initializingState();
-      return () => (mounted = false);
+      return () => {
+        mounted = false;
+      };
     }, [dispatch]);
 
     return (

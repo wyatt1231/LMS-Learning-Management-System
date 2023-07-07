@@ -3,6 +3,7 @@ import IServerResponse from "../Interface/IServerResponse";
 import { PaginationModel } from "../Models/PaginationModels";
 import { ClassModel } from "../Models/ClassModel";
 import { ClassRatingModel } from "../Models/ClassRatingModel";
+import { ClassRequestModel } from "../Models/ClassRequestModel";
 
 const API_DEFAULT_ROUTE = `api/class/`;
 
@@ -76,6 +77,30 @@ const getTutorClassTableApi = async (
 
 const addClassApi = async (payload: ClassModel): Promise<IServerResponse> => {
   const response = await PostFetch(API_DEFAULT_ROUTE + "addClass", payload);
+  return response;
+};
+
+const addClassRequest = async (
+  payload: ClassRequestModel
+): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "addClassRequest",
+    payload
+  );
+  return response;
+};
+const acknowledgeRequest = async (
+  payload: ClassRequestModel
+): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "acknowledgeRequest",
+    payload
+  );
+  return response;
+};
+
+const getClassRequests = async (): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "getClassRequests", {});
   return response;
 };
 
@@ -219,4 +244,7 @@ export default {
   rateClass,
   getEndedClassRatingStats,
   getClassRatings,
+  addClassRequest,
+  getClassRequests,
+  acknowledgeRequest,
 };

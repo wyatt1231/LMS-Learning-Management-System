@@ -27,7 +27,9 @@ export const DataClassStudentView: FC<IDataClassStudentView> = memo(() => {
     };
 
     mounted && initializingState();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
 
   return (
@@ -46,7 +48,7 @@ export const DataClassStudentView: FC<IDataClassStudentView> = memo(() => {
               link: `/student/class/records/ongoing-class`,
             },
             {
-              label: "Available Class",
+              label: "All Classes",
               link: `/student/class/records/available-class`,
             },
             {

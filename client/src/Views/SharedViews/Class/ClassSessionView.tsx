@@ -15,8 +15,12 @@ import {
   parseDateAndDayOfWeekOrDefault,
   parseDateTimeOrDefault,
 } from "../../../Hooks/UseDateParser";
-import { getClassSessionsAction } from "../../../Services/Actions/ClassSessionActions";
+import ClassSessionActions, {
+  getClassSessionsAction,
+} from "../../../Services/Actions/ClassSessionActions";
 import { RootStore } from "../../../Services/Store";
+import { Rating } from "@material-ui/lab";
+import { ClassSessionRatingModel } from "../../../Services/Models/ClassSessionRatingModel";
 
 interface ManageClassSessionTutorInterface {
   class_pk: number;
@@ -25,8 +29,6 @@ interface ManageClassSessionTutorInterface {
 export const ClassSessionView: FC<ManageClassSessionTutorInterface> = memo(
   ({ class_pk }) => {
     const dispatch = useDispatch();
-    const params = useParams<any>();
-    const history = useHistory();
 
     const user_type = useSelector(
       (store: RootStore) => store.UserReducer.user.user_type
@@ -62,8 +64,12 @@ export const ClassSessionView: FC<ManageClassSessionTutorInterface> = memo(
               <TableRow>
                 <TableCell width="auto">Sched Date</TableCell>
                 <TableCell width="auto">Status</TableCell>
-                <TableCell width="auto">Began At</TableCell>
-                <TableCell width="auto">Ended At</TableCell>
+                <TableCell width="auto">Started</TableCell>
+                <TableCell width="auto">Ended</TableCell>
+
+                {user_type == "student" && (
+                  <TableCell width="auto">Session Rating</TableCell>
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -143,23 +149,31 @@ export const ClassSessionView: FC<ManageClassSessionTutorInterface> = memo(
                       />
                     )}
                   </TableCell>
-                  {/* {user_type !== "admin" && (
-                    <TableCell align="center">
-                      <IconButtonPopper
-                        style={{ justifySelf: `end` }}
-                        buttons={[
-                          {
-                            text: "Enter into this session",
-                            handleClick: () => {
-                              history.push(
-                                
-                              );
-                            },
-                          },
-                        ]}
+
+                  {user_type == "student" && (
+                    <TableCell>
+                      <Rating
+                        precision={0.1}
+                        value={session.rating}
+                        defaultValue={3}
+                        disabled={!["s", "e"].includes(session.sts_pk)}
+                        onChange={(event, value) => {
+                          const payload: ClassSessionRatingModel = {
+                            rating: value,
+                            session_pk: session.session_pk,
+                          };
+                          dispatch(
+                            ClassSessionActions.rateClassSession(
+                              payload,
+                              () => {
+                                dispatch(getClassSessionsAction(class_pk));
+                              }
+                            )
+                          );
+                        }}
                       />
                     </TableCell>
-                  )} */}
+                  )}
                 </TableRow>
               ))}
             </TableBody>

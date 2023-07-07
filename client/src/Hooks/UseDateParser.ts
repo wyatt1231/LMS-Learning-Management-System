@@ -27,13 +27,6 @@ export const displayMySqlDateTime = (date: string): string | null => {
 };
 
 export const displayMySqlTime = (time: string): string | null => {
-  // const parsedDate = new Date(date);
-  // if (!moment(parsedDate).isValid) {
-  //   return null;
-  // }
-  // const parsedData = moment(parsedDate).format("hh:mm A");
-  // return parsedData;
-
   return moment(time, "hh:mm:ss").format("HH:mm a");
 };
 

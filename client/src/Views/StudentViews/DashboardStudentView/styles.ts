@@ -87,36 +87,54 @@ export const StyledDashboardStudent = styled(Container)`
         background-color: #fafafa;
         border-radius: 7px;
 
-        .class,
         .tutor {
           display: grid;
-          grid-auto-flow: column;
-          justify-content: start;
-          justify-items: start;
-          grid-gap: 0.5em;
+          grid-template-areas: "img name" "img rate";
+          grid-auto-columns: auto 1fr;
           align-items: center;
           align-content: center;
-          .title {
-            font-weight: 600;
+          .tutor_img {
+            grid-area: img;
+            margin-right: 0.5em;
           }
-          .name {
+          .tutor_name {
+            grid-area: name;
             font-weight: 500;
+
+            &:hover {
+              cursor: pointer;
+              color: blue;
+              transition: 0.3s all ease-in-out;
+            }
+          }
+          .tutor_rating {
+            grid-area: rate;
           }
         }
 
-        .class-sub {
+        .classes {
           display: grid;
-          grid-auto-flow: column;
+          grid-gap: 0.3em;
           width: 100%;
-          grid-gap: 1em;
-          align-items: center;
-          align-content: center;
-          grid-auto-columns: 1fr 1fr;
-          .status {
-            justify-self: end;
-          }
-          .rating {
-            justify-self: start;
+          .class-item {
+            padding: 0.3em;
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: auto 1fr;
+            grid-gap: 0.3em;
+            align-items: center;
+            align-content: center;
+            /* justify-items: start; */
+            border-radius: 7px;
+            background-color: #fff;
+            width: 100%;
+
+            &:hover {
+              cursor: pointer;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              color: blue;
+              transition: 0.3s all ease-in-out;
+            }
           }
         }
       }

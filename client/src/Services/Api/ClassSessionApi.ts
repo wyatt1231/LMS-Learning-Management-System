@@ -5,6 +5,7 @@ import {
   ClassSesMsgModel,
   ClassSessionModel,
 } from "../Models/ClassSessionModel";
+import { ClassSessionRatingModel } from "../Models/ClassSessionRatingModel";
 
 const API_DEFAULT_ROUTE = `api/classsession/`;
 
@@ -54,6 +55,16 @@ const unattendedClassSession = async (
 ): Promise<IServerResponse> => {
   const response = await PostFetch(
     API_DEFAULT_ROUTE + "unattendedClassSession",
+    payload
+  );
+  return response;
+};
+
+const rateClassSession = async (
+  payload: ClassSessionRatingModel
+): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "rateClassSession",
     payload
   );
   return response;
@@ -160,4 +171,5 @@ export default {
   startClassSession,
   endClassSession,
   unattendedClassSession,
+  rateClassSession,
 };

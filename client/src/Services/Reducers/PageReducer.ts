@@ -41,6 +41,12 @@ const PageReducer = (
         toggle_activity_sidebar: action.toggle_activity_sidebar,
       };
 
+    case "toggle_class_req_sidebar":
+      return {
+        ...state,
+        toggle_class_req_sidebar: action.toggle_class_req_sidebar,
+      };
+
     default:
       return state;
   }

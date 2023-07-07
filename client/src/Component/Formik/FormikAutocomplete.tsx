@@ -19,7 +19,7 @@ interface IFormikAutocomplete {
   variant?: any;
   required?: boolean;
   placeholder?: string;
-  size?: "small" | "medium";
+  size?: any;
   onSelectChange?: () => void;
   other_payload?: any;
 }

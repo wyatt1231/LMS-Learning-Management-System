@@ -8,11 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const DatabaseConfig_1 = require("../Configurations/DatabaseConfig");
 const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
 const useSearch_1 = require("../Hooks/useSearch");
+const useSql_1 = __importDefault(require("../Hooks/useSql"));
 const useValidator_1 = require("../Hooks/useValidator");
 const addCourse = (payload, user_id) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
@@ -65,22 +69,29 @@ const addCourse = (payload, user_id) => __awaiter(void 0, void 0, void 0, functi
         };
     }
 });
+<<<<<<< HEAD
 const getCourseDataTable = (pagination_payload) => __awaiter(void 0, void 0, void 0, function* () {
+=======
+const getCourseDataTable = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+>>>>>>> laptop
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.QueryPagination(`SELECT * FROM courses
       WHERE
       course_desc like concat('%',@search,'%')
-      `, pagination_payload);
-        const hasMore = data.length > pagination_payload.page.limit;
+      AND est_duration in @est_duration
+      ${useSql_1.default.DateWhereClause("encoded_at", ">=", payload.filters.encoded_from)}
+      ${useSql_1.default.DateWhereClause("encoded_at", "<=", payload.filters.encoded_to)}
+
+      `, payload);
+        const hasMore = data.length > payload.page.limit;
         if (hasMore) {
             data.splice(data.length - 1, 1);
         }
         const count = hasMore
             ? -1
-            : pagination_payload.page.begin * pagination_payload.page.limit +
-                data.length;
+            : payload.page.begin * payload.page.limit + data.length;
         for (const course of data) {
             course.picture = yield (0, useFileUploader_1.GetUploadedImage)(course.picture);
         }
@@ -89,9 +100,9 @@ const getCourseDataTable = (pagination_payload) => __awaiter(void 0, void 0, voi
             success: true,
             data: {
                 table: data,
-                begin: pagination_payload.page.begin,
+                begin: payload.page.begin,
                 count: count,
-                limit: pagination_payload.page.limit,
+                limit: payload.page.limit,
             },
         };
     }

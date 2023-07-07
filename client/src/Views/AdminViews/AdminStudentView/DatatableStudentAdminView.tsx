@@ -1,4 +1,5 @@
 import {
+  Button,
   Chip,
   Container,
   Grid,
@@ -10,12 +11,15 @@ import {
   TablePagination,
   TableRow,
 } from "@material-ui/core";
+import { Formik, Form } from "formik";
 import React, { FC, memo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import DataTableSearch from "../../../Component/DataTableSearch";
 import DataTableSort from "../../../Component/DataTableSort";
+import FormikCheckbox from "../../../Component/Formik/FormikCheckbox";
+import FormikDateField from "../../../Component/Formik/FormikDateField";
 import LinearLoadingProgress from "../../../Component/LinearLoadingProgress";
 import { InvalidDateToDefault } from "../../../Hooks/UseDateParser";
 import useFilter from "../../../Hooks/useFilter";
@@ -32,6 +36,10 @@ interface DataTableStudentAdminViewInterface {}
 
 const initialSearch = {
   search: "",
+  grade: ["11", "12"],
+  sts_pk: ["FA", "A"],
+  encoded_from: null,
+  encoded_to: null,
 };
 
 const initialTableSort: Array<ITableInitialSort> = [
@@ -93,8 +101,8 @@ const tableColumns: Array<ITableColumns> = [
   },
 ];
 
-export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> = memo(
-  () => {
+export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> =
+  memo(() => {
     const dispatch = useDispatch();
 
     const table_loading = useSelector(
@@ -156,7 +164,9 @@ export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> =
       };
 
       mounted && initializingState();
-      return () => (mounted = false);
+      return () => {
+        mounted = false;
+      };
     }, [dispatch]);
 
     return (
@@ -197,8 +207,8 @@ export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> =
                   count={tableCount}
                   rowsPerPage={tableLimit}
                   page={tablePage}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>
@@ -231,6 +241,109 @@ export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> =
                   }}
                   handleSetSearchField={handleSetSearchField}
                   searchField={searchField}
+                  FilterComponent={
+                    <Formik
+                      initialValues={tableSearch}
+                      enableReinitialize
+                      onSubmit={(form_values) => {
+                        const filter_payload = {
+                          ...form_values,
+                          search: tableSearch.search,
+                        };
+
+                        handleSetTableSearch(filter_payload);
+                      }}
+                    >
+                      {() => (
+                        <Form className="form">
+                          <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                              <FormikCheckbox
+                                row={true}
+                                data={[
+                                  {
+                                    id: "11",
+                                    label: "Grade 11",
+                                  },
+                                  {
+                                    id: "12",
+                                    label: "Grade 12",
+                                  },
+                                ]}
+                                color="primary"
+                                name="grade"
+                                label="Grade Level"
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <FormikCheckbox
+                                row={true}
+                                color="primary"
+                                data={[
+                                  {
+                                    id: "FA",
+                                    label: "for approval",
+                                  },
+                                  {
+                                    id: "A",
+                                    label: "approved",
+                                  },
+                                ]}
+                                name="sts_pk"
+                                label="Status"
+                              />
+                            </Grid>
+
+                            <Grid item xs={6}>
+                              <FormikDateField
+                                name="encoded_from"
+                                clearable={true}
+                                label="Encoded From"
+                              />
+                            </Grid>
+                            <Grid item xs={6}>
+                              <FormikDateField
+                                name="encoded_to"
+                                clearable={true}
+                                label="Encoded To"
+                              />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <Grid container spacing={2} justify="flex-end">
+                                <Grid item>
+                                  <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    type="button"
+                                    onClick={() => {
+                                      const filter_payload = {
+                                        ...initialSearch,
+                                        search: tableSearch.search,
+                                      };
+                                      handleSetTableSearch(filter_payload);
+                                    }}
+                                  >
+                                    Clear Filters
+                                  </Button>
+                                </Grid>
+                                <Grid item>
+                                  <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                  >
+                                    Apply Filters
+                                  </Button>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </Form>
+                      )}
+                    </Formik>
+                  }
                 />
               </Grid>
             </Grid>
@@ -324,7 +437,6 @@ export const DataTableStudentAdminView: FC<DataTableStudentAdminViewInterface> =
         </Grid>
       </Container>
     );
-  }
-);
+  });
 
 export default DataTableStudentAdminView;

@@ -34,7 +34,7 @@ const AntTabs = withStyles({
   },
 })(Tabs);
 
-const AntTab = withStyles((theme: Theme) =>
+const AntTab = withStyles((theme: any) =>
   createStyles({
     root: {
       textTransform: "none",

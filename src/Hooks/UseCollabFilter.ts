@@ -1,7 +1,5 @@
 import { TutorRatingsModel } from "../Models/TutorRatingModel";
 
-const SimilarityScores = () => {};
-
 const PearsonCorrelation = (
   data_set_A: Array<number>,
   data_set_B: Array<number>
@@ -10,15 +8,6 @@ const PearsonCorrelation = (
   let denomer = ProductSumSquareMeanDeviation(data_set_A, data_set_B);
 
   let correlation = numer / denomer;
-
-  console.log(
-    `correlation`,
-    data_set_A,
-    data_set_B,
-    numer,
-    denomer,
-    numer / denomer
-  );
 
   if (!correlation || isNaN(correlation)) {
     return -1;
@@ -116,24 +105,9 @@ export const GeneralWeightedAverage = (data_set: Array<any>) => {
     }
   }
 
-  // console.log(`\n--------------------`);
-
-  // console.log(`data_set: `, data_set);
-  // console.log(`sum_prod_score_rating: `, sum_prod_score_rating);
-  // console.log(`sum_sim_scores: `, sum_sim_scores);
-
   const result = sum_prod_score_rating / sum_sim_scores;
 
-  // console.log(`result weighted av: `, result);
-
-  return result;
-
-  // const pow_data : Array<number> =[];
-  // for (let i = 0; i < tutors.length; i++) {
-
-  //   pow_data.push()
-
-  // }
+  return isNaN(result) ? 0 : result;
 };
 
 const SquareMeanDeviation = (
@@ -168,6 +142,9 @@ const RatingPrediction = async (
   const data_set = [];
   const tutor_sim_scores = [];
 
+  //mark sunner - nhordz = .87
+  //mark sunner - bazar = .3
+
   for (const t of tutors) {
     const student_tutor_ratings = [];
 
@@ -188,19 +165,11 @@ const RatingPrediction = async (
       tutor: t.tutor_pk,
       students: student_tutor_ratings,
     });
-
-    // console.log(`data_set`, {
-    //   tutor: t.tutor_pk,
-    //   students: student_tutor_ratings,
-    // });
   }
 
   const index_tutor_to_compare = data_set.findIndex(
     (d) => d.tutor === tutor_pk
   );
-
-  // console.log(`index_tutor_to_compare`, data_set);
-  // console.log(data_set, tutor_pk);
 
   if (index_tutor_to_compare !== -1) {
     const compare_tutor_ratings = data_set[index_tutor_to_compare].students.map(
@@ -213,23 +182,18 @@ const RatingPrediction = async (
           (v: any) => v.rating
         );
 
+        //marksunner - nhordz
+
         const sim_score = PearsonCorrelation(
           other_tutor_ratings,
           compare_tutor_ratings
         );
-        console.log(
-          `sim_score`,
-          sim_score,
-          other_tutor_ratings,
-          compare_tutor_ratings
-        );
-        console.log(`--------\n`);
+
+        console.log(`sim score`, sim_score);
+
         tutor_sim_scores.push(sim_score);
       }
     }
-
-    console.log(`lengt rating`, student_ratings.length);
-    console.log(`lengt tutor`, data_set.length);
 
     const pcc_data_set = [];
     for (let i = 0; i < student_ratings.length; i++) {
@@ -243,14 +207,9 @@ const RatingPrediction = async (
               student_ratings[i].rating
             ),
           });
-
-          console.log(`student_ratings[i].rating: `, student_ratings[i].rating);
-          console.log(`tutor_sim_scores: `, tutor_sim_scores[x]);
         }
       }
     }
-
-    console.log(`pcc_data_set`, pcc_data_set);
 
     return GeneralWeightedAverage(pcc_data_set);
   } else {

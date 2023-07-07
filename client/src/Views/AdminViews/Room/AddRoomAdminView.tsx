@@ -81,7 +81,9 @@ export const AddRoomAdminView: FC<AddRoomAdminViewInterface> = memo(() => {
     };
 
     mounted && settingPageLinks();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, [dispatch]);
 
   return (

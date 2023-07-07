@@ -18,6 +18,7 @@ const useDateParser_1 = require("../Hooks/useDateParser");
 const useErrorMessage_1 = require("../Hooks/useErrorMessage");
 const useFileUploader_1 = require("../Hooks/useFileUploader");
 const useSearch_1 = require("../Hooks/useSearch");
+const useSql_1 = __importDefault(require("../Hooks/useSql"));
 const useValidator_1 = require("../Hooks/useValidator");
 const addTutor = (params, user_id) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
@@ -111,6 +112,8 @@ const updateTutor = (tutor_payload, user_id) => __awaiter(void 0, void 0, void 0
     try {
         yield con.BeginTransaction();
         tutor_payload.encoder_pk = user_id;
+        tutor_payload.birth_date = (0, useDateParser_1.parseInvalidDateToDefault)(tutor_payload.birth_date);
+        console.log(`birth_date`, tutor_payload.birth_date);
         const sql_update_tutor = yield con.Modify(`
         UPDATE tutors SET
         position=@position,
@@ -118,7 +121,7 @@ const updateTutor = (tutor_payload, user_id) => __awaiter(void 0, void 0, void 0
         middlename=@middlename,
         lastname=@lastname,
         suffix=@suffix,
-        birth_date=@birth_date,
+        birth_date=DATE_FORMAT(@birth_date,'%Y-%m-%d'),
         email=@email,
         mob_no=@mob_no,
         gender=@gender,
@@ -278,7 +281,11 @@ const toggleActiveStatus = (tutor_pk, user_pk) => __awaiter(void 0, void 0, void
         };
     }
 });
+<<<<<<< HEAD
 const getTutorDataTable = (pagination_payload) => __awaiter(void 0, void 0, void 0, function* () {
+=======
+const getTutorDataTable = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+>>>>>>> laptop
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
@@ -290,15 +297,18 @@ const getTutorDataTable = (pagination_payload) => __awaiter(void 0, void 0, void
       OR email like concat('%',@search,'%')
       OR mob_no like concat('%',@search,'%')
       OR position like concat('%',@search,'%'))
-      `, pagination_payload);
-        const hasMore = data.length > pagination_payload.page.limit;
+      AND position in @position
+      AND is_active in @is_active
+      ${useSql_1.default.DateWhereClause("encoded_at", ">=", payload.filters.encoded_from)}
+      ${useSql_1.default.DateWhereClause("encoded_at", "<=", payload.filters.encoded_to)}
+      `, payload);
+        const hasMore = data.length > payload.page.limit;
         if (hasMore) {
             data.splice(data.length - 1, 1);
         }
         const count = hasMore
             ? -1
-            : pagination_payload.page.begin * pagination_payload.page.limit +
-                data.length;
+            : payload.page.begin * payload.page.limit + data.length;
         for (const tutor of data) {
             const pic = yield (0, useFileUploader_1.GetUploadedImage)(tutor.picture);
             tutor.picture = pic;
@@ -308,9 +318,9 @@ const getTutorDataTable = (pagination_payload) => __awaiter(void 0, void 0, void
             success: true,
             data: {
                 table: data,
-                begin: pagination_payload.page.begin,
+                begin: payload.page.begin,
                 count: count,
-                limit: pagination_payload.page.limit,
+                limit: payload.page.limit,
             },
         };
     }
@@ -740,48 +750,63 @@ const getRecommendedTutors = (user_pk) => __awaiter(void 0, void 0, void 0, func
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
-        const student_pk = 18;
+        const student_res = yield con.QuerySingle(`select student_pk from students where user_id=@user_id limit 1;`, {
+            user_id: user_pk,
+        });
+        //students primary key ->
+        const student_pk = student_res.student_pk;
         const unrated_tutors = yield con.Query(`SELECT t.tutor_pk FROM tutors t WHERE t.tutor_pk NOT IN (SELECT tutor_pk FROM tutor_ratings WHERE student_pk = @student_pk)`, {
             student_pk,
-        });
+        }
+        //
+        );
+        //dataset sa wala pa na rate na tutors
         const student_ratings = yield con.Query(`SELECT tutor_pk,rating FROM tutor_ratings WHERE student_pk = @student_pk order by student_pk asc;
         `, {
             student_pk,
         });
+        //dataset of ratings and tutor na na rate na ni student
         const tutors = yield con.Query(`SELECT tutor_pk FROM tutor_ratings GROUP BY tutor_pk  ORDER BY tutor_pk`, {});
         const students = yield con.Query(`SELECT student_pk FROM tutor_ratings GROUP BY student_pk  ORDER BY student_pk
       `, {});
         const ratings = yield con.Query(`SELECT rating,student_pk,tutor_pk FROM tutor_ratings order by student_pk asc;
       `, {});
-        // const rating_prediction = await UseCollabFilter.RatingPrediction(
-        //   18,
-        //   tutors,
-        //   students,
-        //   ratings,
-        //   student_ratings
-        // );
-        // console.log(`rating_prediction`, rating_prediction);
-        UseCollabFilter_1.default.PearsonCorrelation([5, 1, 0, 3, 0, 0, 5, 2, 0, 4, 5, 0, 0, 0, 0], [3, 0, 1, 2, 4, 0, 5, 0, 3, 2, 0, 0, 0, 0, 0]);
-        UseCollabFilter_1.default.PearsonCorrelation([1, 0, 3, 0, 0, 5, 0, 0, 5, 0, 4, 0], [2, 4, 0, 1, 2, 0, 3, 0, 4, 3, 5, 0]);
-        // for (const ut of unrated_tutors) {
-        //   const rating_prediction = await UseCollabFilter.RatingPrediction(
-        //     ut.tutor_pk,
-        //     tutors,
-        //     students,
-        //     ratings,
-        //     student_ratings
-        //   );
-        //   console.log(
-        //     `rating_prediction of ${ut.tutor_pk} is :`,
-        //     rating_prediction
-        //   );
-        // }
+        const tutor_rating_prediction = [];
+        for (const ut of unrated_tutors) {
+            const rating_prediction = yield UseCollabFilter_1.default.RatingPrediction(ut.tutor_pk, tutors, students, ratings, student_ratings);
+            if (rating_prediction > 0) {
+                tutor_rating_prediction.push({
+                    tutor_pk: ut.tutor_pk,
+                    rating: rating_prediction,
+                });
+            }
+        }
+        const sort_tutor_rating_pred = tutor_rating_prediction.sort((a, b) => a.rating < b.rating ? 1 : b.rating < a.rating ? -1 : 0);
+        const recommended_tutors = [];
+        for (const tutor of sort_tutor_rating_pred) {
+            const tutor_info = yield con.QuerySingle(`SELECT *,
+        (SELECT SUM(rating)/COUNT(rating) FROM tutor_ratings WHERE tutor_pk = @tutor_pk) as average_rating
+        FROM tutors WHERE tutor_pk =@tutor_pk;`, {
+                tutor_pk: tutor.tutor_pk,
+            });
+            tutor_info.user_info = yield con.QuerySingle(`select * from vw_user_info where user_id=@user_id`, {
+                user_id: tutor_info.user_id,
+            });
+            tutor_info.user_info.picture = yield (0, useFileUploader_1.GetUploadedImage)(tutor_info.user_info.picture);
+            tutor_info.classes = yield con.Query(`
+        SELECT c.* FROM classes c
+        WHERE c.tutor_pk = @tutor_pk AND c.class_pk NOT IN (SELECT class_pk FROM class_students WHERE student_pk = @student_pk)
+        `, {
+                tutor_pk: tutor.tutor_pk,
+                student_pk: student_pk,
+            });
+            recommended_tutors.push(tutor_info);
+        }
+        console.log(recommended_tutors);
         con.Commit();
         return {
             success: true,
-            data: {
-            // rating_prediction,
-            },
+            data: recommended_tutors,
         };
     }
     catch (error) {

@@ -10,12 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GeneralWeightedAverage = void 0;
-const SimilarityScores = () => { };
 const PearsonCorrelation = (data_set_A, data_set_B) => {
     let numer = SumProductMeanDeviation(data_set_A, data_set_B);
     let denomer = ProductSumSquareMeanDeviation(data_set_A, data_set_B);
     let correlation = numer / denomer;
-    console.log(`correlation`, data_set_A, data_set_B, numer, denomer, numer / denomer);
     if (!correlation || isNaN(correlation)) {
         return -1;
     }
@@ -86,17 +84,8 @@ const GeneralWeightedAverage = (data_set) => {
             sum_sim_scores += sim_scores;
         }
     }
-    // console.log(`\n--------------------`);
-    // console.log(`data_set: `, data_set);
-    // console.log(`sum_prod_score_rating: `, sum_prod_score_rating);
-    // console.log(`sum_sim_scores: `, sum_sim_scores);
     const result = sum_prod_score_rating / sum_sim_scores;
-    // console.log(`result weighted av: `, result);
-    return result;
-    // const pow_data : Array<number> =[];
-    // for (let i = 0; i < tutors.length; i++) {
-    //   pow_data.push()
-    // }
+    return isNaN(result) ? 0 : result;
 };
 exports.GeneralWeightedAverage = GeneralWeightedAverage;
 const SquareMeanDeviation = (data_set, index) => {
@@ -116,6 +105,8 @@ const RatingPrediction = (tutor_pk, tutors, students, ratings, student_ratings) 
     var _a;
     const data_set = [];
     const tutor_sim_scores = [];
+    //mark sunner - nhordz = .87
+    //mark sunner - bazar = .3
     for (const t of tutors) {
         const student_tutor_ratings = [];
         for (const s of students) {
@@ -131,27 +122,19 @@ const RatingPrediction = (tutor_pk, tutors, students, ratings, student_ratings) 
             tutor: t.tutor_pk,
             students: student_tutor_ratings,
         });
-        // console.log(`data_set`, {
-        //   tutor: t.tutor_pk,
-        //   students: student_tutor_ratings,
-        // });
     }
     const index_tutor_to_compare = data_set.findIndex((d) => d.tutor === tutor_pk);
-    // console.log(`index_tutor_to_compare`, data_set);
-    // console.log(data_set, tutor_pk);
     if (index_tutor_to_compare !== -1) {
         const compare_tutor_ratings = data_set[index_tutor_to_compare].students.map((v) => v.rating);
         for (let i = 0; i < data_set.length; i++) {
             if (i !== index_tutor_to_compare) {
                 const other_tutor_ratings = data_set[i].students.map((v) => v.rating);
+                //marksunner - nhordz
                 const sim_score = PearsonCorrelation(other_tutor_ratings, compare_tutor_ratings);
-                console.log(`sim_score`, sim_score, other_tutor_ratings, compare_tutor_ratings);
-                console.log(`--------\n`);
+                console.log(`sim score`, sim_score);
                 tutor_sim_scores.push(sim_score);
             }
         }
-        console.log(`lengt rating`, student_ratings.length);
-        console.log(`lengt tutor`, data_set.length);
         const pcc_data_set = [];
         for (let i = 0; i < student_ratings.length; i++) {
             for (let x = 0; x < data_set.length; x++) {
@@ -161,12 +144,13 @@ const RatingPrediction = (tutor_pk, tutors, students, ratings, student_ratings) 
                         rating: student_ratings[i].rating,
                         distance: EuclideanDistance(tutor_sim_scores[x], student_ratings[i].rating),
                     });
-                    console.log(`student_ratings[i].rating: `, student_ratings[i].rating);
-                    console.log(`tutor_sim_scores: `, tutor_sim_scores[x]);
                 }
             }
         }
+<<<<<<< HEAD
         console.log(`pcc_data_set`, pcc_data_set);
+=======
+>>>>>>> laptop
         return (0, exports.GeneralWeightedAverage)(pcc_data_set);
     }
     else {

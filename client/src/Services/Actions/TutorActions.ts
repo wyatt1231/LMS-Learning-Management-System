@@ -494,6 +494,31 @@ const getMostRatedTutors = () => async (
   }
 };
 
+const getRecommendedTutors = () => async (
+  dispatch: Dispatch<TutorReducerTypes>
+) => {
+  try {
+    dispatch({
+      type: "fetch_recommended_tutors",
+      fetch_recommended_tutors: true,
+    });
+    const response: IServerResponse = await TutorApi.getRecommendedTutors();
+
+    if (response.success) {
+      dispatch({
+        type: "recommended_tutors",
+        recommended_tutors: response.data,
+      });
+    }
+    dispatch({
+      type: "fetch_recommended_tutors",
+      fetch_recommended_tutors: false,
+    });
+  } catch (error) {
+    console.error(`reducer error`, error);
+  }
+};
+
 export default {
   updateTutorImage,
   toggleActiveStatus,
@@ -504,4 +529,5 @@ export default {
   favoriteTutor,
   getSingTutorToStudent,
   getMostRatedTutors,
+  getRecommendedTutors,
 };

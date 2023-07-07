@@ -59,6 +59,10 @@ export type PageReducerTypes =
   | {
       type: "toggle_activity_sidebar";
       toggle_activity_sidebar: boolean;
+    }
+  | {
+      type: "toggle_class_req_sidebar";
+      toggle_class_req_sidebar: boolean;
     };
 
 export interface PageReducerModel {
@@ -69,4 +73,5 @@ export interface PageReducerModel {
   page_success_prompt?: PageSuccessPromptTypes;
 
   toggle_activity_sidebar?: boolean;
+  toggle_class_req_sidebar?: boolean;
 }

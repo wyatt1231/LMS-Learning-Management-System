@@ -63,7 +63,7 @@ const TutorController = async (app: Express): Promise<void> => {
 
   router.post(
     "/searchTutor",
-    Authorize("admin"),
+    Authorize("admin,student"),
     async (req: Request & UserClaims, res: Response) => {
       const search: string = req.body.value;
       res.json(await TutorRepository.searchTutor(search));
@@ -169,18 +169,15 @@ const TutorController = async (app: Express): Promise<void> => {
     }
   );
 
-  router.get("/pcc", async (req: Request & UserClaims, res: Response) => {
-    // const sim_score = UseCollabFilter.PearsonCorrelation(
-    //   // [1, 0, 3, 0, 0, 5, 0, 0, 5, 0, 4, 0] //active
-    //   // [0, 0, 0, 2, 4, 5, 0], //active
-    //   // [4, 0, 0, 5, 1, 0, 0]
-    //   [1, 0, 3, 0, 3, 0, 0, 2, 0, 0, 4, 0],
-    //   [1, 0, 3, 0, 0, 5, 0, 0, 5, 0, 4, 0]
-    //   //
-    // );
-
-    res.json(await TutorRepository.getRecommendedTutors(parseInt(req.user_id)));
-  });
+  router.post(
+    "/getRecommendedTutors",
+    Authorize("student"),
+    async (req: Request & UserClaims, res: Response) => {
+      res.json(
+        await TutorRepository.getRecommendedTutors(parseInt(req.user_id))
+      );
+    }
+  );
 
   app.use("/api/tutor/", router);
 };

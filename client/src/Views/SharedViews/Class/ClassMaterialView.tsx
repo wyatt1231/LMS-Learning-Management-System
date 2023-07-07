@@ -35,16 +35,12 @@ export const ClassMaterialView: FC<ClassMaterialProps> = memo(
     const user_type = useSelector(
       (store: RootStore) => store.UserReducer.user?.user_type
     );
-    const [
-      selectedMaterial,
-      setSelectedMaterial,
-    ] = useState<ClassMaterialModel | null>(null);
+    const [selectedMaterial, setSelectedMaterial] =
+      useState<ClassMaterialModel | null>(null);
 
     const tbl_class_materials = useSelector(
       (store: RootStore) => store.ClassMaterialReducer.tbl_class_materials
     );
-
-    console.log(`selectedMaterial`, selectedMaterial);
 
     const fetch_class_material = useSelector(
       (store: RootStore) => store.ClassMaterialReducer.fetch_class_material
@@ -69,21 +65,22 @@ export const ClassMaterialView: FC<ClassMaterialProps> = memo(
     return (
       <div className="class-tab">
         <Grid item container spacing={2}>
-          {user_type === "tutor" && (
-            <Grid item>
-              <Button
-                color="primary"
-                variant="contained"
-                disableElevation
-                onClick={() => {
-                  setOpenEnrollStudentModel(true);
-                }}
-              >
-                Add Material
-              </Button>
-            </Grid>
-          )}
-          <Grid item container justify="flex-end"></Grid>
+          <Grid container justify="flex-end">
+            {user_type === "tutor" && (
+              <Grid item>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  disableElevation
+                  onClick={() => {
+                    setOpenEnrollStudentModel(true);
+                  }}
+                >
+                  Add Material
+                </Button>
+              </Grid>
+            )}
+          </Grid>
 
           <Grid item container spacing={3} justify="flex-start">
             <LinearLoadingProgress show={fetch_class_material} />

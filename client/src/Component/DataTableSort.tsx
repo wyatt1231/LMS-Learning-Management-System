@@ -16,31 +16,33 @@ export const DataTableSort: FC<IDataTableSort> = memo(
           gridAutoFlow: "column",
           alignItems: `center`,
           alignContent: `center`,
-          gridGap: `.7em`,
+          gridGap: `.5em`,
           justifyContent: `start`,
           justifyItems: `start`,
+          gridAutoColumns: `auto 120px`,
         }}
       >
         <div
           style={{
-            fontWeight: 500,
-            fontSize: `.9em`,
+            fontWeight: 400,
+            fontSize: `.87em`,
           }}
         >
-          Sort By:
+          Order By:
         </div>
 
         <TextField
-          InputLabelProps={{
-            shrink: true,
-          }}
           select
-          // size="small"
           fullWidth
           value={selectedSortIndex}
-          style={{ width: 150 }}
           SelectProps={{
             disableUnderline: true,
+            style: {
+              fontSize: `.87em`,
+            },
+          }}
+          style={{
+            minWidth: 100,
           }}
           onChange={(e) => {
             handleChagenSelectedSortIndex(e.target.value);

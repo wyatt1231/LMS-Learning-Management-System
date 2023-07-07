@@ -1,20 +1,13 @@
 import { Chip, Container, Grid, useTheme } from "@material-ui/core";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import { Skeleton } from "@material-ui/lab";
-import React, { FC, memo, useCallback, useEffect, useState } from "react";
+import React, { FC, memo, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, useParams } from "react-router";
 import { Route } from "react-router-dom";
 import CustomAvatar from "../../../Component/CustomAvatar";
 import IconButtonPopper from "../../../Component/IconButtonPopper/IconButtonPopper";
 import LinkTabs from "../../../Component/LinkTabs";
-import {
-  InvalidDateTimeToDefault,
-  InvalidDateToDefault,
-  InvalidTimeToDefault,
-} from "../../../Hooks/UseDateParser";
-import { StringEmptyToDefault } from "../../../Hooks/UseStringFormatter";
-import { setSelectedClassAction } from "../../../Services/Actions/ClassActions";
+import { InvalidDateTimeToDefault } from "../../../Hooks/UseDateParser";
 import {
   setGeneralPrompt,
   setPageLinks,
@@ -22,9 +15,7 @@ import {
 import StudentActions, {
   setSelectedStudentAction,
 } from "../../../Services/Actions/StudentActions";
-import { setSingleTutor } from "../../../Services/Actions/TutorActions";
 import { RootStore } from "../../../Services/Store";
-import ClassSessionView from "../../SharedViews/Class/ClassSessionView";
 import RatedTutorClassView from "./RatedTutorClassView";
 import StudentCalendarView from "./StudentCalendarView";
 import StudentEnrollClassView from "./StudentEnrollClassView";

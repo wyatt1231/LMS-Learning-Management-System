@@ -1,40 +1,64 @@
-import { resolve } from "bluebird";
 import mysql, { OkPacket, RowDataPacket } from "mysql2";
-import Connection from "mysql2/typings/mysql/lib/Connection";
 import { DatabaseConnectionModel, InsertModel } from "../Models/DatabaseModel";
 import { PaginationModel } from "../Models/PaginationModel";
 
 export let connection_string: mysql.PoolOptions | null = null;
 
 if (process.env.NODE_ENV === "production") {
-  connection_string = {
-    host: "109.106.254.1",
-    user: "u498243179_lms",
-    password: "LMS@capstone2",
-    database: "u498243179_lms",
-    port: 3306,
-  };
+  // connection_string = {
+  //   host: "127.0.0.1",
+  //   user: "root",
+  //   password: "root sa",
+  //   database: "lms",
+  //   port: 3309,
+  // };
+  // connection_string = {
+  //   host: "db-lms.mysql.database.azure.com",
+  //   user: "lms@db-lms",
+  //   password: "DB_capstone@azure",
+  //   database: "lms",
+  //   port: 3306,
+  // };
 } else {
+  //var conn = mysql.createConnection({host: "db-lms.mysql.database.azure.com", user: "lms@db-lms", password: {your_password}, database: {your_database}, port: 3306, ssl:{ca:fs.readFileSync({ca-cert filename})}});
+  // connection_string = {
+  //   host: "127.0.0.1",
+  //   user: "root",
+  //   password: "root sa",
+  //   database: "lms",
+  //   port: 3309,
+  // };
+
   connection_string = {
-    host: "109.106.254.1",
-    user: "u498243179_lms",
-    password: "LMS@capstone2",
-    database: "u498243179_lms",
-    port: 3306,
+    host: "127.0.0.1",
+    user: "root",
+    password: "root sa",
+    database: "lms",
+    port: 3309,
   };
+
+  // connection_string = {
+  //   host: "db-lms.mysql.database.azure.com",
+  //   user: "lms@db-lms",
+  //   password: "DB_capstone@azure",
+  //   database: "lms",
+  //   port: 3306,
+  // };
 }
+
+console.log(`connection_string`, connection_string);
+
+const DatabaseConfig: mysql.Pool = mysql.createPool(connection_string);
 
 export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
   return new Promise((resolve, reject) => {
-    let DatabaseConfig: null | mysql.Pool = null;
     try {
-      DatabaseConfig = mysql.createPool(connection_string);
-
       DatabaseConfig.getConnection((error, connection) => {
         if (error) {
-          connection.destroy();
-          connection.release();
+          // connection.destroy();
+          // connection.release();
           // connection.end();
+          console.log(error);
           return reject(error);
         }
 
@@ -49,7 +73,6 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
               if (typeof message !== "undefined") {
                 connection.destroy();
                 connection.release();
-                // connection.end();
                 return reject(message);
               }
             }
@@ -94,7 +117,7 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             ORDER BY ${sort.column} ${sort.direction}` +
               (page
                 ? `
-          LIMIT ${mysql.escape(page.begin)}, ${mysql.escape(page.limit)} `
+          LIMIT ${mysql.escape(page.begin)}, ${mysql.escape(page.limit + 1)} `
                 : "");
 
             try {
@@ -128,6 +151,9 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             try {
               connection.query(query, (err, result: OkPacket) => {
                 if (err) {
+                  connection.destroy();
+                  connection.release();
+                  // connection.end();
                   return reject(err);
                 } else {
                   return resolve(result.affectedRows);
@@ -155,6 +181,9 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             try {
               connection.query(query, (err, result: OkPacket) => {
                 if (err) {
+                  connection.destroy();
+                  connection.release();
+                  // connection.end();
                   return reject(err);
                 } else {
                   return resolve({
@@ -186,6 +215,9 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             try {
               connection.query(query, (err, result: RowDataPacket) => {
                 if (err) {
+                  connection.destroy();
+                  connection.release();
+                  // connection.end();
                   reject(err);
                 } else {
                   if (result.length > 0) {
@@ -208,11 +240,17 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
             try {
               connection.beginTransaction((err) => {
                 if (err) {
+                  connection.destroy();
+                  connection.release();
+                  // connection.end();
                   return reject(error);
                 }
                 return resolve();
               });
             } catch (error) {
+              connection.destroy();
+              connection.release();
+              // connection.end();
               return reject(error);
             }
           });
@@ -238,8 +276,9 @@ export const DatabaseConnection = (): Promise<DatabaseConnectionModel> => {
           return new Promise((resolve, reject) => {
             try {
               connection.rollback(() => {
-                connection.release();
                 connection.destroy();
+                connection.release();
+                // connection.end();
                 return resolve();
               });
             } catch (error) {
