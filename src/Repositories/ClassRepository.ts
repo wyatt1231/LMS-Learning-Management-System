@@ -11,6 +11,7 @@ import useSql from "../Hooks/useSql";
 import { ClassModel } from "../Models/ClassModel";
 import { ClassRatingModel } from "../Models/ClassRatingModel";
 import { ClassRequestModel } from "../Models/ClassRequestModel";
+import { ClassSessionRatingModel } from "../Models/ClassSessionRatingModel";
 import { NotifModel } from "../Models/NotifModel";
 import { PaginationModel } from "../Models/PaginationModel";
 import { ResponseModel } from "../Models/ResponseModel";

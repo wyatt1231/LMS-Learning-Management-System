@@ -29,6 +29,10 @@ const ClassStudentController = (app) => __awaiter(void 0, void 0, void 0, functi
         const payload = req.body;
         res.json(yield ClassStudentRepository_1.default.joinStudentToClass(payload, req.user_id));
     }));
+    router.post("/acceptClassStudent", (0, Authorize_1.default)("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const class_stud_pk = req.body.class_stud_pk;
+        res.json(yield ClassStudentRepository_1.default.acceptClassStudent(class_stud_pk));
+    }));
     router.post("/blockClassStudent", (0, Authorize_1.default)("admin,tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const class_stud_pk = req.body.class_stud_pk;
         res.json(yield ClassStudentRepository_1.default.blockClassStudent(class_stud_pk));

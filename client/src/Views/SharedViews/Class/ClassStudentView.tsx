@@ -139,15 +139,30 @@ export const ClassStudentView: FC<ClassStudentProps> = memo(({ class_pk }) => {
                 </TableCell>
                 <TableCell align="center">
                   <div className="actions">
-                    <IconButtonPopper
-                      style={{ justifySelf: `end` }}
-                      buttons={[
-                        {
-                          text: "Accept Class",
-                          handleClick: () => {},
-                        },
-                      ]}
-                    />
+                    {user_type == "tutor" && (
+                      <IconButtonPopper
+                        style={{ justifySelf: `end` }}
+                        buttons={[
+                          {
+                            text: "Accept Class",
+                            handleClick: () => {
+                              dispatch(
+                                ClassStudentActions.acceptClassStudentAction(
+                                  parseInt(student.class_stud_pk),
+                                  () => {
+                                    dispatch(
+                                      ClassStudentActions.setTblClassStudentsAction(
+                                        class_pk
+                                      )
+                                    );
+                                  }
+                                )
+                              );
+                            },
+                          },
+                        ]}
+                      />
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

@@ -20,8 +20,8 @@ const SendSms = (to, message) => __awaiter(void 0, void 0, void 0, function* () 
             method: "post",
             url: `https://api-mapper.clicksend.com/http/v2/send.php`,
             data: qs_1.default.stringify({
-                username: `m.suner.378131@umindanao.edu.ph`,
-                key: `74FC7C63-182F-42CD-08B9-0D34D55F849E`,
+                username: `markanthony.suner1993@gmail.com`,
+                key: `6DE50D7D-B7F0-1596-96D2-5B8DA4CC1BFB`,
                 to: to,
                 message: message,
             }),

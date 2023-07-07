@@ -3,6 +3,7 @@ import Authorize from "../Middlewares/Authorize";
 import { ClassModel } from "../Models/ClassModel";
 import { ClassRatingModel } from "../Models/ClassRatingModel";
 import { ClassRequestModel } from "../Models/ClassRequestModel";
+import { ClassSessionRatingModel } from "../Models/ClassSessionRatingModel";
 import { ClassStudentModel } from "../Models/ClassStudentModel";
 import { PaginationModel } from "../Models/PaginationModel";
 import { UserClaims } from "../Models/UserModel";

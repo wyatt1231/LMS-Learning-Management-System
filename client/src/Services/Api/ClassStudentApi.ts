@@ -42,6 +42,15 @@ const blockClassStudentApi = async (
   return response;
 };
 
+const acceptClassStudentApi = async (
+  class_stud_pk: number
+): Promise<IServerResponse> => {
+  const response = await PostFetch(API_DEFAULT_ROUTE + "acceptClassStudent", {
+    class_stud_pk: class_stud_pk,
+  });
+  return response;
+};
+
 const reEnrollClassStudentApi = async (
   class_stud_pk: number
 ): Promise<IServerResponse> => {
@@ -57,4 +66,5 @@ export default {
   blockClassStudentApi,
   reEnrollClassStudentApi,
   joinStudentToClassApi,
+  acceptClassStudentApi,
 };

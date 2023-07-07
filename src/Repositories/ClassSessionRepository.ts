@@ -7,24 +7,43 @@ import {
   ClassSessionModel,
   TutorFutureSessionModel,
 } from "../Models/ClassSessionModel";
+import { ClassSessionRatingModel } from "../Models/ClassSessionRatingModel";
 import { ResponseModel } from "../Models/ResponseModel";
 
 const getTblClassSessions = async (
-  class_pk: number
+  class_pk: number,
+  user_pk: number
 ): Promise<ResponseModel> => {
   const con = await DatabaseConnection();
   try {
     await con.BeginTransaction();
 
+    // const {student_pk} = await con.QuerySingle(
+    //   `
+    // SELECT COUNT(*) AS total FROM class_students cs
+    // JOIN class_sessions s ON s.class_pk = cs.class_pk
+    // WHERE cs.student_pk = (SELECT student_pk FROM students WHERE user_id =@user_pk) AND s.session_pk = @session_pk
+
+    // `,
+    //   {
+    //     user_pk: user_pk,
+    //     session_pk: session_pk,
+    //   }
+    // );
+
     const data: Array<ClassSessionModel> = await con.Query(
       `
-      SELECT cs.*,sm.sts_desc,sm.sts_color,sm.sts_bgcolor FROM class_sessions  cs
+      SELECT cs.*,sm.sts_desc,sm.sts_color,sm.sts_bgcolor, COALESCE(csr.rating,0) rating FROM class_sessions  cs
       LEFT JOIN status_master sm ON cs.sts_pk=sm.sts_pk
-      where cs.class_pk = @class_pk`,
+      LEFT JOIN class_session_rating csr ON csr.session_pk = cs.session_pk AND csr.student_pk = (SELECT student_pk FROM students WHERE user_id =@student_pk)
+      WHERE cs.class_pk = @class_pk`,
       {
         class_pk: class_pk,
+        student_pk: user_pk,
       }
     );
+
+    console.log(`getTblClassSessions`, user_pk, data);
 
     con.Commit();
     return {
@@ -525,6 +544,127 @@ const unattendedClassSession = async (
   }
 };
 
+const rateClassSession = async (
+  payload: ClassSessionRatingModel,
+  user_type: string,
+  user_id
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    if (user_type === "student") {
+      const count_class_session = await con.QuerySingle(
+        `
+        SELECT COUNT(*) AS total FROM class_sessions 
+        WHERE session_pk = @session_pk LIMIT 1
+      `,
+        {
+          user_pk: payload.encoded_by,
+          session_pk: payload.session_pk,
+        }
+      );
+
+      if (count_class_session?.total <= 0) {
+        await con.Rollback();
+        return {
+          success: false,
+          message:
+            "The class session that you are trying to rate cannot be found!",
+        };
+      }
+    } else {
+      await con.Rollback();
+      return {
+        success: false,
+        message: "Only students are allowed to rate this class.",
+      };
+    }
+
+    payload.encoded_by = user_id;
+    payload.student_pk = user_id;
+
+    const res_count_rating = await con.QuerySingle(
+      `
+      SELECT session_rating_pk FROM class_session_rating WHERE session_pk =@session_pk AND student_pk =(select student_pk from students where user_id=@encoded_by limit 1);`,
+      payload
+    );
+
+    if (!!res_count_rating?.session_rating_pk) {
+      payload.session_rating_pk = res_count_rating.session_rating_pk;
+
+      const sql_update_rating = await con.Modify(
+        `
+        UPDATE class_session_rating set rating=@rating where session_rating_pk=@session_rating_pk;
+      `,
+        payload
+      );
+
+      if (sql_update_rating < 1) {
+        con.Rollback();
+        return {
+          success: false,
+          message: "There were no rows affected during the process.",
+        };
+      }
+    } else {
+      const sql_insert_rating = await con.Insert(
+        `
+        INSERT into class_session_rating set 
+          rating= @rating,
+          session_pk=@session_pk,
+          encoder_pk=@encoded_by,
+          student_pk=(select student_pk from students where user_id=@student_pk limit 1)
+          ;
+      `,
+        payload
+      );
+
+      console.log(`INSERT `, payload, sql_insert_rating);
+
+      if (sql_insert_rating.insertedId < 1) {
+        con.Rollback();
+        return {
+          success: false,
+          message: "There were no rows affected during the process.",
+        };
+      }
+    }
+
+    // const audit_log = await con.Insert(
+    //   `insert into audit_log set
+    //   user_pk=@user_pk,
+    //   activity=CONCAT('gave ${payload.rating} ratings to class session ',(select class_desc from classes where class_pk=@class_pk limit 1));
+    //   `,
+    //   {
+    //     user_pk: payload.encoded_by,
+    //     class_pk: payload.class_pk,
+    //   }
+    // );
+
+    // if (audit_log.insertedId <= 0) {
+    //   con.Rollback();
+    //   return {
+    //     success: false,
+    //     message: "The activity was not logged!",
+    //   };
+    // }
+
+    con.Commit();
+    return {
+      success: true,
+      message: `The rating has been saved successfully!`,
+    };
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
 //sendMessage
 //hideMessage
 //getAllMessage
@@ -829,4 +969,5 @@ export default {
   getStudentSessionCal,
   getLoggedInTutorSessionCalendar,
   getLoggedStudentCalendar,
+  rateClassSession,
 };

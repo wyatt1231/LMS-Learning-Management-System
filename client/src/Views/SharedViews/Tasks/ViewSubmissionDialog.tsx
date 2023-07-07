@@ -9,14 +9,14 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
-import React, { FC, memo, useCallback } from "react";
+import React, { FC, memo, useCallback, useEffect } from "react";
 import {
   Controller,
   FormProvider,
   useFieldArray,
   useForm,
 } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import FormDialog from "../../../Component/FormDialog/FormDialog";
 import TextFieldHookForm from "../../../Component/HookForm/TextFieldHookForm";
 import ClassSessionTaskActions from "../../../Services/Actions/ClassSessionTaskActions";
@@ -38,12 +38,15 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
   ({ selected_submission, class_task_pk, open, handleViewSubmitDtls }) => {
     const dispatch = useDispatch();
     const form_edit_task_ques = useForm<SessionTaskSubModel>({
-      //   resolver: yupResolver(validate_task_ques),
       mode: "onBlur",
       defaultValues: {
         questions: selected_submission.questions,
       },
     });
+
+    // const all_class_task_ques = useSelector(
+    //   (store: RootStore) => store.ClassSessionTaskReducer.all_class_task_ques
+    // );
 
     const { fields } = useFieldArray({
       control: form_edit_task_ques.control,
@@ -55,9 +58,11 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
         const payload: any = [];
 
         data?.questions?.forEach((element) => {
-          console.log(`element`, element);
           payload.push({
-            is_correct: element.is_correct === true ? "y" : "n",
+            is_correct:
+              element.is_correct === "y" || element.is_correct == true
+                ? "y"
+                : "n",
             task_sub_pk: element.task_sub_pk,
           });
         });
@@ -88,7 +93,7 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
 
     return (
       <FormDialog
-        title="VIew Student Submission"
+        title="View Student Submission"
         open={open}
         handleClose={() => {
           handleViewSubmitDtls(false);
@@ -127,6 +132,7 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
                                 render={(props) => (
                                   <Checkbox
                                     {...props}
+                                    defaultChecked={item.is_correct == "y"}
                                     onChange={(e) =>
                                       props.onChange(e.target.checked)
                                     }

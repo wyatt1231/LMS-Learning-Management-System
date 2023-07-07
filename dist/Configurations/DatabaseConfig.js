@@ -7,6 +7,30 @@ exports.DatabaseConnection = exports.connection_string = void 0;
 const mysql2_1 = __importDefault(require("mysql2"));
 exports.connection_string = null;
 if (process.env.NODE_ENV === "production") {
+    // connection_string = {
+    //   host: "127.0.0.1",
+    //   user: "root",
+    //   password: "root sa",
+    //   database: "lms",
+    //   port: 3309,
+    // };
+    // connection_string = {
+    //   host: "db-lms.mysql.database.azure.com",
+    //   user: "lms@db-lms",
+    //   password: "DB_capstone@azure",
+    //   database: "lms",
+    //   port: 3306,
+    // };
+}
+else {
+    //var conn = mysql.createConnection({host: "db-lms.mysql.database.azure.com", user: "lms@db-lms", password: {your_password}, database: {your_database}, port: 3306, ssl:{ca:fs.readFileSync({ca-cert filename})}});
+    // connection_string = {
+    //   host: "127.0.0.1",
+    //   user: "root",
+    //   password: "root sa",
+    //   database: "lms",
+    //   port: 3309,
+    // };
     exports.connection_string = {
         host: "127.0.0.1",
         user: "root",
@@ -21,30 +45,6 @@ if (process.env.NODE_ENV === "production") {
     //   database: "lms",
     //   port: 3306,
     // };
-}
-else {
-    //var conn = mysql.createConnection({host: "db-lms.mysql.database.azure.com", user: "lms@db-lms", password: {your_password}, database: {your_database}, port: 3306, ssl:{ca:fs.readFileSync({ca-cert filename})}});
-    // connection_string = {
-    //   host: "109.106.254.1",
-    //   user: "u498243179_lms",
-    //   password: "LMS@capstone2",
-    //   database: "u498243179_lms",
-    //   port: 3306,
-    // };
-    exports.connection_string = {
-        host: "db-lms.mysql.database.azure.com",
-        user: "lms@db-lms",
-        password: "DB_capstone@azure",
-        database: "lms",
-        port: 3306,
-    };
-    exports.connection_string = {
-        host: "127.0.0.1",
-        user: "root",
-        password: "root sa",
-        database: "lms",
-        port: 3309,
-    };
 }
 console.log(`connection_string`, exports.connection_string);
 const DatabaseConfig = mysql2_1.default.createPool(exports.connection_string);

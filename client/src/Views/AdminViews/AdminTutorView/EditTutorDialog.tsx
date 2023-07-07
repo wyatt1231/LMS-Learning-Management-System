@@ -48,7 +48,13 @@ export const EditTutorDialog: FC<IEditTutorDialog> = memo(
 
     const handleFormSubmit = useCallback(
       async (payload: TutorModel) => {
+        // payload = {
+        //   ...payload,
+        //   birth_date: moment(payload.birth_date).toDate(),
+        // };
         console.log(`payload`, payload);
+
+        //Fri Jan 06 2023 00:35:00 GMT+0800 (Singapore Standard Time)
 
         payload.tutor_pk = initial_form_values.tutor_pk;
 

@@ -64,7 +64,8 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     // const PORT = process.env.PORT || 4040;
     // server.listen(PORT, () => console.log(`listening to ports ${PORT}`));
     // const PORT = process.env.PORT || 6000;
-    const PORT = 4040;
+    // const PORT = 4040;
+    const PORT = process.env.PORT || 8080; //8080
     server.listen(PORT, () => console.log(`listening to ports ${PORT}`));
 });
 main();

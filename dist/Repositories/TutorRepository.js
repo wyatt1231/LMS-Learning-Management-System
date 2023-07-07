@@ -112,6 +112,8 @@ const updateTutor = (tutor_payload, user_id) => __awaiter(void 0, void 0, void 0
     try {
         yield con.BeginTransaction();
         tutor_payload.encoder_pk = user_id;
+        tutor_payload.birth_date = (0, useDateParser_1.parseInvalidDateToDefault)(tutor_payload.birth_date);
+        console.log(`birth_date`, tutor_payload.birth_date);
         const sql_update_tutor = yield con.Modify(`
         UPDATE tutors SET
         position=@position,
@@ -119,7 +121,7 @@ const updateTutor = (tutor_payload, user_id) => __awaiter(void 0, void 0, void 0
         middlename=@middlename,
         lastname=@lastname,
         suffix=@suffix,
-        birth_date=@birth_date,
+        birth_date=DATE_FORMAT(@birth_date,'%Y-%m-%d'),
         email=@email,
         mob_no=@mob_no,
         gender=@gender,
@@ -792,7 +794,7 @@ const getRecommendedTutors = (user_pk) => __awaiter(void 0, void 0, void 0, func
         WHERE c.tutor_pk = @tutor_pk AND c.class_pk NOT IN (SELECT class_pk FROM class_students WHERE student_pk = @student_pk)
         `, {
                 tutor_pk: tutor.tutor_pk,
-                student_pk: student_pk
+                student_pk: student_pk,
             });
             recommended_tutors.push(tutor_info);
         }

@@ -21,6 +21,8 @@ export interface ClassSessionModel {
   hash_pk?: string;
   class_info?: ClassModel;
   status_info?: StatusMasterModel;
+  //
+  student_rating?: number;
 }
 
 export interface TutorFutureSessionModel {

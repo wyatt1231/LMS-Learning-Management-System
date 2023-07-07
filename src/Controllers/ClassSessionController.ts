@@ -5,6 +5,7 @@ import {
   ClassSesMsgModel,
   ClassSessionModel,
 } from "../Models/ClassSessionModel";
+import { ClassSessionRatingModel } from "../Models/ClassSessionRatingModel";
 import { UserClaims } from "../Models/UserModel";
 import ClassSessionRepository from "../Repositories/ClassSessionRepository";
 
@@ -16,7 +17,12 @@ const ClassSessionController = async (app: Express): Promise<void> => {
     Authorize("admin,tutor,student"),
     async (req: Request & UserClaims, res: Response) => {
       const class_pk: number = req.body.class_pk;
-      res.json(await ClassSessionRepository.getTblClassSessions(class_pk));
+      res.json(
+        await ClassSessionRepository.getTblClassSessions(
+          class_pk,
+          parseInt(req.user_id)
+        )
+      );
     }
   );
 
@@ -94,6 +100,21 @@ const ClassSessionController = async (app: Express): Promise<void> => {
     async (req: Request & UserClaims, res: Response) => {
       const payload: ClassSessionModel = req.body;
       res.json(await ClassSessionRepository.unattendedClassSession(payload));
+    }
+  );
+
+  router.post(
+    "/rateClassSession",
+    Authorize("student"),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: ClassSessionRatingModel = req.body;
+      res.json(
+        await ClassSessionRepository.rateClassSession(
+          payload,
+          req.user_type,
+          req.user_id
+        )
+      );
     }
   );
 

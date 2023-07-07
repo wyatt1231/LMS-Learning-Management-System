@@ -225,6 +225,59 @@ const joinStudentToClass = async (
 };
 
 //udpate queries
+const acceptClassStudent = async (
+  class_stud_pk: number
+): Promise<ResponseModel> => {
+  const con = await DatabaseConnection();
+  try {
+    await con.BeginTransaction();
+
+    const sql_get_sts = await con.QuerySingle(
+      `
+        SELECT sts_pk from class_students where class_stud_pk=@class_stud_pk limit 1;
+        `,
+      { class_stud_pk: class_stud_pk }
+    );
+
+    if (sql_get_sts.sts_pk != "fa") {
+      con.Rollback();
+      return {
+        success: false,
+        message: "The student is not for approval",
+      };
+    }
+
+    const sql_enroll_student = await con.Insert(
+      `
+        UPDATE class_students set sts_pk='a' where class_stud_pk=@class_stud_pk 
+        `,
+      { class_stud_pk: class_stud_pk }
+    );
+
+    if (sql_enroll_student.affectedRows > 0) {
+      con.Commit();
+      return {
+        success: true,
+        message: "The student's enrollment request has been approved!",
+      };
+    } else {
+      con.Rollback();
+      return {
+        success: false,
+        message:
+          "Something went wrong during the process, please try again or report this to the administrator!",
+      };
+    }
+  } catch (error) {
+    await con.Rollback();
+    console.error(`error`, error);
+    return {
+      success: false,
+      message: ErrorMessage(error),
+    };
+  }
+};
+
 const blockClassStudent = async (
   class_stud_pk: number
 ): Promise<ResponseModel> => {
@@ -337,4 +390,5 @@ export default {
   blockClassStudent,
   reEnrollClassStudent,
   joinStudentToClass,
+  acceptClassStudent,
 };

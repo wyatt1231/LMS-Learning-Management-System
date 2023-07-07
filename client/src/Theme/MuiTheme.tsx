@@ -2,7 +2,7 @@
 
 import { Color } from "@material-ui/core";
 import {
-  createMuiTheme,
+  createTheme,
   responsiveFontSizes,
   Theme,
 } from "@material-ui/core/styles";
@@ -25,7 +25,7 @@ export interface StyledComponentTheme {
   theme: Theme;
 }
 
-declare module "@material-ui/core/styles/createMuiTheme" {
+declare module "@material-ui/core/styles/createTheme" {
   interface ThemeOptions {
     header?: IHeader;
     sidebar?: ISidebar;
@@ -58,7 +58,7 @@ declare module "@material-ui/core/styles/createPalette" {
   }
 }
 
-let theme = createMuiTheme({
+let theme = createTheme({
   palette: {
     primary: {
       // main: `#1e2a78`,

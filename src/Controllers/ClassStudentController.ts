@@ -41,6 +41,15 @@ const ClassStudentController = async (app: Express): Promise<void> => {
   );
 
   router.post(
+    "/acceptClassStudent",
+    Authorize("admin,tutor"),
+    async (req: Request & UserClaims, res: Response) => {
+      const class_stud_pk: number = req.body.class_stud_pk;
+      res.json(await ClassStudentRepository.acceptClassStudent(class_stud_pk));
+    }
+  );
+
+  router.post(
     "/blockClassStudent",
     Authorize("admin,tutor"),
     async (req: Request & UserClaims, res: Response) => {

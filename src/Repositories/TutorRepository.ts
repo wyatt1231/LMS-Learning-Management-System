@@ -132,6 +132,11 @@ const updateTutor = async (
     await con.BeginTransaction();
 
     tutor_payload.encoder_pk = user_id;
+    tutor_payload.birth_date = parseInvalidDateToDefault(
+      tutor_payload.birth_date
+    );
+
+    console.log(`birth_date`, tutor_payload.birth_date);
 
     const sql_update_tutor = await con.Modify(
       `
@@ -141,7 +146,7 @@ const updateTutor = async (
         middlename=@middlename,
         lastname=@lastname,
         suffix=@suffix,
-        birth_date=@birth_date,
+        birth_date=DATE_FORMAT(@birth_date,'%Y-%m-%d'),
         email=@email,
         mob_no=@mob_no,
         gender=@gender,
@@ -1046,7 +1051,7 @@ const getRecommendedTutors = async (
         `,
         {
           tutor_pk: tutor.tutor_pk,
-          student_pk: student_pk
+          student_pk: student_pk,
         }
       );
 

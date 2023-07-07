@@ -19,7 +19,7 @@ const ClassSessionController = (app) => __awaiter(void 0, void 0, void 0, functi
     const router = (0, express_1.Router)();
     router.post("/getClassSessions", (0, Authorize_1.default)("admin,tutor,student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const class_pk = req.body.class_pk;
-        res.json(yield ClassSessionRepository_1.default.getTblClassSessions(class_pk));
+        res.json(yield ClassSessionRepository_1.default.getTblClassSessions(class_pk, parseInt(req.user_id)));
     }));
     router.post("/getTutorFutureSessions", (0, Authorize_1.default)("admin"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const tutor_pk = req.body.tutor_pk;
@@ -49,6 +49,10 @@ const ClassSessionController = (app) => __awaiter(void 0, void 0, void 0, functi
     router.post("/unattendedClassSession", (0, Authorize_1.default)("tutor"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
         res.json(yield ClassSessionRepository_1.default.unattendedClassSession(payload));
+    }));
+    router.post("/rateClassSession", (0, Authorize_1.default)("student"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        res.json(yield ClassSessionRepository_1.default.rateClassSession(payload, req.user_type, req.user_id));
     }));
     router.post("/getAllMessage", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body.session_pk;
