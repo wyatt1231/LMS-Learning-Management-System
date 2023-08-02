@@ -17,7 +17,7 @@ const AdminController_1 = __importDefault(require("../Controllers/AdminControlle
 const ClassController_1 = __importDefault(require("../Controllers/ClassController"));
 const ClassMaterialController_1 = __importDefault(require("../Controllers/ClassMaterialController"));
 const ClassSessionController_1 = __importDefault(require("../Controllers/ClassSessionController"));
-const ClassSessionTaskRepository_1 = __importDefault(require("../Controllers/ClassSessionTaskRepository"));
+const ClassSessionTaskController_1 = __importDefault(require("../Controllers/ClassSessionTaskController"));
 const ClassStudentController_1 = __importDefault(require("../Controllers/ClassStudentController"));
 const CourseController_1 = __importDefault(require("../Controllers/CourseController"));
 const RoomController_1 = __importDefault(require("../Controllers/RoomController"));
@@ -35,7 +35,7 @@ const ControllerRegistry = (app) => __awaiter(void 0, void 0, void 0, function* 
     yield (0, ClassSessionController_1.default)(app);
     yield (0, ClassStudentController_1.default)(app);
     yield (0, ClassMaterialController_1.default)(app);
-    yield (0, ClassSessionTaskRepository_1.default)(app);
+    yield (0, ClassSessionTaskController_1.default)(app);
 });
 exports.ControllerRegistry = ControllerRegistry;
 exports.default = exports.ControllerRegistry;

@@ -19,6 +19,8 @@ import EditTaskDialog from "./EditTaskDialog";
 import ManageTaskQuesViewStud from "./ManageTaskQuesStud";
 import ManageTaskQuesView from "./ManageTaskQuesView";
 import ManageTaskSubmit from "./ManageTaskSubmit";
+import { API_BASE_URL } from "../../../Helpers/AppConfig";
+import FileViwer from "../../../Component/FileViewer";
 interface IManageTaskView {}
 
 export const ManageTaskView: FC<IManageTaskView> = memo(() => {
@@ -33,6 +35,7 @@ export const ManageTaskView: FC<IManageTaskView> = memo(() => {
   );
 
   const [open_edit_task, set_open_edit_task] = useState(false);
+  const [open_file, set_open_file] = useState<boolean>(false);
 
   const handleSetOpenEditTask = useCallback((open: boolean) => {
     set_open_edit_task(open);
@@ -267,6 +270,16 @@ export const ManageTaskView: FC<IManageTaskView> = memo(() => {
                     />
                   </div> */}
                   <div>{single_class_task?.task_desc}</div>
+
+                  {!!single_class_task.file_location && (
+                    <div
+                      onClick={() => {
+                        set_open_file(!open_file);
+                      }}
+                    >
+                      <small className="link">View Attached Task File</small>
+                    </div>
+                  )}
                 </Grid>
                 <Grid item xs={12}>
                   <CustomTab tabs={tabs} />
@@ -283,6 +296,20 @@ export const ManageTaskView: FC<IManageTaskView> = memo(() => {
           task={single_class_task}
           open={open_edit_task}
           handleSetOpenEditTask={handleSetOpenEditTask}
+        />
+      )}
+
+      {!!open_file && (
+        <FormDialog
+          open={open_file}
+          handleClose={() => set_open_file(false)}
+          title={single_class_task?.task_title}
+          fullScreen={true}
+          body={
+            <FileViwer
+              file={`${API_BASE_URL}${single_class_task?.file_location}`}
+            />
+          }
         />
       )}
     </>

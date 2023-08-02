@@ -29,16 +29,14 @@ interface ManageClassMaterialTutorInterface {
   class_pk: number;
 }
 
-export const ManageClassMaterialTutorView: FC<ManageClassMaterialTutorInterface> = memo(
-  ({ class_pk }) => {
+export const ManageClassMaterialTutorView: FC<ManageClassMaterialTutorInterface> =
+  memo(({ class_pk }) => {
     const dispatch = useDispatch();
     const user_type = useSelector(
       (store: RootStore) => store.UserReducer.user?.user_type
     );
-    const [
-      selectedMaterial,
-      setSelectedMaterial,
-    ] = useState<ClassMaterialModel | null>(null);
+    const [selectedMaterial, setSelectedMaterial] =
+      useState<ClassMaterialModel | null>(null);
 
     const tbl_class_materials = useSelector(
       (store: RootStore) => store.ClassMaterialReducer.tbl_class_materials
@@ -162,6 +160,7 @@ export const ManageClassMaterialTutorView: FC<ManageClassMaterialTutorInterface>
               }}
               onSubmit={async (values: any, formikHelpers) => {
                 values.class_pk = class_pk;
+
                 const payload = convertObjectToFormData(values);
 
                 dispatch(
@@ -252,7 +251,6 @@ export const ManageClassMaterialTutorView: FC<ManageClassMaterialTutorInterface>
         )}
       </div>
     );
-  }
-);
+  });
 
 export default ManageClassMaterialTutorView;

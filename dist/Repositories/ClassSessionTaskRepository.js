@@ -69,16 +69,23 @@ const getSingleClassTask = (class_task_pk) => __awaiter(void 0, void 0, void 0, 
         };
     }
 });
-const addClassTask = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const addClassTask = (payload, file) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         payload.due_date = (0, useDateParser_1.parseInvalidDateTimeToDefault)(payload.due_date);
+        const file_res = yield (0, useFileUploader_1.UploadFile)("src/Storage/Files/Tasks/", file);
+        if (!file_res.success) {
+            con.Rollback();
+            return file_res;
+        }
+        payload = Object.assign(Object.assign({}, payload), { file_location: file_res.data });
         const sql_add_task = yield con.Insert(`INSERT INTO class_tasks SET
         class_pk=@class_pk,
         task_title=@task_title,
         task_desc=@task_desc,
         due_date=@due_date,
+        file_location=@file_location,
         encoder_pk=@encoder_pk;`, payload);
         if (sql_add_task.affectedRows > 0) {
             for (const ques of payload.questions) {
@@ -119,15 +126,21 @@ const addClassTask = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         };
     }
 });
-const updateClassTask = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const updateClassTask = (payload, file) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         payload.due_date = (0, useDateParser_1.parseInvalidDateTimeToDefault)(payload.due_date);
-        console.log(`payload`, payload);
+        const file_res = yield (0, useFileUploader_1.UploadFile)("src/Storage/Files/Tasks/", file);
+        if (!file_res.success) {
+            con.Rollback();
+            return file_res;
+        }
+        payload = Object.assign(Object.assign({}, payload), { file_location: file_res.data });
         const sql_update_task = yield con.Modify(`UPDATE  class_tasks SET
             task_title=@task_title,
             task_desc=@task_desc,
+            file_location=@file_location,
             due_date=@due_date
             WHERE class_task_pk=@class_task_pk;`, payload);
         if (sql_update_task > 0) {
@@ -265,6 +278,40 @@ const getSingleClassTaskQues = (task_ques_pk) => __awaiter(void 0, void 0, void 
         };
     }
 });
+const addClassTaskQues = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
+    try {
+        yield con.BeginTransaction();
+        const sql_add_task = yield con.Modify(`INSERT class_task_ques SET
+       class_task_pk=@class_task_pk,
+       question=@question,
+       cor_answer=@cor_answer,
+       pnt=@pnt;
+       `, payload);
+        if (sql_add_task > 0) {
+            con.Commit();
+            return {
+                success: true,
+                message: `The task has been added successfully.`,
+            };
+        }
+        else {
+            con.Rollback();
+            return {
+                success: false,
+                message: `There were no affected rows in the process!`,
+            };
+        }
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
+        };
+    }
+});
 const updateClassTaskQues = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
@@ -300,22 +347,31 @@ const updateClassTaskQues = (payload) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 //class task submissions
-const getAllClassTaskSub = (class_task_pk) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllClassTaskSub = (class_task_pk, user_pk) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         const data = yield con.Query(`
-        SELECT s.*, q.question,q.pnt,q.task_ques_pk,q.class_task_pk  FROM class_task_sub s RIGHT JOIN
-        class_task_ques q ON s.task_ques_pk = q.task_ques_pk
-        WHERE q.class_task_pk =@class_task_pk
+        SELECT question, pnt, task_ques_pk, class_task_pk FROM class_task_ques  WHERE class_task_pk = @class_task_pk;
           `, {
             class_task_pk: class_task_pk,
         });
-        console.log(`data`, data);
+        let entity = [];
+        for (let sub of data) {
+            const fileSub = yield con.QuerySingle(`SELECT * FROM class_task_sub_file WHERE class_task_pk=@class_task_pk limit 1`, {
+                class_task_pk: sub.class_task_pk,
+            });
+            const studentSubmit = yield con.QuerySingle(`SELECT task_sub_pk,task_ques_pk,student_pk,answered_at,is_correct, answer FROM class_task_sub WHERE task_ques_pk = @task_ques_pk AND student_pk=(SELECT student_pk FROM students WHERE user_id=@user_pk LIMIT 1) LIMIT 1`, {
+                task_ques_pk: sub.task_ques_pk,
+                user_pk: user_pk,
+            });
+            entity.push(Object.assign(Object.assign({}, sub), { task_sub_pk: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.task_sub_pk, student_pk: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.student_pk, answered_at: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.answered_at, answer: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.answer, is_correct: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.is_correct, stu_ans_file_loc: fileSub === null || fileSub === void 0 ? void 0 : fileSub.stu_ans_file_loc, tut_file_loc: fileSub === null || fileSub === void 0 ? void 0 : fileSub.tut_file_loc }));
+            // console.log(`getAllClassTaskSub sub ${class_task_pk}`, sub);
+        }
         con.Commit();
         return {
             success: true,
-            data: data,
+            data: entity,
         };
     }
     catch (error) {
@@ -332,24 +388,31 @@ const getAllStudentsSubmit = (class_task_pk) => __awaiter(void 0, void 0, void 0
     try {
         yield con.BeginTransaction();
         const task_sub = yield con.Query(`
-      SELECT s.* FROM class_task_sub s  JOIN class_task_ques q
-      ON s.task_ques_pk = q.task_ques_pk WHERE q.class_task_pk =@class_task_pk GROUP BY q.class_task_pk;
+      SELECT s.*,q.class_task_pk FROM class_task_sub s  JOIN class_task_ques q
+      ON s.task_ques_pk = q.task_ques_pk WHERE q.class_task_pk =@class_task_pk GROUP BY q.class_task_pk,s.student_pk;
           `, {
             class_task_pk: class_task_pk,
         });
-        for (const sub of task_sub) {
-            console.log(`sub -> `, sub.task_ques_pk);
+        // console.log(`getAllStudentsSubmit`, getAllStudentsSubmit);
+        for (let sub of task_sub) {
+            const fileSub = yield con.QuerySingle(`SELECT * FROM class_task_sub_file WHERE class_task_pk=@class_task_pk AND student_pk=@student_pk limit 1 `, {
+                class_task_pk: class_task_pk,
+                student_pk: sub.student_pk,
+            });
             const student = yield con.QuerySingle(`SELECT * FROM students WHERE student_pk=@student_pk limit 1`, {
                 student_pk: sub.student_pk,
             });
             student.picture = yield (0, useFileUploader_1.GetUploadedImage)(student.picture);
             sub.student = student;
-            sub.questions = yield con.Query(
-            // `SELECT * FROM class_task_ques WHERE class_task_pk = @class_task_pk`,
-            `SELECT s.*,q.cor_answer,q.question,q.pnt FROM class_task_sub s  JOIN class_task_ques q
-        ON s.task_ques_pk = q.task_ques_pk WHERE q.class_task_pk=@class_task_pk;`, {
+            console.log(`class_task_pk`, class_task_pk);
+            sub.questions = yield con.Query(`SELECT s.*,q.cor_answer,q.question,q.pnt FROM class_task_sub s  JOIN class_task_ques q
+        ON s.task_ques_pk = q.task_ques_pk WHERE q.class_task_pk=@class_task_pk AND s.student_pk=@student_pk ;`, {
                 class_task_pk: class_task_pk,
+                student_pk: sub.student_pk,
+                // task_ques_pk: sub.task_ques_pk,
             });
+            sub.stu_ans_file_loc = fileSub === null || fileSub === void 0 ? void 0 : fileSub.stu_ans_file_loc;
+            sub.tut_file_loc = fileSub === null || fileSub === void 0 ? void 0 : fileSub.tut_file_loc;
         }
         con.Commit();
         return {
@@ -397,15 +460,26 @@ const updateTaskSub = (payload) => __awaiter(void 0, void 0, void 0, function* (
         };
     }
 });
-const addClassTaskSub = (payload, student_pk) => __awaiter(void 0, void 0, void 0, function* () {
+const addClassTaskSub = (payload, user_pk) => __awaiter(void 0, void 0, void 0, function* () {
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
+        // const sudent_result = await con.QuerySingle(
+        //   `SELECT student_pk FROM students WHERE user_id=@user_id limit 1`,
+        //   {
+        //     user_id: user_id,
+        //   }
+        // );
         for (const sub of payload) {
-            sub.student_pk = student_pk;
-            if (sub.task_sub_pk) {
+            sub.user_pk = user_pk;
+            const existingSub = yield con.QuerySingle(`SELECT COUNT(*) as total FROM class_task_sub WHERE task_ques_pk=@task_ques_pk AND student_pk=(SELECT student_pk FROM students WHERE user_id=@user_pk LIMIT 1) limit 1`, {
+                task_ques_pk: sub === null || sub === void 0 ? void 0 : sub.task_ques_pk,
+                user_pk: sub === null || sub === void 0 ? void 0 : sub.user_pk,
+            });
+            console.log(`sub`, sub, existingSub);
+            if ((existingSub === null || existingSub === void 0 ? void 0 : existingSub.total) > 0) {
                 const sql_update_sub = yield con.Modify(`UPDATE class_task_sub SET
-                student_pk=(SELECT student_pk FROM students WHERE user_id=@student_pk LIMIT 1),
+                student_pk=(SELECT student_pk FROM students WHERE user_id=@user_pk LIMIT 1),
                 task_ques_pk=@task_ques_pk,
                 answer=@answer WHERE task_sub_pk = @task_sub_pk ;
                 `, sub);
@@ -419,7 +493,7 @@ const addClassTaskSub = (payload, student_pk) => __awaiter(void 0, void 0, void 
             }
             else {
                 const sql_add_sub = yield con.Insert(`INSERT INTO class_task_sub SET
-                student_pk=(SELECT student_pk FROM students WHERE user_id=@student_pk LIMIT 1),
+                student_pk=(SELECT student_pk FROM students WHERE user_id=@user_pk LIMIT 1),
                 task_ques_pk=@task_ques_pk,
                 answer=@answer;
                 ;`, sub);
@@ -430,6 +504,72 @@ const addClassTaskSub = (payload, student_pk) => __awaiter(void 0, void 0, void 
                         message: `Your work has been submitted successfully.`,
                     };
                 }
+            }
+        }
+        con.Commit();
+        return {
+            success: true,
+            message: `Your work has been submitted successfully.`,
+        };
+    }
+    catch (error) {
+        yield con.Rollback();
+        console.error(`error`, error);
+        return {
+            success: false,
+            message: (0, useErrorMessage_1.ErrorMessage)(error),
+        };
+    }
+});
+const addClassTaskFileSub = (payload, student_pk, file) => __awaiter(void 0, void 0, void 0, function* () {
+    const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
+    try {
+        yield con.BeginTransaction();
+        const file_res = yield (0, useFileUploader_1.UploadFile)("src/Storage/Files/Materials/", file);
+        if (!file_res.success) {
+            con.Rollback();
+            return file_res;
+        }
+        payload = Object.assign(Object.assign({}, payload), { student_pk: student_pk, tut_file_loc: ``, stu_ans_file_loc: `` });
+        if (payload.submit_type == `tutor`) {
+            payload.tut_file_loc = file_res.data;
+        }
+        else {
+            payload.stu_ans_file_loc = file_res.data;
+        }
+        console.log(`payload addClassTaskFileSub`, payload);
+        // payload = {
+        //   ...payload,
+        //   student_pk: student_pk,
+        // };
+        var existingRecord = yield con.QuerySingle(`SELECT * from class_task_sub_file where class_task_pk=@class_task_pk limit 1;`, {
+            class_task_pk: payload.class_task_pk,
+        });
+        if (existingRecord == null) {
+            if (payload.submit_type == `tutor`) {
+                yield con.Insert(`INSERT INTO class_task_sub_file SET
+                student_pk=(SELECT student_pk FROM students WHERE user_id=@student_pk LIMIT 1),
+                class_task_pk=@class_task_pk,
+                tut_file_loc=@tut_file_loc;`, payload);
+            }
+            else {
+                yield con.Insert(`INSERT INTO class_task_sub_file SET
+                student_pk=(SELECT student_pk FROM students WHERE user_id=@student_pk LIMIT 1),
+                class_task_pk=@class_task_pk,
+                stu_ans_file_loc=@stu_ans_file_loc;`, payload);
+            }
+        }
+        else {
+            if (payload.submit_type == `tutor`) {
+                yield con.Modify(`UPDATE class_task_sub_file SET
+                tut_file_loc=@tut_file_loc
+                WHERE class_task_pk=@class_task_pk ;`, payload);
+            }
+            else {
+                yield con.Modify(`UPDATE class_task_sub_file SET
+                student_pk=(SELECT student_pk FROM students WHERE user_id=@student_pk LIMIT 1),
+                stu_ans_file_loc=@stu_ans_file_loc
+                WHERE class_task_pk=@class_task_pk ;`, payload);
             }
         }
         con.Commit();
@@ -461,5 +601,7 @@ exports.default = {
     addClassTaskSub,
     getAllStudentsSubmit,
     updateTaskSub,
+    addClassTaskFileSub,
+    addClassTaskQues,
 };
 //# sourceMappingURL=ClassSessionTaskRepository.js.map

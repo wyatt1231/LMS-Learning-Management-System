@@ -6,6 +6,7 @@ export interface SessionTaskModel {
   class_pk?: number;
   task_title?: string;
   task_desc?: string;
+  file_location?: string;
   due_date?: string | Date;
   allow_view?: "y" | "n";
   allow_submit?: "y" | "n";
@@ -34,4 +35,19 @@ export interface SessionTaskSubModel {
   answered_at?: string | Date;
   student?: StudentModel;
   questions?: Array<SessionTaskQuesModel>;
+  is_correct?: any;
+  //
+  class_task_pk?: number;
+  stu_ans_file_loc?: string;
+  tut_file_loc?: string;
+  user_pk?: number;
+}
+
+export interface SessionTaskSubFileModel {
+  task_sub_file_pk?: number;
+  class_task_pk?: number;
+  student_pk?: number;
+  stu_ans_file_loc?: string;
+  tut_file_loc?: string;
+  submit_type: `tutor` | `student`;
 }

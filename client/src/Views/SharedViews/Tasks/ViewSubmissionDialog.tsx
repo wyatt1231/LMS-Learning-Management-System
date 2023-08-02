@@ -96,7 +96,7 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
         title="View Student Submission"
         open={open}
         handleClose={() => {
-          handleViewSubmitDtls(false);
+          handleViewSubmitDtls();
         }}
         body={
           <div style={{ padding: `1em` }}>

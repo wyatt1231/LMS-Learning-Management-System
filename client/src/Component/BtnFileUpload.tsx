@@ -1,6 +1,11 @@
-import Button from "@material-ui/core/Button";
+import { IconButton } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import React from "react";
+import AttachFileIcon from "@material-ui/icons/AttachFile";
+import React, { FC } from "react";
+
+interface IBtnFileUpload {
+  onChange: (values: any) => void;
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -15,28 +20,35 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const BtnFileUpload = () => {
+const BtnFileUpload: FC<IBtnFileUpload> = ({ onChange }) => {
   const classes = useStyles();
 
   return (
+    // accept="image/*"
     <div className={classes.root}>
       <input
-        accept="image/*"
+        accept=".docx,.pdf,.doc,.rtf,.pptx,.ppt,image/*"
         className={classes.input}
         id="contained-button-file"
         multiple
         type="file"
+        onChange={onChange}
       />
       <label htmlFor="contained-button-file">
-        <Button variant="contained" color="primary" component="span">
+        {/* <Button variant="contained" color="primary" component="span">
           Upload
-        </Button>
+        </Button> */}
+
+        <IconButton color="primary" size="small" component="span">
+          <AttachFileIcon />
+        </IconButton>
       </label>
       <input
         accept="image/*"
         className={classes.input}
         id="icon-button-file"
         type="file"
+        onChange={onChange}
       />
     </div>
   );

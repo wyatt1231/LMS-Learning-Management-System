@@ -3,6 +3,7 @@ import IServerResponse from "../Interface/IServerResponse";
 import {
   SessionTaskModel,
   SessionTaskQuesModel,
+  SessionTaskSubFileModel,
   SessionTaskSubModel,
 } from "../Models/ClassSessionTaskModels";
 
@@ -89,6 +90,16 @@ const updateClassTaskQues = async (
   return response;
 };
 
+const addClassTaskQues = async (
+  payload: SessionTaskQuesModel
+): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "addClassTaskQues",
+    payload
+  );
+  return response;
+};
+
 const getAllClassTaskSub = async (
   class_task_pk: number
 ): Promise<IServerResponse> => {
@@ -127,6 +138,16 @@ const updateTaskSub = async (
   return response;
 };
 
+const addClassTaskFileSub = async (
+  payload: SessionTaskSubFileModel
+): Promise<IServerResponse> => {
+  const response = await PostFetch(
+    API_DEFAULT_ROUTE + "addClassTaskFileSub",
+    payload
+  );
+  return response;
+};
+
 export default {
   getAllClassTask,
   getSingleClassTask,
@@ -141,4 +162,6 @@ export default {
   addClassTaskSub,
   getAllStudentsSubmit,
   updateTaskSub,
+  addClassTaskQues,
+  addClassTaskFileSub,
 };

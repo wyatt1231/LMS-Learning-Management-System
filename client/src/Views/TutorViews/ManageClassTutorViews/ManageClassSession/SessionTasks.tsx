@@ -8,6 +8,10 @@ import { parseDateTimeOrDefault } from "../../../../Hooks/UseDateParser";
 import ClassSessionTaskActions from "../../../../Services/Actions/ClassSessionTaskActions";
 import { RootStore } from "../../../../Services/Store";
 import DialogAddTask from "./DialogAddTask";
+import FormDialog from "../../../../Component/FormDialog/FormDialog";
+import { API_BASE_URL } from "../../../../Helpers/AppConfig";
+import FileViwer from "../../../../Component/FileViewer";
+import { SessionTaskModel } from "../../../../Services/Models/ClassSessionTaskModels";
 
 interface ISessionTasks {}
 
@@ -30,6 +34,8 @@ export const SessionTasks: FC<ISessionTasks> = memo(() => {
   const handleSetOpenAddTask = useCallback((open: boolean) => {
     set_open_add_task(open);
   }, []);
+
+  const [selected_task, set_selected_task] = useState<SessionTaskModel>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -81,7 +87,7 @@ export const SessionTasks: FC<ISessionTasks> = memo(() => {
                   {parseDateTimeOrDefault(t.due_date, "-")}
                 </div>
               </div>
-              <Chip
+              {/* <Chip
                 size="small"
                 label={t.status_dtls.sts_desc}
                 style={{
@@ -89,13 +95,37 @@ export const SessionTasks: FC<ISessionTasks> = memo(() => {
                   backgroundColor: t.status_dtls.sts_bgcolor,
                   justifySelf: `start`,
                 }}
-              />
+              /> */}
               <div className="desc">{t.task_desc}</div>
+
+              {!!t.file_location && (
+                <div
+                  onClick={() => {
+                    set_selected_task(t);
+                  }}
+                >
+                  <small className="link">View Task File</small>
+                </div>
+              )}
             </div>
           ))}
         </div>
       </div>
       <DialogAddTask open={open_add_task} setOpen={handleSetOpenAddTask} />
+
+      {!!selected_task && (
+        <FormDialog
+          open={selected_task?.file_location !== null}
+          handleClose={() => set_selected_task(null)}
+          title={selected_task?.task_title}
+          fullScreen={true}
+          body={
+            <FileViwer
+              file={`${API_BASE_URL}${selected_task?.file_location}`}
+            />
+          }
+        />
+      )}
     </>
   );
 });

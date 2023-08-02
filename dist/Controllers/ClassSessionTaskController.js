@@ -31,14 +31,15 @@ const ClassSessionTaskController = (app) => __awaiter(void 0, void 0, void 0, fu
         var _a;
         const payload = req.body;
         const file = (_a = req === null || req === void 0 ? void 0 : req.files) === null || _a === void 0 ? void 0 : _a.file;
-        console.log(`file`, file);
         payload.encoder_pk = parseInt(req.user_id);
         res.json(yield ClassSessionTaskRepository_1.default.addClassTask(payload, file));
     }));
     router.post("/updateClassTask", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        var _b;
         const payload = req.body;
+        const file = (_b = req === null || req === void 0 ? void 0 : req.files) === null || _b === void 0 ? void 0 : _b.file;
         payload.encoder_pk = parseInt(req.user_id);
-        res.json(yield ClassSessionTaskRepository_1.default.updateClassTask(payload));
+        res.json(yield ClassSessionTaskRepository_1.default.updateClassTask(payload, file));
     }));
     router.post("/toggleSubmitClassTask", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
@@ -63,6 +64,10 @@ const ClassSessionTaskController = (app) => __awaiter(void 0, void 0, void 0, fu
         const payload = req.body;
         res.json(yield ClassSessionTaskRepository_1.default.updateClassTaskQues(payload));
     }));
+    router.post("/addClassTaskQues", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const payload = req.body;
+        res.json(yield ClassSessionTaskRepository_1.default.addClassTaskQues(payload));
+    }));
     //task submissions
     router.post("/getAllStudentsSubmit", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const class_task_pk = req.body.class_task_pk;
@@ -70,7 +75,7 @@ const ClassSessionTaskController = (app) => __awaiter(void 0, void 0, void 0, fu
     }));
     router.post("/getAllClassTaskSub", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const class_task_pk = req.body.class_task_pk;
-        res.json(yield ClassSessionTaskRepository_1.default.getAllClassTaskSub(class_task_pk));
+        res.json(yield ClassSessionTaskRepository_1.default.getAllClassTaskSub(class_task_pk, parseInt(req.user_id)));
     }));
     router.post("/addClassTaskSub", (0, Authorize_1.default)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = req.body;
@@ -88,4 +93,4 @@ const ClassSessionTaskController = (app) => __awaiter(void 0, void 0, void 0, fu
     app.use("/api/task/", router);
 });
 exports.default = ClassSessionTaskController;
-//# sourceMappingURL=ClassSessionTaskRepository.js.map
+//# sourceMappingURL=ClassSessionTaskController.js.map

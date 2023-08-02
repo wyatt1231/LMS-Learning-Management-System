@@ -46,7 +46,6 @@ else {
     //   port: 3306,
     // };
 }
-console.log(`connection_string`, exports.connection_string);
 const DatabaseConfig = mysql2_1.default.createPool(exports.connection_string);
 const DatabaseConnection = () => {
     return new Promise((resolve, reject) => {

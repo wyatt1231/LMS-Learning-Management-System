@@ -3,7 +3,7 @@ import AdminController from "../Controllers/AdminController";
 import ClassController from "../Controllers/ClassController";
 import ClassMaterialController from "../Controllers/ClassMaterialController";
 import ClassSessionController from "../Controllers/ClassSessionController";
-import ClassSessionTaskController from "../Controllers/ClassSessionTaskRepository";
+import ClassSessionTaskController from "../Controllers/ClassSessionTaskController";
 import ClassStudentController from "../Controllers/ClassStudentController";
 import CourseController from "../Controllers/CourseController";
 import RoomController from "../Controllers/RoomController";

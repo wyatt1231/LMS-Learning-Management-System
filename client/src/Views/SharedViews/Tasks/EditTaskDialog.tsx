@@ -1,6 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Grid, Button } from "@material-ui/core";
-import React, { memo, FC } from "react";
+import React, { memo, FC, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import FormDialog from "../../../Component/FormDialog/FormDialog";
 import DateFieldHookForm from "../../../Component/HookForm/DateFieldHookForm";
@@ -11,6 +11,7 @@ import { useCallback } from "react";
 import ClassSessionTaskActions from "../../../Services/Actions/ClassSessionTaskActions";
 import { setGeneralPrompt } from "../../../Services/Actions/PageActions";
 import { useDispatch } from "react-redux";
+import convertObjectToFormData from "../../../Helpers/convertObjectToFormData";
 
 interface IEditTaskDialog {
   task: SessionTaskModel;
@@ -37,20 +38,25 @@ export const EditTaskDialog: FC<IEditTaskDialog> = memo(
       },
     });
 
+    const [file, set_file] = useState<any>();
+
     const handleSubmitFormTask = useCallback(
       (data) => {
         const payload: SessionTaskModel = {
           ...data,
           class_task_pk: task.class_task_pk,
+          file: file,
         };
+
+        const formData: any = convertObjectToFormData(payload);
 
         dispatch(
           setGeneralPrompt({
             open: true,
             continue_callback: () =>
               dispatch(
-                ClassSessionTaskActions.updateClassMaterialAction(
-                  payload,
+                ClassSessionTaskActions.updateClassTaskAction(
+                  formData,
                   (msg: string) => {
                     form_edit_task.reset();
                     dispatch(
@@ -67,6 +73,12 @@ export const EditTaskDialog: FC<IEditTaskDialog> = memo(
       },
       [dispatch, form_edit_task, handleSetOpenEditTask, task.class_task_pk]
     );
+
+    const handleChangeInput = (e) => {
+      if (e.target.files[0]) {
+        set_file(e.target.files[0]);
+      }
+    };
 
     return (
       <FormDialog
@@ -117,6 +129,17 @@ export const EditTaskDialog: FC<IEditTaskDialog> = memo(
                       required
                       InputLabelProps={{ shrink: true }}
                       placeholder="Write the class description and/or instructions here..."
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <input
+                      accept=".docx,.pdf,.doc,.rtf,.pptx,.ppt,image/*"
+                      id="contained-button-file"
+                      type="file"
+                      onChange={(e) => {
+                        handleChangeInput(e);
+                      }}
                     />
                   </Grid>
                 </Grid>

@@ -28,6 +28,8 @@ import {
   SessionTaskModel,
   SessionTaskQuesModel,
 } from "../../../../Services/Models/ClassSessionTaskModels";
+import convertObjectToFormData from "../../../../Helpers/convertObjectToFormData";
+import { fileToBase64 } from "../../../../Hooks/UseFileConverter";
 interface IDialogAddTask {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -53,6 +55,7 @@ export const DialogAddTask: FC<IDialogAddTask> = memo(({ open, setOpen }) => {
   });
 
   const [open_add_ques, set_open_add_ques] = useState(false);
+  const [file, set_file] = useState<any>();
 
   const [questions, set_questions] = useState<Array<SessionTaskQuesModel>>([]);
 
@@ -64,21 +67,30 @@ export const DialogAddTask: FC<IDialogAddTask> = memo(({ open, setOpen }) => {
     resolver: yupResolver(validate_add_task),
   });
 
+  const handleChangeInput = (e) => {
+    if (e.target.files[0]) {
+      set_file(e.target.files[0]);
+    }
+  };
+
   const handleSubmitFormTask = useCallback(
-    (data) => {
+    async (data) => {
       const payload: SessionTaskModel = {
         class_pk: params.class_pk,
         ...data,
         questions: questions,
+        file: file,
       };
+
+      const formData: any = convertObjectToFormData(payload);
 
       dispatch(
         setGeneralPrompt({
           open: true,
           continue_callback: () =>
             dispatch(
-              ClassSessionTaskActions.addClassMaterialAction(
-                payload,
+              ClassSessionTaskActions.addClassTaskAction(
+                formData,
                 (msg: string) => {
                   setOpen(false);
                   form_create_task.reset();
@@ -156,6 +168,17 @@ export const DialogAddTask: FC<IDialogAddTask> = memo(({ open, setOpen }) => {
                     required
                     InputLabelProps={{ shrink: true }}
                     placeholder="Write the class description and/or instructions here..."
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <input
+                    accept=".docx,.pdf,.doc,.rtf,.pptx,.ppt,image/*"
+                    id="contained-button-file"
+                    type="file"
+                    onChange={(e) => {
+                      handleChangeInput(e);
+                    }}
                   />
                 </Grid>
               </Grid>

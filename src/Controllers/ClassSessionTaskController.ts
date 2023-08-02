@@ -3,6 +3,7 @@ import Authorize from "../Middlewares/Authorize";
 import {
   SessionTaskModel,
   SessionTaskQuesModel,
+  SessionTaskSubFileModel,
   SessionTaskSubModel,
 } from "../Models/ClassSessionTaskModels";
 import { UserClaims } from "../Models/UserModel";
@@ -34,20 +35,25 @@ const ClassSessionTaskController = async (app: Express): Promise<void> => {
   router.post(
     "/addClassTask",
     Authorize(),
-    async (req: Request & UserClaims, res: Response) => {
+    // async (req: Request & UserClaims, res: Response) => {
+    async (req: Request & { files: any } & UserClaims, res: Response) => {
       const payload: SessionTaskModel = req.body;
+      const file = req?.files?.file;
+
       payload.encoder_pk = parseInt(req.user_id);
-      res.json(await ClassSessionTaskRepository.addClassTask(payload));
+      res.json(await ClassSessionTaskRepository.addClassTask(payload, file));
     }
   );
 
   router.post(
     "/updateClassTask",
     Authorize(),
-    async (req: Request & UserClaims, res: Response) => {
+    async (req: Request & { files: any } & UserClaims, res: Response) => {
       const payload: SessionTaskModel = req.body;
+      const file = req?.files?.file;
+
       payload.encoder_pk = parseInt(req.user_id);
-      res.json(await ClassSessionTaskRepository.updateClassTask(payload));
+      res.json(await ClassSessionTaskRepository.updateClassTask(payload, file));
     }
   );
 
@@ -104,8 +110,16 @@ const ClassSessionTaskController = async (app: Express): Promise<void> => {
     }
   );
 
-  //task submissions
+  router.post(
+    "/addClassTaskQues",
+    Authorize(),
+    async (req: Request & UserClaims, res: Response) => {
+      const payload: SessionTaskQuesModel = req.body;
+      res.json(await ClassSessionTaskRepository.addClassTaskQues(payload));
+    }
+  );
 
+  //task submissions
   router.post(
     "/getAllStudentsSubmit",
     Authorize(),
@@ -123,7 +137,10 @@ const ClassSessionTaskController = async (app: Express): Promise<void> => {
     async (req: Request & UserClaims, res: Response) => {
       const class_task_pk: number = req.body.class_task_pk;
       res.json(
-        await ClassSessionTaskRepository.getAllClassTaskSub(class_task_pk)
+        await ClassSessionTaskRepository.getAllClassTaskSub(
+          class_task_pk,
+          parseInt(req.user_id)
+        )
       );
     }
   );
@@ -148,6 +165,23 @@ const ClassSessionTaskController = async (app: Express): Promise<void> => {
     async (req: Request & UserClaims, res: Response) => {
       const payload: Array<SessionTaskSubModel> = req.body;
       res.json(await ClassSessionTaskRepository.updateTaskSub(payload));
+    }
+  );
+
+  router.post(
+    "/addClassTaskFileSub",
+    Authorize(),
+    async (req: Request & { files: any } & UserClaims, res: Response) => {
+      const payload: SessionTaskSubFileModel = req.body;
+      const file = req.files.file;
+
+      res.json(
+        await ClassSessionTaskRepository.addClassTaskFileSub(
+          payload,
+          parseInt(req.user_id),
+          file
+        )
+      );
     }
   );
 
