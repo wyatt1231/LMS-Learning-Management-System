@@ -420,16 +420,31 @@ const StudentQuestion = ({ all_class_task_sub, class_task_pk }) => {
               className="link"
               style={{ marginBottom: ".5em" }}
               onClick={() => {
-                console.log(`all_class_task_sub`, all_class_task_sub);
-
+                set_previewed_file(null);
                 if (all_class_task_sub?.length > 0) {
-                  set_previewed_file(all_class_task_sub[0].stu_ans_file_loc);
+                  set_previewed_file(all_class_task_sub[0]?.stu_ans_file_loc);
                 } else {
                   dispatch(setSnackbar(`No student file is attached`, `error`));
                 }
               }}
             >
-              Preview Answer Attachment
+              Preview Student Answer Attachment
+            </small>
+            <div style={{ margin: ".5em 0" }}></div>
+            <small
+              className="link"
+              style={{ marginBottom: ".5em" }}
+              onClick={() => {
+                set_previewed_file(null);
+
+                if (all_class_task_sub?.length > 0) {
+                  set_previewed_file(all_class_task_sub[0]?.tut_file_loc);
+                } else {
+                  dispatch(setSnackbar(`No tutor file is attached`, `error`));
+                }
+              }}
+            >
+              Preview Tutor Reply Attachment
             </small>
           </div>
 

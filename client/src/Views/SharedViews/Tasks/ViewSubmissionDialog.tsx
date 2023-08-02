@@ -26,7 +26,7 @@ import { SessionTaskSubModel } from "../../../Services/Models/ClassSessionTaskMo
 interface ViewSubmissionDialogProps {
   selected_submission: SessionTaskSubModel;
   open: boolean;
-  handleViewSubmitDtls: (open: boolean) => void;
+  handleViewSubmitDtls: any;
   class_task_pk: number;
 }
 
