@@ -30,6 +30,7 @@ import {
 } from "../../../../Services/Models/ClassSessionTaskModels";
 import convertObjectToFormData from "../../../../Helpers/convertObjectToFormData";
 import { fileToBase64 } from "../../../../Hooks/UseFileConverter";
+import moment from "moment";
 interface IDialogAddTask {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -78,11 +79,23 @@ export const DialogAddTask: FC<IDialogAddTask> = memo(({ open, setOpen }) => {
       const payload: SessionTaskModel = {
         class_pk: params.class_pk,
         ...data,
+        // due_date: moment(data.due_date).format("YYYY-MM-DD"),
         questions: questions,
-        file: file,
+        // file: file,
       };
 
-      const formData: any = convertObjectToFormData(payload);
+      console.log(`payload`, payload);
+
+      // const formData: any = convertObjectToFormData(payload);
+
+      // questions?.forEach((p, i) => {
+      //   formData.append(`questions[]['class_task_pk']`, p.class_task_pk + ``);
+      //   formData.append(`questions[]['question']`, p.question);
+      //   formData.append(`questions[]['cor_answer']`, p.cor_answer);
+      //   formData.append(`questions[]['pnt']`, p.pnt + ``);
+      // });
+
+      // formData.append(`file`, file);
 
       dispatch(
         setGeneralPrompt({
@@ -90,7 +103,7 @@ export const DialogAddTask: FC<IDialogAddTask> = memo(({ open, setOpen }) => {
           continue_callback: () =>
             dispatch(
               ClassSessionTaskActions.addClassTaskAction(
-                formData,
+                payload,
                 (msg: string) => {
                   setOpen(false);
                   form_create_task.reset();
@@ -171,7 +184,7 @@ export const DialogAddTask: FC<IDialogAddTask> = memo(({ open, setOpen }) => {
                   />
                 </Grid>
 
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <input
                     accept=".docx,.pdf,.doc,.rtf,.pptx,.ppt,image/*"
                     id="contained-button-file"
@@ -180,7 +193,7 @@ export const DialogAddTask: FC<IDialogAddTask> = memo(({ open, setOpen }) => {
                       handleChangeInput(e);
                     }}
                   />
-                </Grid>
+                </Grid> */}
               </Grid>
             </form>
           </FormProvider>

@@ -96,18 +96,23 @@ const addClassTask = async (
   try {
     await con.BeginTransaction();
 
+    console.log(`payload.due_date`, payload.questions);
     payload.due_date = parseInvalidDateTimeToDefault(payload.due_date);
 
-    const file_res = await UploadFile("src/Storage/Files/Tasks/", file);
-    if (!file_res.success) {
-      con.Rollback();
-      return file_res;
-    }
+    // let file_res: any = null;
 
-    payload = {
-      ...payload,
-      file_location: file_res.data,
-    };
+    // if (!!file) {
+    //   file_res = await UploadFile("src/Storage/Files/Tasks/", file);
+    //   if (!file_res.success) {
+    //     con.Rollback();
+    //     return file_res;
+    //   }
+    // }
+
+    // payload = {
+    //   ...payload,
+    //   file_location: file_res?.data,
+    // };
 
     const sql_add_task = await con.Insert(
       `INSERT INTO class_tasks SET
@@ -117,19 +122,28 @@ const addClassTask = async (
         due_date=@due_date,
         file_location=@file_location,
         encoder_pk=@encoder_pk;`,
-      payload
+      {
+        ...payload,
+        file_location: null,
+      }
     );
 
     if (sql_add_task.affectedRows > 0) {
-      for (const ques of payload.questions) {
-        ques.class_task_pk = sql_add_task.insertedId;
+      for (const ques of payload?.questions) {
+        const params = {
+          ...ques,
+          class_task_pk: sql_add_task.insertedId,
+        };
+
+        console.log(`ques`, ques);
+
         const sql_add_ques = await con.Insert(
           `INSERT INTO class_task_ques SET
           class_task_pk=@class_task_pk,
           question=@question,
           cor_answer=@cor_answer,
           pnt=@pnt;`,
-          ques
+          params
         );
 
         if (sql_add_ques.affectedRows <= 0) {

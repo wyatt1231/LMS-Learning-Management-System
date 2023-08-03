@@ -73,28 +73,36 @@ const addClassTask = (payload, file) => __awaiter(void 0, void 0, void 0, functi
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
+        console.log(`payload.due_date`, payload.questions);
         payload.due_date = (0, useDateParser_1.parseInvalidDateTimeToDefault)(payload.due_date);
-        const file_res = yield (0, useFileUploader_1.UploadFile)("src/Storage/Files/Tasks/", file);
-        if (!file_res.success) {
-            con.Rollback();
-            return file_res;
-        }
-        payload = Object.assign(Object.assign({}, payload), { file_location: file_res.data });
+        // let file_res: any = null;
+        // if (!!file) {
+        //   file_res = await UploadFile("src/Storage/Files/Tasks/", file);
+        //   if (!file_res.success) {
+        //     con.Rollback();
+        //     return file_res;
+        //   }
+        // }
+        // payload = {
+        //   ...payload,
+        //   file_location: file_res?.data,
+        // };
         const sql_add_task = yield con.Insert(`INSERT INTO class_tasks SET
         class_pk=@class_pk,
         task_title=@task_title,
         task_desc=@task_desc,
         due_date=@due_date,
         file_location=@file_location,
-        encoder_pk=@encoder_pk;`, payload);
+        encoder_pk=@encoder_pk;`, Object.assign(Object.assign({}, payload), { file_location: null }));
         if (sql_add_task.affectedRows > 0) {
-            for (const ques of payload.questions) {
-                ques.class_task_pk = sql_add_task.insertedId;
+            for (const ques of payload === null || payload === void 0 ? void 0 : payload.questions) {
+                const params = Object.assign(Object.assign({}, ques), { class_task_pk: sql_add_task.insertedId });
+                console.log(`ques`, ques);
                 const sql_add_ques = yield con.Insert(`INSERT INTO class_task_ques SET
           class_task_pk=@class_task_pk,
           question=@question,
           cor_answer=@cor_answer,
-          pnt=@pnt;`, ques);
+          pnt=@pnt;`, params);
                 if (sql_add_ques.affectedRows <= 0) {
                     con.Rollback();
                     return {
