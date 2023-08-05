@@ -23,6 +23,7 @@ import {
 import {
   SessionTaskQuesModel,
   SessionTaskSubFileModel,
+  SessionTaskSubModel,
 } from "../../../Services/Models/ClassSessionTaskModels";
 import { RootStore } from "../../../Services/Store";
 import EditQues from "./EditQues";
@@ -301,6 +302,8 @@ const StudentQuestion = ({ all_class_task_sub, class_task_pk }) => {
     },
   });
 
+  console.log(`all_class_task_sub`, all_class_task_sub);
+
   const single_class_task = useSelector(
     (store: RootStore) => store.ClassSessionTaskReducer.single_class_task
   );
@@ -457,66 +460,75 @@ const StudentQuestion = ({ all_class_task_sub, class_task_pk }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {fields.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>
-                    <div
-                      style={{
-                        display: `grid`,
-                        gridGap: `.3em`,
-                        fontWeight: 500,
-                        fontSize: `.87em`,
-                      }}
-                    >
-                      <TextFieldHookForm
-                        name={`questions[${index}].answer`}
-                        multiline={true}
-                        rows={2}
-                      />
+              {fields.map(
+                (item, index) =>
+                  !!item.question && (
+                    <TableRow key={index}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>
+                        <div
+                          style={{
+                            display: `grid`,
+                            gridGap: `.3em`,
+                            fontWeight: 500,
+                            fontSize: `.87em`,
+                          }}
+                        >
+                          <TextFieldHookForm
+                            name={`questions[${index}].answer`}
+                            multiline={true}
+                            rows={2}
+                          />
 
-                      <TextFieldHookForm
-                        name={`questions[${index}].task_sub_pk`}
-                        type="hidden"
-                      />
-                      <TextFieldHookForm
-                        name={`questions[${index}].task_ques_pk`}
-                        type="hidden"
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <small className="ques">{item.question}</small>
-                  </TableCell>
-                </TableRow>
-              ))}
+                          <TextFieldHookForm
+                            name={`questions[${index}].task_sub_pk`}
+                            type="hidden"
+                          />
+                          <TextFieldHookForm
+                            name={`questions[${index}].task_ques_pk`}
+                            type="hidden"
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <small className="ques">{item.question}</small>
+                      </TableCell>
+                    </TableRow>
+                  )
+              )}
             </TableBody>
           </Table>
 
-          <div
-            style={{
-              display: `grid`,
-              justifyContent: `end`,
-              justifyItems: `end`,
-              width: `100%`,
-              padding: `1em`,
-            }}
-          >
-            <Button
-              form="submit-ques-form"
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={single_class_task?.allow_submit != "y"}
-            >
-              Submit & Save Answers
-            </Button>
-            {single_class_task?.allow_submit != "y" && (
-              <small className="error" style={{ marginTop: `.5em` }}>
-                Submission for this task is not yet allowed!
-              </small>
-            )}
-          </div>
+          {all_class_task_sub?.length > 0 && (
+            <>
+              {all_class_task_sub[0].task_ques_pk != null && (
+                <div
+                  style={{
+                    display: `grid`,
+                    justifyContent: `end`,
+                    justifyItems: `end`,
+                    width: `100%`,
+                    padding: `1em`,
+                  }}
+                >
+                  <Button
+                    form="submit-ques-form"
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={single_class_task?.allow_submit != "y"}
+                  >
+                    Submit & Save Answers
+                  </Button>
+                  {single_class_task?.allow_submit != "y" && (
+                    <small className="error" style={{ marginTop: `.5em` }}>
+                      Submission for this task is not yet allowed!
+                    </small>
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </form>
       </FormProvider>
       {!!previewed_file && (

@@ -471,34 +471,48 @@ const getAllClassTaskSub = async (
 
     let entity: Array<SessionTaskQuesModel & SessionTaskSubModel> = [];
 
-    for (let sub of data) {
+    if (data?.length > 0) {
+      for (let sub of data) {
+        const fileSub: SessionTaskSubFileModel = await con.QuerySingle(
+          `SELECT * FROM class_task_sub_file WHERE class_task_pk=@class_task_pk limit 1`,
+          {
+            class_task_pk: sub.class_task_pk,
+          }
+        );
+
+        const studentSubmit: SessionTaskSubModel = await con.QuerySingle(
+          `SELECT task_sub_pk,task_ques_pk,student_pk,answered_at,is_correct, answer FROM class_task_sub WHERE task_ques_pk = @task_ques_pk AND student_pk=(SELECT student_pk FROM students WHERE user_id=@user_pk LIMIT 1) LIMIT 1`,
+          {
+            task_ques_pk: sub.task_ques_pk,
+            user_pk: user_pk,
+          }
+        );
+
+        entity.push({
+          ...sub,
+          task_sub_pk: studentSubmit?.task_sub_pk,
+          student_pk: studentSubmit?.student_pk,
+          answered_at: studentSubmit?.answered_at,
+          answer: studentSubmit?.answer,
+          is_correct: studentSubmit?.is_correct,
+          stu_ans_file_loc: fileSub?.stu_ans_file_loc,
+          tut_file_loc: fileSub?.tut_file_loc,
+        });
+
+        // console.log(`getAllClassTaskSub sub ${class_task_pk}`, sub);
+      }
+    } else {
       const fileSub: SessionTaskSubFileModel = await con.QuerySingle(
         `SELECT * FROM class_task_sub_file WHERE class_task_pk=@class_task_pk limit 1`,
         {
-          class_task_pk: sub.class_task_pk,
-        }
-      );
-
-      const studentSubmit: SessionTaskSubModel = await con.QuerySingle(
-        `SELECT task_sub_pk,task_ques_pk,student_pk,answered_at,is_correct, answer FROM class_task_sub WHERE task_ques_pk = @task_ques_pk AND student_pk=(SELECT student_pk FROM students WHERE user_id=@user_pk LIMIT 1) LIMIT 1`,
-        {
-          task_ques_pk: sub.task_ques_pk,
-          user_pk: user_pk,
+          class_task_pk: class_task_pk,
         }
       );
 
       entity.push({
-        ...sub,
-        task_sub_pk: studentSubmit?.task_sub_pk,
-        student_pk: studentSubmit?.student_pk,
-        answered_at: studentSubmit?.answered_at,
-        answer: studentSubmit?.answer,
-        is_correct: studentSubmit?.is_correct,
         stu_ans_file_loc: fileSub?.stu_ans_file_loc,
         tut_file_loc: fileSub?.tut_file_loc,
       });
-
-      // console.log(`getAllClassTaskSub sub ${class_task_pk}`, sub);
     }
 
     con.Commit();
@@ -535,40 +549,78 @@ const getAllStudentsSubmit = async (
 
     // console.log(`getAllStudentsSubmit`, getAllStudentsSubmit);
 
-    for (let sub of task_sub) {
-      const fileSub: SessionTaskSubFileModel = await con.QuerySingle(
-        `SELECT * FROM class_task_sub_file WHERE class_task_pk=@class_task_pk AND student_pk=@student_pk limit 1 `,
+    if (task_sub?.length > 0) {
+      for (let sub of task_sub) {
+        const fileSub: SessionTaskSubFileModel = await con.QuerySingle(
+          `SELECT * FROM class_task_sub_file WHERE class_task_pk=@class_task_pk AND student_pk=@student_pk limit 1 `,
+          {
+            class_task_pk: class_task_pk,
+            student_pk: sub.student_pk,
+          }
+        );
+
+        const student: StudentModel = await con.QuerySingle(
+          `SELECT * FROM students WHERE student_pk=@student_pk limit 1`,
+          {
+            student_pk: sub.student_pk,
+          }
+        );
+
+        student.picture = await GetUploadedImage(student.picture);
+        sub.student = student;
+
+        console.log(`class_task_pk`, class_task_pk);
+
+        sub.questions = await con.Query(
+          `SELECT s.*,q.cor_answer,q.question,q.pnt FROM class_task_sub s  JOIN class_task_ques q
+          ON s.task_ques_pk = q.task_ques_pk WHERE q.class_task_pk=@class_task_pk AND s.student_pk=@student_pk ;`,
+          {
+            class_task_pk: class_task_pk,
+            student_pk: sub.student_pk,
+            // task_ques_pk: sub.task_ques_pk,
+          }
+        );
+
+        sub.stu_ans_file_loc = fileSub?.stu_ans_file_loc;
+        sub.tut_file_loc = fileSub?.tut_file_loc;
+      }
+    } else {
+      const fileSub: SessionTaskSubFileModel[] = await con.Query(
+        `SELECT * FROM class_task_sub_file WHERE class_task_pk=@class_task_pk limit 1 `,
         {
           class_task_pk: class_task_pk,
-          student_pk: sub.student_pk,
         }
       );
 
-      const student: StudentModel = await con.QuerySingle(
-        `SELECT * FROM students WHERE student_pk=@student_pk limit 1`,
-        {
-          student_pk: sub.student_pk,
-        }
-      );
+      const task_subs: SessionTaskSubModel[] = [];
 
-      student.picture = await GetUploadedImage(student.picture);
-      sub.student = student;
+      for (const sub of fileSub) {
+        console.log(`sub`, sub);
+        const student: StudentModel = await con.QuerySingle(
+          `SELECT * FROM students WHERE student_pk=@student_pk limit 1`,
+          {
+            student_pk: sub.student_pk,
+          }
+        );
 
-      console.log(`class_task_pk`, class_task_pk);
+        student.picture = await GetUploadedImage(student.picture);
 
-      sub.questions = await con.Query(
-        `SELECT s.*,q.cor_answer,q.question,q.pnt FROM class_task_sub s  JOIN class_task_ques q
-        ON s.task_ques_pk = q.task_ques_pk WHERE q.class_task_pk=@class_task_pk AND s.student_pk=@student_pk ;`,
-        {
-          class_task_pk: class_task_pk,
-          student_pk: sub.student_pk,
-          // task_ques_pk: sub.task_ques_pk,
-        }
-      );
+        task_subs.push({
+          student: student,
+          class_task_pk: sub.class_task_pk,
+          stu_ans_file_loc: sub?.stu_ans_file_loc,
+          tut_file_loc: sub?.tut_file_loc,
+          answered_at: new Date(),
+        });
+      }
 
-      sub.stu_ans_file_loc = fileSub?.stu_ans_file_loc;
-      sub.tut_file_loc = fileSub?.tut_file_loc;
+      con.Commit();
+      return {
+        success: true,
+        data: task_subs,
+      };
     }
+
     con.Commit();
     return {
       success: true,
