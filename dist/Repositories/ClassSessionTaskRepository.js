@@ -356,6 +356,7 @@ const updateClassTaskQues = (payload) => __awaiter(void 0, void 0, void 0, funct
 });
 //class task submissions
 const getAllClassTaskSub = (class_task_pk, user_pk) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
@@ -370,11 +371,11 @@ const getAllClassTaskSub = (class_task_pk, user_pk) => __awaiter(void 0, void 0,
                 const fileSub = yield con.QuerySingle(`SELECT * FROM class_task_sub_file WHERE class_task_pk=@class_task_pk limit 1`, {
                     class_task_pk: sub.class_task_pk,
                 });
-                const studentSubmit = yield con.QuerySingle(`SELECT task_sub_pk,task_ques_pk,student_pk,answered_at,is_correct, answer FROM class_task_sub WHERE task_ques_pk = @task_ques_pk AND student_pk=(SELECT student_pk FROM students WHERE user_id=@user_pk LIMIT 1) LIMIT 1`, {
+                const studentSubmit = yield con.QuerySingle(`SELECT task_sub_pk,task_ques_pk,student_pk,answered_at,is_correct, answer, tutor_comment FROM class_task_sub WHERE task_ques_pk = @task_ques_pk AND student_pk=(SELECT student_pk FROM students WHERE user_id=@user_pk LIMIT 1) LIMIT 1`, {
                     task_ques_pk: sub.task_ques_pk,
                     user_pk: user_pk,
                 });
-                entity.push(Object.assign(Object.assign({}, sub), { task_sub_pk: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.task_sub_pk, student_pk: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.student_pk, answered_at: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.answered_at, answer: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.answer, is_correct: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.is_correct, stu_ans_file_loc: fileSub === null || fileSub === void 0 ? void 0 : fileSub.stu_ans_file_loc, tut_file_loc: fileSub === null || fileSub === void 0 ? void 0 : fileSub.tut_file_loc }));
+                entity.push(Object.assign(Object.assign({}, sub), { task_sub_pk: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.task_sub_pk, student_pk: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.student_pk, answered_at: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.answered_at, answer: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.answer, is_correct: studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.is_correct, tutor_comment: (_a = studentSubmit === null || studentSubmit === void 0 ? void 0 : studentSubmit.tutor_comment) !== null && _a !== void 0 ? _a : ``, stu_ans_file_loc: fileSub === null || fileSub === void 0 ? void 0 : fileSub.stu_ans_file_loc, tut_file_loc: fileSub === null || fileSub === void 0 ? void 0 : fileSub.tut_file_loc }));
                 // console.log(`getAllClassTaskSub sub ${class_task_pk}`, sub);
             }
         }
@@ -476,13 +477,21 @@ const getAllStudentsSubmit = (class_task_pk) => __awaiter(void 0, void 0, void 0
     }
 });
 const updateTaskSub = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b, _c;
     const con = yield (0, DatabaseConfig_1.DatabaseConnection)();
     try {
         yield con.BeginTransaction();
         for (const sub of payload) {
+            console.log(`update task sub`, sub);
             const sql_update_sub = yield con.Modify(`  UPDATE class_task_sub  SET
-        is_correct = @is_correct WHERE task_sub_pk=@task_sub_pk ;
-              `, sub);
+        is_correct = @is_correct,
+        tutor_comment = @tutor_comment
+        WHERE task_sub_pk=@task_sub_pk ;
+              `, {
+                task_sub_pk: sub.task_sub_pk,
+                is_correct: (_b = sub === null || sub === void 0 ? void 0 : sub.is_correct) !== null && _b !== void 0 ? _b : "n",
+                tutor_comment: (_c = sub === null || sub === void 0 ? void 0 : sub.tutor_comment) !== null && _c !== void 0 ? _c : ``,
+            });
             if (sql_update_sub < 1) {
                 con.Rollback();
                 return {

@@ -8,6 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from "@material-ui/core";
 import React, { FC, memo, useCallback, useEffect } from "react";
 import {
@@ -55,7 +56,7 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
 
     const handleSubmitFormTask = useCallback(
       (data) => {
-        const payload: any = [];
+        const payload: SessionTaskSubModel[] = [];
 
         data?.questions?.forEach((element) => {
           payload.push({
@@ -64,6 +65,7 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
                 ? "y"
                 : "n",
             task_sub_pk: element.task_sub_pk,
+            tutor_comment: element.tutor_comment,
           });
         });
 
@@ -95,6 +97,7 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
       <FormDialog
         title="View Student Submission"
         open={open}
+        minWidth={950}
         handleClose={() => {
           handleViewSubmitDtls();
         }}
@@ -117,8 +120,9 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
                           <TableCell width="5%">#</TableCell>
                           <TableCell width="5%">Check</TableCell>
                           <TableCell width="20%">Answer</TableCell>
-                          <TableCell width="60%">Question</TableCell>
+                          <TableCell width="20%">Question</TableCell>
                           <TableCell width="5%">Points</TableCell>
+                          <TableCell width="40%">Comment</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -157,6 +161,33 @@ export const ViewSubmissionDialog: FC<ViewSubmissionDialogProps> = memo(
 
                             <TableCell>
                               <small className="ques">{item.pnt}</small>
+                            </TableCell>
+
+                            <TableCell>
+                              <Controller
+                                name={`questions[${index}].tutor_comment`}
+                                control={form_edit_task_ques.control}
+                                render={(props) => (
+                                  <TextField
+                                    {...props}
+                                    defaultValue={item.tutor_comment}
+                                    inputProps={{
+                                      style: { fontSize: `.87em`, padding: 0 },
+                                    }}
+                                    InputProps={{
+                                      style: { padding: `.5em` },
+                                    }}
+                                    rows={2}
+                                    fullWidth={true}
+                                    multiline={true}
+                                    variant="outlined"
+                                    placeholder="Write your comment here...."
+                                    onChange={(e) =>
+                                      props.onChange(e.target.value)
+                                    }
+                                  />
+                                )}
+                              />
                             </TableCell>
                           </TableRow>
                         ))}

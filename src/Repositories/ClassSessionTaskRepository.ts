@@ -481,7 +481,7 @@ const getAllClassTaskSub = async (
         );
 
         const studentSubmit: SessionTaskSubModel = await con.QuerySingle(
-          `SELECT task_sub_pk,task_ques_pk,student_pk,answered_at,is_correct, answer FROM class_task_sub WHERE task_ques_pk = @task_ques_pk AND student_pk=(SELECT student_pk FROM students WHERE user_id=@user_pk LIMIT 1) LIMIT 1`,
+          `SELECT task_sub_pk,task_ques_pk,student_pk,answered_at,is_correct, answer, tutor_comment FROM class_task_sub WHERE task_ques_pk = @task_ques_pk AND student_pk=(SELECT student_pk FROM students WHERE user_id=@user_pk LIMIT 1) LIMIT 1`,
           {
             task_ques_pk: sub.task_ques_pk,
             user_pk: user_pk,
@@ -495,6 +495,7 @@ const getAllClassTaskSub = async (
           answered_at: studentSubmit?.answered_at,
           answer: studentSubmit?.answer,
           is_correct: studentSubmit?.is_correct,
+          tutor_comment: studentSubmit?.tutor_comment ?? ``,
           stu_ans_file_loc: fileSub?.stu_ans_file_loc,
           tut_file_loc: fileSub?.tut_file_loc,
         });
@@ -644,11 +645,18 @@ const updateTaskSub = async (
     await con.BeginTransaction();
 
     for (const sub of payload) {
+      console.log(`update task sub`, sub);
       const sql_update_sub = await con.Modify(
         `  UPDATE class_task_sub  SET
-        is_correct = @is_correct WHERE task_sub_pk=@task_sub_pk ;
+        is_correct = @is_correct,
+        tutor_comment = @tutor_comment
+        WHERE task_sub_pk=@task_sub_pk ;
               `,
-        sub
+        {
+          task_sub_pk: sub.task_sub_pk,
+          is_correct: sub?.is_correct ?? "n",
+          tutor_comment: sub?.tutor_comment ?? ``,
+        }
       );
       if (sql_update_sub < 1) {
         con.Rollback();

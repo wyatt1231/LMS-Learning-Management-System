@@ -36,6 +36,7 @@ export interface SessionTaskSubModel {
   student?: StudentModel;
   questions?: Array<SessionTaskQuesModel>;
   is_correct?: any;
+  tutor_comment?: string;
   //
   class_task_pk?: number;
   stu_ans_file_loc?: string;

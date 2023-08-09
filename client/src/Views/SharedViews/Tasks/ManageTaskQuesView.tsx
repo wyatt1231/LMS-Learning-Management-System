@@ -1,5 +1,7 @@
 import {
+  Badge,
   Button,
+  Chip,
   Grid,
   IconButton,
   Table,
@@ -455,8 +457,10 @@ const StudentQuestion = ({ all_class_task_sub, class_task_pk }) => {
             <TableHead>
               <TableRow>
                 <TableCell width="5%">#</TableCell>
-                <TableCell width="40%">Answer</TableCell>
-                <TableCell width="55%">Questions</TableCell>
+                <TableCell width="30%">Answer</TableCell>
+                <TableCell width="35%">Questions</TableCell>
+                <TableCell width="5%">Correct</TableCell>
+                <TableCell width="30%">Tutor's Comment</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -466,32 +470,49 @@ const StudentQuestion = ({ all_class_task_sub, class_task_pk }) => {
                     <TableRow key={index}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>
-                        <div
+                        {/* <div
                           style={{
                             display: `grid`,
                             gridGap: `.3em`,
                             fontWeight: 500,
                             fontSize: `.87em`,
                           }}
-                        >
-                          <TextFieldHookForm
-                            name={`questions[${index}].answer`}
-                            multiline={true}
-                            rows={2}
-                          />
+                        > */}
+                        <TextFieldHookForm
+                          name={`questions[${index}].answer`}
+                          variant="outlined"
+                          multiline={true}
+                          inputProps={{
+                            style: { fontSize: `.87em`, padding: 0 },
+                          }}
+                          InputProps={{
+                            style: { padding: `.5em` },
+                          }}
+                          rows={2}
+                        />
 
-                          <TextFieldHookForm
-                            name={`questions[${index}].task_sub_pk`}
-                            type="hidden"
-                          />
-                          <TextFieldHookForm
-                            name={`questions[${index}].task_ques_pk`}
-                            type="hidden"
-                          />
-                        </div>
+                        <TextFieldHookForm
+                          name={`questions[${index}].task_sub_pk`}
+                          type="hidden"
+                        />
+                        <TextFieldHookForm
+                          name={`questions[${index}].task_ques_pk`}
+                          type="hidden"
+                        />
+                        {/* </div> */}
                       </TableCell>
                       <TableCell>
                         <small className="ques">{item.question}</small>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={item.is_correct == "y" ? "Yes" : "No"}
+                          color="default"
+                          size="small"
+                        ></Chip>
+                      </TableCell>
+                      <TableCell>
+                        <small className="ques">{item.tutor_comment}</small>
                       </TableCell>
                     </TableRow>
                   )

@@ -33,6 +33,8 @@ export interface SessionTaskSubModel {
   answered_at?: string | Date;
   student?: StudentModel;
   questions?: Array<SessionTaskQuesModel>;
+  is_correct?: `y` | `n`;
+  tutor_comment?: string;
   //
   class_task_pk?: number;
   stu_ans_file_loc?: string;
